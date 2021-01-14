@@ -49,13 +49,13 @@ parser.add_argument('--replay_bs',type=int,default=10,\
                     help='experience replay batch size')
 
 # ovr parameters
-parser.add_argument('--G_timesteps',type=int,default=1000,\
+parser.add_argument('--G_timesteps',type=int,default=5000,\
                     help='number of swarm movements')
 parser.add_argument('--training',type=int,default=1,\
                     help='training or testing the DRL')
 parser.add_argument('--centralized',type=bool,default=True,\
                     help='centralized or decentralized')
-parser.add_argument('--DQN_update_period',type=int,default=25,\
+parser.add_argument('--DQN_update_period',type=int,default=50,\
                     help='DQN update period')
 
 args = parser.parse_args()
@@ -132,8 +132,8 @@ class DQN:
     def build_linear_NN(self):
         model = Sequential()
 
-        model.add(Dense(40,activation='relu',input_shape = [self.input_size]))
-        model.add(Dense(30,activation='relu'))
+        model.add(Dense(50,activation='relu',input_shape = [self.input_size]))
+        model.add(Dense(50,activation='relu'))
         model.add(Dense(self.action_size)) ##this should be the size of the action space
 
         model.compile(loss='mse',optimizer=self.optimizer)
@@ -180,7 +180,7 @@ class DQN:
                 t = self.target_network.predict(next_state)
                 target[0][action] = reward + self.g_discount * np.amax(t)
                 
-            self.q_net.fit(state,target,epochs=1,verbose=1)    
+            self.q_net.fit(state,target,epochs=1,verbose=0)    
     
 # %% confirmation testing
 test_DQN = DQN(args)
@@ -276,10 +276,12 @@ for e in range(episodes):
         reward_DQN[0,0,timestep] = rewards
         
         ## printing check up
-        if timestep % 1 == 0:
-            print(state_set)
+        if timestep % 10 == 0:
+            #print(state_set)
             print('timestep='+str(timestep),
-                  'reward_DQN ={:.2f}'.format(np.sum(reward_DQN,axis=0)[e][timestep]))
+                  'reward_DQN ={:.2f}'.format(np.sum(reward_DQN,axis=0)[e][timestep]),
+                  'epsilon = {:.2f}'.format(ep_greed)
+                  )
             # print(test_DQN.q_net.get_weights())
         
         ## perform learning
