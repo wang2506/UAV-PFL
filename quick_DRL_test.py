@@ -39,7 +39,7 @@ parser.add_argument('--UAV_init_ratio',type=float,default=0.8,\
                     help='initial worker to coorindator ratio')
 
 ## RL probs (epsilon and gamma)
-parser.add_argument('--ep_greed',type=float,default=0.7,\
+parser.add_argument('--ep_greed',type=float,default=0.5,\
                     help='epsilon greedy val')
 parser.add_argument('--ep_min',type=float,default=0.05,\
                     help='epsilon minimum')
@@ -49,7 +49,7 @@ parser.add_argument('--replay_bs',type=int,default=10,\
                     help='experience replay batch size')
 
 # ovr parameters
-parser.add_argument('--G_timesteps',type=int,default=5000,\
+parser.add_argument('--G_timesteps',type=int,default=1000,\
                     help='number of swarm movements')
 parser.add_argument('--training',type=int,default=1,\
                     help='training or testing the DRL')
@@ -132,8 +132,8 @@ class DQN:
     def build_linear_NN(self):
         model = Sequential()
 
-        model.add(Dense(50,activation='relu',input_shape = [self.input_size]))
-        model.add(Dense(50,activation='relu'))
+        model.add(Dense(10,activation='relu',input_shape = [self.input_size]))
+        model.add(Dense(10,activation='relu'))
         model.add(Dense(self.action_size)) ##this should be the size of the action space
 
         model.compile(loss='mse',optimizer=self.optimizer)
@@ -293,7 +293,7 @@ for e in range(episodes):
 
         # experience update -> this is the actual training
         if len(test_DQN.past_exps) > args.replay_bs:
-            print('tomato')
+            #print('tomato')
             test_DQN.retrain_exp_replay(args.replay_bs)
             
         # update label generation from taget model

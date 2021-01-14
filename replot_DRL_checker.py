@@ -12,28 +12,28 @@ import os
 # %% import data
 cwd = os.getcwd()
 
-for i in np.arange(2,5,1):
+for i in np.arange(50,51,1):
     with open(cwd+'/data/'+str(i),'rb') as f:
         data = pickle.load(f)
     
     # plot average reward per 10 iterations
-    data_fixer = [sum(data[j:j+10])/10 for j,jj in enumerate(data) if j % 10 == 0]
+    data_fixer = [sum(data[j:j+100])/100 for j,jj in enumerate(data) if j % 100 == 0]
     
     plt.figure(i)
     plt.plot(data_fixer[:-1])
-    plt.xlabel('10th iterations instance')
-    plt.ylabel('average reward over the latest 10 iterations')
+    plt.xlabel('100th iterations instance')
+    plt.ylabel('average reward over the latest 100 iterations')
     plt.title('final iteration was ' +str(100*i))
 
 
-    min_data = [min(data[j:j+10]) for j,jj in enumerate(data) if j % 10 == 0]
+    # min_data = [min(data[j:j+10]) for j,jj in enumerate(data) if j % 10 == 0]
     
     
-    plt.figure(10*i)
-    plt.plot(min_data[:-1])
-    plt.xlabel('10th iterations instance')
-    plt.ylabel('min reward over the latest 10 iterations')
-    plt.title('final iteration was ' +str(100*i))
+    # plt.figure(10*i)
+    # plt.plot(min_data[:-1])
+    # plt.xlabel('10th iterations instance')
+    # plt.ylabel('min reward over the latest 10 iterations')
+    # plt.title('final iteration was ' +str(100*i))
 
 
 
