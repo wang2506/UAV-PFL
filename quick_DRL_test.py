@@ -39,7 +39,7 @@ parser.add_argument('--UAV_init_ratio',type=float,default=0.8,\
                     help='initial worker to coorindator ratio')
 
 ## RL probs (epsilon and gamma)
-parser.add_argument('--ep_greed',type=float,default=0.5,\
+parser.add_argument('--ep_greed',type=float,default=0.8,\
                     help='epsilon greedy val')
 parser.add_argument('--ep_min',type=float,default=0.05,\
                     help='epsilon minimum')
@@ -160,7 +160,7 @@ class DQN:
             q_values = self.q_net.predict(state)
             action_indexes = np.argmax(q_values[0])
         
-            print(q_values)
+            #print(q_values)
         
         return action_indexes #which index the swarm should go to next
     
@@ -260,7 +260,7 @@ for e in range(episodes):
 
     ## iterate over the timesteps
     for timestep in range(args.G_timesteps):
-        ep_greed = np.max([args.ep_min, args.ep_greed*(1-10**(-3.5))**timestep])
+        ep_greed = np.max([args.ep_min, args.ep_greed*(1-10**(-2))**timestep])
         
         action_set = test_DQN.calc_action(state=init_state_set, args=args,ep_greed =ep_greed)
         
@@ -305,6 +305,9 @@ for e in range(episodes):
         state_set_all.append(state_set)
         
         if timestep % 100 == 0:
+            print(test_DQN.q_net.get_weights()[-1])
+            
+            
             fig_no += 1
             plt.figure(fig_no) # plot reward change over time - move this to separate file later
             
