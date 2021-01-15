@@ -63,7 +63,7 @@ args = parser.parse_args()
 # %% DQN object 
 
 class DQN:
-    def __init__(self,args,optimizer=Adam(learning_rate=0.01)):
+    def __init__(self,args,optimizer=Adam(learning_rate=0.001)):
         # inits
         self.U = np.arange(0,args.U_swarms,1) #the swarms as an array 
         self.C = np.random.randint(0,10,size=args.Clusters) # measures their difficulty (i.e., need more revisits)
@@ -202,7 +202,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     current_reward = 0
     for i,j in enumerate(next_state_set):
         ## reward function calculated based on elapsed time x cluster factor
-        current_reward += cluster_expectations[j]**next_state_visits[j] 
+        current_reward += np.min(cluster_expectations[j]**next_state_visits[j],2000)
         #previously was cluster_expectations[j] * next_state_visits[j]
         next_state_visits[j] = 0 # zero out since now it will be visited
     
@@ -318,12 +318,12 @@ for e in range(episodes):
             plt.title('reward over time')    
             
             # save image
-            plt.savefig(cwd+'/plots/'+str(fig_no)+'_30_epsilon_10000_lr_large.png')
+            plt.savefig(cwd+'/plots/'+str(fig_no)+'_30_epsilon_10000_lr_small.png')
             
             plt.clf()
             
             # save data
-            with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_large','wb') as f:
+            with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small','wb') as f:
                 pk.dump(reward_storage,f)
             
             # with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small_states','wb') as f:
