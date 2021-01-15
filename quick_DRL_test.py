@@ -233,7 +233,7 @@ else:
 # static action space - as finite swarm movement choices
 action_space = action_space_calc(list(range(args.Clusters)))
 #cluster_expectations = 100*np.random.rand(args.Clusters) # the distribution change over time
-cluster_expectations = 100*np.array([0.005,1.2,0.8,10,0.3])
+cluster_expectations = 100*np.array([0.005,1.2,0.8,10,0.3,0.02])
 
 # saving some plots for debugging
 fig_no = 0
@@ -317,7 +317,7 @@ for e in range(episodes):
             plt.title('reward over time')    
             
             # save image
-            plt.savefig(cwd+'/plots/'+str(fig_no)+'_30_epsilon_heterogeneous.png')
+            plt.savefig(cwd+'/plots/'+str(fig_no)+'_30_epsilon_heterogeneous_1000.png')
             
             plt.clf()
             
