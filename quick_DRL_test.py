@@ -232,7 +232,7 @@ else:
 
 # static action space - as finite swarm movement choices
 action_space = action_space_calc(list(range(args.Clusters)))
-cluster_expectations = 10*np.random.rand(args.Clusters) # the distribution change over time
+cluster_expectations = 100*np.random.rand(args.Clusters) # the distribution change over time
 
 # saving some plots for debugging
 fig_no = 0
@@ -260,7 +260,7 @@ for e in range(episodes):
 
     ## iterate over the timesteps
     for timestep in range(args.G_timesteps):
-        ep_greed = np.max([args.ep_min, args.ep_greed*(1-10**(-2.5))**timestep])
+        ep_greed = np.max([args.ep_min, args.ep_greed*(1-10**(-2.7))**timestep])
         
         action_set = test_DQN.calc_action(state=init_state_set, args=args,ep_greed =ep_greed)
         
