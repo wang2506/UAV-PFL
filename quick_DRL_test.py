@@ -49,7 +49,7 @@ parser.add_argument('--replay_bs',type=int,default=10,\
                     help='experience replay batch size')
 
 # ovr parameters
-parser.add_argument('--G_timesteps',type=int,default=1000,\
+parser.add_argument('--G_timesteps',type=int,default=10000,\
                     help='number of swarm movements')
 parser.add_argument('--training',type=int,default=1,\
                     help='training or testing the DRL')
@@ -317,15 +317,15 @@ for e in range(episodes):
             plt.title('reward over time')    
             
             # save image
-            plt.savefig(cwd+'/plots/'+str(fig_no)+'_30_epsilon_heterogeneous_1000.png')
+            plt.savefig(cwd+'/plots/'+str(fig_no)+'_30_epsilon_heterogeneous_10000.png')
             
             plt.clf()
             
             # save data
-            with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_heterogeneous_1000','wb') as f:
+            with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_heterogeneous_10000','wb') as f:
                 pk.dump(reward_storage,f)
             
-            with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_heterogeneous_states_1000','wb') as f:
+            with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_heterogeneous_states_10000','wb') as f:
                 pk.dump(state_set_all,f)
             
             
