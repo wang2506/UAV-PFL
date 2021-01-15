@@ -17,7 +17,7 @@ def moving_average(x, w):
 # %% import data
 cwd = os.getcwd()
 
-for i in np.arange(9,10,1):
+for i in np.arange(15,16,1):
     with open(cwd+'/data/'+str(i),'rb') as f:
         data = pickle.load(f)
     
