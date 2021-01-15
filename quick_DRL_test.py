@@ -49,7 +49,7 @@ parser.add_argument('--replay_bs',type=int,default=10,\
                     help='experience replay batch size')
 
 # ovr parameters
-parser.add_argument('--G_timesteps',type=int,default=20000,\
+parser.add_argument('--G_timesteps',type=int,default=1000,\
                     help='number of swarm movements')
 parser.add_argument('--training',type=int,default=1,\
                     help='training or testing the DRL')
@@ -132,8 +132,8 @@ class DQN:
     def build_linear_NN(self):
         model = Sequential()
 
-        model.add(Dense(60,activation='relu',input_shape = [self.input_size]))
-        model.add(Dense(60,activation='relu'))
+        model.add(Dense(10,activation='relu',input_shape = [self.input_size]))
+        model.add(Dense(10,activation='relu'))
         model.add(Dense(self.action_size)) ##this should be the size of the action space
 
         model.compile(loss='mse',optimizer=self.optimizer)
@@ -232,7 +232,8 @@ else:
 
 # static action space - as finite swarm movement choices
 action_space = action_space_calc(list(range(args.Clusters)))
-cluster_expectations = 100*np.random.rand(args.Clusters) # the distribution change over time
+#cluster_expectations = 100*np.random.rand(args.Clusters) # the distribution change over time
+cluster_expectations = 100*np.array([0.005,1.2,0.8,10,3])
 
 # saving some plots for debugging
 fig_no = 0
@@ -260,7 +261,7 @@ for e in range(episodes):
 
     ## iterate over the timesteps
     for timestep in range(args.G_timesteps):
-        ep_greed = np.max([args.ep_min, args.ep_greed*(1-10**(-2.5))**timestep])
+        ep_greed = np.max([args.ep_min, args.ep_greed*(1-10**(-3))**timestep])
         
         action_set = test_DQN.calc_action(state=init_state_set, args=args,ep_greed =ep_greed)
         
@@ -316,15 +317,15 @@ for e in range(episodes):
             plt.title('reward over time')    
             
             # save image
-            plt.savefig(cwd+'/plots/'+str(fig_no)+'25_epsilon_complexNN.png')
+            plt.savefig(cwd+'/plots/'+str(fig_no)+'_30_epsilon_heterogeneous.png')
             
             plt.clf()
             
             # save data
-            with open(cwd+'/data/'+str(fig_no)+'_25_epsilon_complexNN','wb') as f:
+            with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_heterogeneous','wb') as f:
                 pk.dump(reward_storage,f)
             
-            with open(cwd+'/data/'+str(fig_no)+'_state_sets_25_epsilon_complexNN','wb') as f:
+            with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_heterogeneous','wb') as f:
                 pk.dump(state_set_all,f)
             
             
