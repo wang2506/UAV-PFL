@@ -134,7 +134,7 @@ class DQN:
 
         model.add(Dense(50,activation='relu',input_shape = [self.input_size]))
         model.add(Dense(50,activation='relu'))
-        model.add(Dense(self.action_size)) ##this should be the size of the action space
+        model.add(Dense(self.action_size,activation='linear')) ##this should be the size of the action space
 
         model.compile(loss='mse',optimizer=self.optimizer)
 
@@ -172,8 +172,8 @@ class DQN:
         for state,action,reward,next_state in minibatch:
             
             target = self.q_net.predict(state)
-            print(target)
-            raise NameError('HiThere')
+            # print(target)
+            # raise NameError('HiThere')
         
             terminated = 0
             
