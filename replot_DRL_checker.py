@@ -18,13 +18,13 @@ def moving_average(x, w):
 cwd = os.getcwd()
 
 # for i in np.arange(15,16,1):
-with open(cwd+'/data/'+str(0)+'_30_epsilon_complexNN','rb') as f:
+with open(cwd+'/data/'+str(0)+'_30_epsilon_heterogeneous','rb') as f:
     data = pickle.load(f)
 
 # plot average reward per 10 iterations
 # data_fixer = [sum(data[j:j+10])/10 for j,jj in enumerate(data) if j % 10 == 0]
 
-data_fixer = moving_average(data,10000)
+# data_fixer = moving_average(data,100)
 
 plt.figure()
 plt.plot(data_fixer[:])
