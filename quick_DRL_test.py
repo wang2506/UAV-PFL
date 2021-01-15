@@ -49,7 +49,7 @@ parser.add_argument('--replay_bs',type=int,default=10,\
                     help='experience replay batch size')
 
 # ovr parameters
-parser.add_argument('--G_timesteps',type=int,default=1000,\
+parser.add_argument('--G_timesteps',type=int,default=1500,\
                     help='number of swarm movements')
 parser.add_argument('--training',type=int,default=1,\
                     help='training or testing the DRL')
@@ -232,7 +232,7 @@ else:
 
 # static action space - as finite swarm movement choices
 action_space = action_space_calc(list(range(args.Clusters)))
-cluster_expectations = np.random.rand(args.Clusters) # the distribution change over time
+cluster_expectations = 10*np.random.rand(args.Clusters) # the distribution change over time
 
 # saving some plots for debugging
 fig_no = 0

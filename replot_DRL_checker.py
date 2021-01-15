@@ -9,6 +9,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
+# %% moving average function
+
+def moving_average(x, w):
+    return np.convolve(x, np.ones(w), 'valid') / w
+
 # %% import data
 cwd = os.getcwd()
 
@@ -17,13 +22,17 @@ for i in np.arange(9,10,1):
         data = pickle.load(f)
     
     # plot average reward per 10 iterations
-    data_fixer = [sum(data[j:j+50])/50 for j,jj in enumerate(data) if j % 50 == 0]
+    # data_fixer = [sum(data[j:j+10])/10 for j,jj in enumerate(data) if j % 10 == 0]
+    
+    data_fixer = moving_average(data,200)
     
     plt.figure(i)
-    plt.plot(data_fixer[:-1])
-    plt.xlabel('10th iterations instance')
-    plt.ylabel('average reward over the latest 10 iterations')
-    plt.title('final iteration was ' +str(10*i))
+    plt.plot(data_fixer[:])
+    # plt.xlabel('10th iterations instance')
+    # plt.ylabel('average reward over the latest 10 iterations')
+    # plt.title('final iteration was ' +str(10*i))
+
+
 
 
     # min_data = [min(data[j:j+10]) for j,jj in enumerate(data) if j % 10 == 0]
