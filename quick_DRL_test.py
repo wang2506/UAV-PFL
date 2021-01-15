@@ -202,7 +202,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     current_reward = 0
     for i,j in enumerate(next_state_set):
         ## reward function calculated based on elapsed time x cluster factor
-        current_reward += np.min(cluster_expectations[j]**next_state_visits[j],2000)
+        current_reward += np.min([cluster_expectations[j]**next_state_visits[j],2000])
         #previously was cluster_expectations[j] * next_state_visits[j]
         next_state_visits[j] = 0 # zero out since now it will be visited
     
