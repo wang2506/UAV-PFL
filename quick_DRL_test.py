@@ -316,15 +316,15 @@ for e in range(episodes):
             plt.title('reward over time')    
             
             # save image
-            plt.savefig(cwd+'/plots/'+str(fig_no)+'.png')
+            plt.savefig(cwd+'/plots/'+str(fig_no)+'25_epsilon.png')
             
             plt.clf()
             
             # save data
-            with open(cwd+'/data/'+str(fig_no),'wb') as f:
+            with open(cwd+'/data/'+str(fig_no)+'_25_epsilon','wb') as f:
                 pk.dump(reward_storage,f)
             
-            with open(cwd+'/data/'+str(fig_no)+'_state_sets','wb') as f:
+            with open(cwd+'/data/'+str(fig_no)+'_state_sets_25_epsilon','wb') as f:
                 pk.dump(state_set_all,f)
             
             

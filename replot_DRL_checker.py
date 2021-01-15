@@ -17,17 +17,17 @@ def moving_average(x, w):
 # %% import data
 cwd = os.getcwd()
 
-for i in np.arange(15,16,1):
-    with open(cwd+'/data/'+str(i),'rb') as f:
-        data = pickle.load(f)
-    
-    # plot average reward per 10 iterations
-    # data_fixer = [sum(data[j:j+10])/10 for j,jj in enumerate(data) if j % 10 == 0]
-    
-    data_fixer = moving_average(data,500)
-    
-    plt.figure(i)
-    plt.plot(data_fixer[:])
+# for i in np.arange(15,16,1):
+with open(cwd+'/data/'+str(0),'rb') as f:
+    data = pickle.load(f)
+
+# plot average reward per 10 iterations
+# data_fixer = [sum(data[j:j+10])/10 for j,jj in enumerate(data) if j % 10 == 0]
+
+data_fixer = moving_average(data,500)
+
+plt.figure()
+plt.plot(data_fixer[:])
     # plt.xlabel('10th iterations instance')
     # plt.ylabel('average reward over the latest 10 iterations')
     # plt.title('final iteration was ' +str(10*i))
