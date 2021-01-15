@@ -63,7 +63,7 @@ args = parser.parse_args()
 # %% DQN object 
 
 class DQN:
-    def __init__(self,args,optimizer=Adam(learning_rate=0.001)):
+    def __init__(self,args,optimizer=Adam(learning_rate=0.01)):
         # inits
         self.U = np.arange(0,args.U_swarms,1) #the swarms as an array 
         self.C = np.random.randint(0,10,size=args.Clusters) # measures their difficulty (i.e., need more revisits)
@@ -318,12 +318,12 @@ for e in range(episodes):
             plt.title('reward over time')    
             
             # save image
-            plt.savefig(cwd+'/plots/'+str(fig_no)+'_30_epsilon_10000_lr_small.png')
+            plt.savefig(cwd+'/plots/'+str(fig_no)+'_30_epsilon_10000_lr_large.png')
             
             plt.clf()
             
             # save data
-            with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small','wb') as f:
+            with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_large','wb') as f:
                 pk.dump(reward_storage,f)
             
             # with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small_states','wb') as f:
