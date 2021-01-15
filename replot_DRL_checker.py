@@ -17,7 +17,7 @@ for i in np.arange(9,10,1):
         data = pickle.load(f)
     
     # plot average reward per 10 iterations
-    data_fixer = [sum(data[j:j+10])/10 for j,jj in enumerate(data) if j % 10 == 0]
+    data_fixer = [sum(data[j:j+50])/50 for j,jj in enumerate(data) if j % 50 == 0]
     
     plt.figure(i)
     plt.plot(data_fixer[:-1])

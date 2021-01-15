@@ -260,7 +260,7 @@ for e in range(episodes):
 
     ## iterate over the timesteps
     for timestep in range(args.G_timesteps):
-        ep_greed = np.max([args.ep_min, args.ep_greed*(1-10**(-2))**timestep])
+        ep_greed = np.max([args.ep_min, args.ep_greed*(1-10**(-2.5))**timestep])
         
         action_set = test_DQN.calc_action(state=init_state_set, args=args,ep_greed =ep_greed)
         
