@@ -49,7 +49,7 @@ parser.add_argument('--replay_bs',type=int,default=10,\
                     help='experience replay batch size')
 
 # ovr parameters
-parser.add_argument('--G_timesteps',type=int,default=1500,\
+parser.add_argument('--G_timesteps',type=int,default=2000,\
                     help='number of swarm movements')
 parser.add_argument('--training',type=int,default=1,\
                     help='training or testing the DRL')
@@ -260,7 +260,7 @@ for e in range(episodes):
 
     ## iterate over the timesteps
     for timestep in range(args.G_timesteps):
-        ep_greed = np.max([args.ep_min, args.ep_greed*(1-10**(-2.7))**timestep])
+        ep_greed = np.max([args.ep_min, args.ep_greed*(1-10**(-3))**timestep])
         
         action_set = test_DQN.calc_action(state=init_state_set, args=args,ep_greed =ep_greed)
         
@@ -308,7 +308,6 @@ for e in range(episodes):
             print(test_DQN.q_net.get_weights()[-1])
             
             
-            fig_no += 1
             plt.figure(fig_no) # plot reward change over time - move this to separate file later
             
             plt.plot(reward_storage)
@@ -318,6 +317,8 @@ for e in range(episodes):
             
             # save image
             plt.savefig(cwd+'/plots/'+str(fig_no)+'.png')
+            
+            plt.clf()
             
             # save data
             with open(cwd+'/data/'+str(fig_no),'wb') as f:

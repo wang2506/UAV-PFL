@@ -24,7 +24,7 @@ for i in np.arange(15,16,1):
     # plot average reward per 10 iterations
     # data_fixer = [sum(data[j:j+10])/10 for j,jj in enumerate(data) if j % 10 == 0]
     
-    data_fixer = moving_average(data,200)
+    data_fixer = moving_average(data,500)
     
     plt.figure(i)
     plt.plot(data_fixer[:])
