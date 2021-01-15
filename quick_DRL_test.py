@@ -39,9 +39,9 @@ parser.add_argument('--UAV_init_ratio',type=float,default=0.8,\
                     help='initial worker to coorindator ratio')
 
 ## RL probs (epsilon and gamma)
-parser.add_argument('--ep_greed',type=float,default=0.8,\
+parser.add_argument('--ep_greed',type=float,default=0.6,\
                     help='epsilon greedy val')
-parser.add_argument('--ep_min',type=float,default=0.05,\
+parser.add_argument('--ep_min',type=float,default=0.005,\
                     help='epsilon minimum')
 parser.add_argument('--g_discount',type=float,default=0.7,\
                     help='gamma discount factor')
@@ -63,7 +63,7 @@ args = parser.parse_args()
 # %% DQN object 
 
 class DQN:
-    def __init__(self,args,optimizer=Adam(learning_rate=0.01)):
+    def __init__(self,args,optimizer=Adam(learning_rate=0.001)):
         # inits
         self.U = np.arange(0,args.U_swarms,1) #the swarms as an array 
         self.C = np.random.randint(0,10,size=args.Clusters) # measures their difficulty (i.e., need more revisits)
@@ -202,7 +202,8 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     current_reward = 0
     for i,j in enumerate(next_state_set):
         ## reward function calculated based on elapsed time x cluster factor
-        current_reward += next_state_visits[j]*cluster_expectations[j] 
+        current_reward += cluster_expectations[j]**next_state_visits[j] 
+        #previously was cluster_expectations[j] * next_state_visits[j]
         next_state_visits[j] = 0 # zero out since now it will be visited
     
     next_state_set += next_state_visits
@@ -233,7 +234,7 @@ else:
 # static action space - as finite swarm movement choices
 action_space = action_space_calc(list(range(args.Clusters)))
 #cluster_expectations = 100*np.random.rand(args.Clusters) # the distribution change over time
-cluster_expectations = 100*np.array([0.005,1.2,0.8,10,0.3,0.02])
+cluster_expectations = 100*np.array([0.005,1.6,0.8,5,0.3,0.02])
 
 # saving some plots for debugging
 fig_no = 0
@@ -317,16 +318,16 @@ for e in range(episodes):
             plt.title('reward over time')    
             
             # save image
-            plt.savefig(cwd+'/plots/'+str(fig_no)+'_30_epsilon_heterogeneous_10000.png')
+            plt.savefig(cwd+'/plots/'+str(fig_no)+'_30_epsilon_10000_lr_small.png')
             
             plt.clf()
             
             # save data
-            with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_heterogeneous_10000','wb') as f:
+            with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small','wb') as f:
                 pk.dump(reward_storage,f)
             
-            with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_heterogeneous_states_10000','wb') as f:
-                pk.dump(state_set_all,f)
+            # with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small_states','wb') as f:
+            #     pk.dump(state_set_all,f)
             
             
             
