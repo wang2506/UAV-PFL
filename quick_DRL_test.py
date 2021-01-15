@@ -63,7 +63,7 @@ args = parser.parse_args()
 # %% DQN object 
 
 class DQN:
-    def __init__(self,args,optimizer=Adam(learning_rate=0.01)):
+    def __init__(self,args,optimizer=Adam(learning_rate=0.001)):
         # inits
         self.U = np.arange(0,args.U_swarms,1) #the swarms as an array 
         self.C = np.random.randint(0,10,size=args.Clusters) # measures their difficulty (i.e., need more revisits)
@@ -76,7 +76,7 @@ class DQN:
         
         #self.ep_greed = args.ep_greed
         self.g_discount = args.g_discount
-        self.past_exps = deque(maxlen=50)
+        self.past_exps = deque(maxlen=300)
 
         self.optimizer = optimizer
         
@@ -172,6 +172,9 @@ class DQN:
         for state,action,reward,next_state in minibatch:
             
             target = self.q_net.predict(state)
+            print(target)
+            raise NameError('HiThere')
+        
             terminated = 0
             
             if terminated:
@@ -181,7 +184,7 @@ class DQN:
                 target[0][action] = reward + self.g_discount * np.amax(t)
                 
             self.q_net.fit(state,target,epochs=1,verbose=0)    
-    
+
 # %% confirmation testing
 test_DQN = DQN(args)
 
@@ -318,12 +321,12 @@ for e in range(episodes):
             plt.title('reward over time')    
             
             # save image
-            plt.savefig(cwd+'/plots/'+str(fig_no)+'_30_epsilon_10000_lr_large.png')
+            plt.savefig(cwd+'/plots/'+str(fig_no)+'_30_epsilon_10000_lr_small.png')
             
             plt.clf()
             
             # save data
-            with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_large','wb') as f:
+            with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small','wb') as f:
                 pk.dump(reward_storage,f)
             
             # with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small_states','wb') as f:
