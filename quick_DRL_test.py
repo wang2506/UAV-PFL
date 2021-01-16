@@ -48,7 +48,11 @@ parser.add_argument('--g_discount',type=float,default=0.7,\
                     help='gamma discount factor')
 parser.add_argument('--replay_bs',type=int,default=10,\
                     help='experience replay batch size')
-
+parser.add_argument('--linear',type=bool,default=True,\
+                    help='MLP or CNN')
+parser.add_argument('--cnn_range',type=int, default=2,\
+                    help='conv1d range')
+    
 # ovr parameters
 parser.add_argument('--G_timesteps',type=int,default=10000,\
                     help='number of swarm movements')
@@ -72,7 +76,7 @@ class DQN:
         
         self.total_time = args.G_timesteps
         ## (swarm 0 position, swarm 0 min energy),... , (latest cluster visit times), ...
-        self.input_size = args.U_swarms + args.Clusters 
+        
         self.action_size = factorial(args.Clusters)/factorial(args.Clusters-args.U_swarms) # all possible permutations
         
         #self.ep_greed = args.ep_greed
@@ -82,9 +86,20 @@ class DQN:
         self.optimizer = optimizer
         
         # RL Q-function nets
-        self.q_net = self.build_linear_NN()
-        #self.target_network = deepcopy(self.q_net) #deepcopy fails on TF pickled objects
-        self.target_network = self.build_linear_NN()
+        if args.linear == True:
+            self.input_size = args.U_swarms + args.Clusters 
+            
+            self.q_net = self.build_linear_NN()
+            #self.target_network = deepcopy(self.q_net) #deepcopy fails on TF pickled objects
+            self.target_network = self.build_linear_NN()
+
+        else:
+            self.input_size = [args.cnn_range, args.U_swarms + args.Clusters ]
+            
+            self.q_net = self.build_CNN()
+            self.target_network = self.build_CNN()
+
+        
         self.align_target_model()
 
         self.init_UAV_swarm_allocation(args)
@@ -109,7 +124,8 @@ class DQN:
     
     ##########################################################################
     ## utilities
-    def store(self,state,action,reward,next_state):
+    def store(self,state,action,reward,next_state,args=args,\
+              action2=0, reward2=0, next_state2=0):
         
         ## state contains cluster index + time of last swarm visit at cluster
         ## [to add min UAV energy within the swarm [[a_0,a_1,a_2]
@@ -124,11 +140,20 @@ class DQN:
         ## randomly assigned at initialization [later on, need to make it so that
         ## it is assigned based on geography]
         
-        state = np.reshape(state,[1, len(state)])
-        next_state = np.reshape(next_state,[1,len(next_state)])
+        if args.linear == True:
+            state = np.reshape(state,[1, len(state)])
+            next_state = np.reshape(next_state,[1,len(next_state)])
         
-        # saving
-        self.past_exps.append((state,action,reward,next_state))
+            # saving
+            self.past_exps.append((state,action,reward,next_state))
+        
+        else:
+            state1 = np.reshape(state,[1, len(state)])
+            state2 = np.reshape(next_state,[1,len(next_state)])
+            state3 = np.reshape(next_state2,[1,len(next_state2)])
+            
+            temp = np.array([[state,action,reward,state2],[state2,action2,reward2,state3]])
+            self.past_exps.append(temp)
         
     def build_linear_NN(self):
         model = Sequential()
@@ -144,7 +169,8 @@ class DQN:
     def build_CNN(self):
         model = Sequential()
         
-        model.add(Conv1D(filters=64,kernel_size=3,activation='relu',input_shape = [self.input_size] ))
+        model.add(Conv1D(filters=64,kernel_size=3,activation='relu',\
+                         input_shape = [self.input_size] ))
         model.add(Conv1D(filters=64,kernel_size=3,activation='relu'))
         model.add(MaxPooling1D(pool_size=2))
         model.add(Flatten())
@@ -278,19 +304,75 @@ for e in range(episodes):
 
     ## iterate over the timesteps
     for timestep in range(args.G_timesteps):
-        ep_greed = np.max([args.ep_min, args.ep_greed*(1-10**(-3))**timestep])
-        
-        action_set = test_DQN.calc_action(state=init_state_set, args=args,ep_greed =ep_greed)
         
         # calculate the reward
-        if timestep == 0:
-            rewards, state_set = reward_state_calc(test_DQN,init_state_set,action_set,\
+        if args.linear == True:
+            ep_greed = np.max([args.ep_min, args.ep_greed*(1-10**(-3))**timestep])
+            
+            if timestep == 0:
+                action_set = test_DQN.calc_action(state=init_state_set, \
+                                                  args=args,ep_greed =ep_greed)
+                
+                rewards, state_set = reward_state_calc(test_DQN,init_state_set,action_set,\
                                 action_space,cluster_expectations)
+                
+                ## store experiences
+                test_DQN.store(init_state_set,action_set,rewards,state_set)
+                
+            else:                
+                current_state_set = deepcopy(state_set)
+                
+                action_set = test_DQN.calc_action(state=current_state_set, \
+                                                  args=args,ep_greed =ep_greed)
+                
+                rewards, state_set = reward_state_calc(test_DQN,current_state_set,action_set,\
+                        action_space,cluster_expectations)
+                
+                ## store experiences
+                test_DQN.store(current_state_set,action_set,rewards,state_set)
+            
         else:
-            current_state_set = deepcopy(state_set)
-            rewards, state_set = reward_state_calc(test_DQN,current_state_set,action_set,\
-                                action_space,cluster_expectations)
-        
+            if timestep != 0 and timestep % 2 == 0:
+                ep_greed1 = np.max([args.ep_min, args.ep_greed*(1-10**(-3))**(timestep-1)])
+                ep_greed2 = np.max([args.ep_min, args.ep_greed*(1-10**(-3))**timestep])
+                
+                if timestep == 2:
+                    action_set = test_DQN.calc_action(state=init_state_set, \
+                                                      args=args,ep_greed =ep_greed1)
+                    
+                    reward1, state_set1 = reward_state_calc(test_DQN,init_state_set,\
+                                        action_set, action_space,cluster_expectations)
+                    
+                    current_state_set = deepcopy(state_set1)
+                    
+                    action_set2 = test_DQN.calc_action(state=current_state_set, \
+                                                       args=args,ep_greed = ep_greed2)
+                    
+                    reward2, state_set2 = reward_state_calc(test_DQN,state_set1,\
+                                        action_set2, action_space, cluster_expectations)
+                        
+                    test_DQN.store(init_state_set,action_set,reward1,state_set1,\
+                                   action2=action_set2, reward2=reward2, next_state2 = state_set2)
+                        
+                else:
+                    state_set = deepcopy(state_set2)
+                    
+                    action_set = test_DQN.calc_action(state=state_set, args=args, \
+                                            ep_greed = ep_greed1)
+                        
+                    reward1, state_set1 = reward_state_calc(test_DQN,state_set,\
+                                        action_set, action_space,cluster_expectations)
+                
+                    action_set2 = test_DQN.calc_action(state=state_set1, \
+                                                       args=args,ep_greed = ep_greed2)
+                    
+                    reward2, state_set2 = reward_state_calc(test_DQN,state_set1,\
+                                        action_set2, action_space, cluster_expectations)
+                        
+                    test_DQN.store(init_state_set,action_set,reward1,state_set1,\
+                                   action2=action_set2, reward2=reward2, next_state2 = state_set2)
+                
+            
         reward_DQN[0,0,timestep] = rewards
         
         ## printing check up
@@ -301,13 +383,7 @@ for e in range(episodes):
                   'epsilon = {:.2f}'.format(ep_greed)
                   )
             # print(test_DQN.q_net.get_weights())
-        
-        ## perform learning
-        # store experiences
-        if timestep == 0:
-            test_DQN.store(init_state_set,action_set,rewards,state_set)
-        else:
-            test_DQN.store(current_state_set,action_set,rewards,state_set)
+
 
         # experience update -> this is the actual training
         if len(test_DQN.past_exps) > args.replay_bs:
