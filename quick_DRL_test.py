@@ -94,7 +94,7 @@ class DQN:
             self.target_network = self.build_linear_NN()
 
         else:
-            self.input_size = (args.cnn_range, args.U_swarms + args.Clusters)
+            self.input_size = [args.cnn_range, args.U_swarms + args.Clusters]
             
             self.q_net = self.build_CNN()
             self.target_network = self.build_CNN()
@@ -201,7 +201,9 @@ class DQN:
             
             if args.linear == True:
                 state = np.reshape(state,[1,self.input_size])
-                
+            else:
+                print(state)
+            
             q_values = self.q_net.predict(state)
             action_indexes = np.argmax(q_values[0])
         
