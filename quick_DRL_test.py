@@ -247,7 +247,7 @@ class DQN:
                 # print(item[-1])
                 
                 ## bugged
-                state = [[item[0][0]],[item[0][-1] ]]
+                state = [list(item[0][0]),list(item[0][-1]) ]
                 print(state)
                 
                 
