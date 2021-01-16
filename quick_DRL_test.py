@@ -239,18 +239,16 @@ class DQN:
                     
                 self.q_net.fit(state,target,epochs=1,verbose=0)    
         
-        else:
+        else: #follows the format of linear
             
             for item in minibatch:
                 print('item printing')
                 print(item)
                 print(item[-1])
                 
+                
                 ## bugged
-                item2 = []
-                for state,action,reward,next_state in item[-1]: 
-                    item2.append(state)
-                    item2.append(next_state)
+                item2 = [item[-1][0],item[-1][-1]]
                 
                 target = self.q_net.predict(item2) #item is [args.cnn_range, args.U_swarms + args.Clusters]
                 
@@ -258,7 +256,7 @@ class DQN:
                 t = self.target_network.predict(item2)
                 target[0][item[-1][1]] = reward + self.g_discount * np.amax(t)
                 
-                self.q_net.fit(item,target,epochs=1,verbose=0)
+                self.q_net.fit(item2,target,epochs=1,verbose=0)
                 
 
 # %% confirmation testing
