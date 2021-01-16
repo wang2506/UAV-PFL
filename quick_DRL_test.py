@@ -49,7 +49,7 @@ parser.add_argument('--g_discount',type=float,default=0.7,\
                     help='gamma discount factor')
 parser.add_argument('--replay_bs',type=int,default=10,\
                     help='experience replay batch size')
-parser.add_argument('--linear',type=bool,default=False,\
+parser.add_argument('--linear',type=bool,default=True,\
                     help='MLP or CNN')
 parser.add_argument('--cnn_range',type=int, default=2,\
                     help='conv1d range')
@@ -286,7 +286,7 @@ test_DQN.target_network.summary()
 # %% function to calculate rewards
 
 def reward_state_calc(test_DQN,current_state,current_action,current_action_space,\
-                      cluster_expectations):
+                      cluster_expectations,cluster_limits):
     
     ## ali - add penalty for not visiting nodes; want to ensure visit the nodes not being visited
     
@@ -306,10 +306,19 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
         # print(i,j)
         
         ## reward function calculated based on elapsed time x cluster factor
-        current_reward += cluster_expectations[j]*next_state_visits[j]
-        
+        if cluster_expectations[j]*next_state_visits[j] < cluster_limits[j]:
+            current_reward += cluster_expectations[j]*next_state_visits[j]
+        else:
+            current_reward += cluster_limits[j]
+
         #previously was cluster_expectations[j] * next_state_visits[j]
         next_state_visits[j] = 0 # zero out since now it will be visited
+    
+    ## calculate penalty for not visiting certain nodes (25% of their nominal value)
+    penalty = 0
+    for i,j in enumerate(next_state_visits):
+        penalty += next_state_visits[j] * 0.25 * cluster_expectations[j]
+    current_reward -= penalty
     
     next_state_set += next_state_visits
 
@@ -339,7 +348,8 @@ else:
 # static action space - as finite swarm movement choices
 action_space = action_space_calc(list(range(args.Clusters)))
 #cluster_expectations = 100*np.random.rand(args.Clusters) # the distribution change over time
-cluster_expectations = 100*np.array([0.005,1.6,0.8,5,0.3,0.02])
+cluster_expectations = 100*np.array([0.005,1.6,0.8,3,0.3,0.02])
+cluster_limits = 100*np.array([1,2.2,1.3,5,1.1,2.1])
 
 # saving some plots for debugging
 fig_no = 0
@@ -377,7 +387,7 @@ for e in range(episodes):
                                                   args=args,ep_greed =ep_greed)
                 
                 rewards, state_set = reward_state_calc(test_DQN,init_state_set,action_set,\
-                                action_space,cluster_expectations)
+                                action_space,cluster_expectations,cluster_limits)
                 
                 ## store experiences
                 test_DQN.store(init_state_set,action_set,rewards,state_set)
