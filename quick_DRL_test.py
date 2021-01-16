@@ -247,7 +247,14 @@ class DQN:
                 # print(item[-1])
                 
                 ## bugged
-                state = [list(item[0][0]),list(item[0][-1]) ]
+                if type(item[0][0]) == np.ndarray:
+                    item[0][0] = item[0][0].tolist()
+                
+                if type(item[0][-1]) == np.ndarray:
+                    item[0][-1] = item[0][-1].tolist()
+                    
+                    
+                state = [item[0][0],item[0][-1] ]
                 print(state)
                 
                 
