@@ -257,10 +257,13 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     ## calculate current_state + current_action expected gain  
     ## determine next state, also changes last visits
     next_state_set = list(current_action_space[current_action]) #deepcopy(current_state)
+    print('begin')
     print(next_state_set)
     
     # update last visits 
     next_state_visits = [i+1 for i in current_state[len(test_DQN.U):]]
+    
+    print(current_state)
     
     current_reward = 0
     for i,j in enumerate(next_state_set):
