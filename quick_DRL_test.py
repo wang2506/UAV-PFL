@@ -412,6 +412,11 @@ for e in range(episodes):
                                    action2=action_set2, reward2=reward2, next_state2 = state_set2)
                         
                 else:
+                    print(timestep)
+                    print('state_set1 check')
+                    print(state_set1)
+                    print('state_set1 end')
+                    
                     state_set = [state_set1,state_set2] #needs the previous two instances
                     
                     action_set = test_DQN.calc_action(state=state_set, args=args, \
