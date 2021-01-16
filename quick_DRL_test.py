@@ -242,12 +242,11 @@ class DQN:
         else: #follows the format of linear
             
             for item in minibatch:
-                print('item printing')
-                print(item)
-                print(item[-1])
+                # print('item printing')
+                # print(item)
+                # print(item[-1])
                 
                 # raise NameError('Int')
-                
                 
                 ## bugged
                 if type(item[0][0]) == np.ndarray:
@@ -256,7 +255,6 @@ class DQN:
                 if type(item[0][-1]) == np.ndarray:
                     item[0][-1] = item[0][-1].tolist()
                     
-                    
                 state = [item[0][0], item[0][-1][0] ]
                 print('state check')
                 print(state)
@@ -264,10 +262,10 @@ class DQN:
                 state = np.reshape(state,[1,self.input_size[0],self.input_size[1]])
                 
                 next_state = [item[-1][0],item[-1][-1]]
-                next_state = np.reshape(next_state,[1,self.input_size[0],self.input_size[1]])
-                
                 print('next state check')
                 print(next_state)
+                
+                next_state = np.reshape(next_state,[1,self.input_size[0],self.input_size[1]])
                 
                 target = self.q_net.predict(state) #item is [args.cnn_range, args.U_swarms + args.Clusters]
                 
@@ -430,6 +428,7 @@ for e in range(episodes):
                     # print('state_set1 check')
                     # print(state_set1)
                     # print('state_set1 end')
+                    prev_state_set = deepcopy(state_set2)                    
                     
                     state_set = [state_set1,state_set2] #needs the previous two instances
                     
@@ -446,8 +445,8 @@ for e in range(episodes):
                     
                     reward2, state_set2 = reward_state_calc(test_DQN,state_set1,\
                                         action_set2, action_space, cluster_expectations)
-                        
-                    test_DQN.store(init_state_set,action_set,reward1,state_set1,\
+                    
+                    test_DQN.store(prev_state_set,action_set,reward1,state_set1,\
                                    action2=action_set2, reward2=reward2, next_state2 = state_set2)
                 
         
