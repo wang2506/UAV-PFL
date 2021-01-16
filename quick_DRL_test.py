@@ -256,14 +256,14 @@ class DQN:
                     item[0][-1] = item[0][-1].tolist()
                     
                 state = [item[0][0], item[0][-1][0] ]
-                print('state check')
-                print(state)
+                # print('state check')
+                # print(state)
                 
                 state = np.reshape(state,[1,self.input_size[0],self.input_size[1]])
                 
                 next_state = [item[-1][0],item[-1][-1]]
-                print('next state check')
-                print(next_state)
+                # print('next state check')
+                # print(next_state)
                 
                 next_state = np.reshape(next_state,[1,self.input_size[0],self.input_size[1]])
                 
