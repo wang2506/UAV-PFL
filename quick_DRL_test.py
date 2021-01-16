@@ -207,6 +207,7 @@ class DQN:
             
             print('state')
             print(state)
+            print('end state')
             
             q_values = self.q_net.predict(state)
             action_indexes = np.argmax(q_values[0])
@@ -241,17 +242,19 @@ class DQN:
         else:
             
             for item in minibatch:
+                # print(item)  
+                # if type(item[0][0]) == list:
+                #     item[0][0] = np.array(item[0][0])
+                # print(self.input_size)
                 # print(item)
-                
-                if type(item[0][0]) == list:
-                    item[0][0] = np.array(item[0][0])
-                
-                print(self.input_size)
-                print(item)
-                
                 # item = tf.convert_to_tensor(item)
-                
                 # print(item)
+                
+                
+                ## bugged
+                item = []
+                for state,action,reward,next_state in minibatch: 
+                    item.append(state)
                 
                 target = self.q_net.predict(item) #item is [args.cnn_range, args.U_swarms + args.Clusters]
                 
