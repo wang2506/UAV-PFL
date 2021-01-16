@@ -201,8 +201,6 @@ class DQN:
             
             if args.linear == True:
                 state = np.reshape(state,[1,self.input_size])
-            else:
-                print(state)
             
             q_values = self.q_net.predict(state)
             action_indexes = np.argmax(q_values[0])
@@ -213,24 +211,33 @@ class DQN:
     
     ##########################################################################
     ## retraining procedure (experience replay)
-    def retrain_exp_replay(self,batch_size):
+    def retrain_exp_replay(self,batch_size,args=args):
         minibatch = random.sample(self.past_exps,batch_size)
         
-        for state,action,reward,next_state in minibatch:
-            
-            target = self.q_net.predict(state)
-            # print(target)
-            # raise NameError('HiThere')
+        if args.linear == True:
         
-            terminated = 0
-            
-            if terminated:
-                target[0][action] = reward
-            else:
-                t = self.target_network.predict(next_state)
-                target[0][action] = reward + self.g_discount * np.amax(t)
+            for state,action,reward,next_state in minibatch:
                 
-            self.q_net.fit(state,target,epochs=1,verbose=0)    
+                target = self.q_net.predict(state)
+                # print(target)
+                # raise NameError('HiThere')
+            
+                terminated = 0
+                
+                if terminated:
+                    target[0][action] = reward
+                else:
+                    t = self.target_network.predict(next_state)
+                    target[0][action] = reward + self.g_discount * np.amax(t)
+                    
+                self.q_net.fit(state,target,epochs=1,verbose=0)    
+        
+        else:
+            
+            for item in minibatch:
+                
+                target = self.q_net.predict(item) #item is [args.cnn_range, args.U_swarms + args.Clusters]
+            
 
 # %% confirmation testing
 test_DQN = DQN(args)
@@ -350,16 +357,19 @@ for e in range(episodes):
                 ep_greed2 = np.max([args.ep_min, args.ep_greed*(1-10**(-3))**timestep])
                 
                 if timestep == 2:
-                    action_set = test_DQN.calc_action(state=init_state_set, \
-                                                      args=args,ep_greed =ep_greed1)
+                    # action_set = test_DQN.calc_action(state=init_state_set, \
+                                                      # args=args,ep_greed =ep_greed1)
+                    # random initial actions
+                    action_set = np.random.randint(0,len(action_space))
                     
                     reward1, state_set1 = reward_state_calc(test_DQN,init_state_set,\
                                         action_set, action_space,cluster_expectations)
                     
                     current_state_set = deepcopy(state_set1)
                     
-                    action_set2 = test_DQN.calc_action(state=current_state_set, \
-                                                       args=args,ep_greed = ep_greed2)
+                    # action_set2 = test_DQN.calc_action(state=current_state_set, \
+                                                       # args=args,ep_greed = ep_greed2)
+                    action_set2 = np.random.randint(0,len(action_space))
                     
                     reward2, state_set2 = reward_state_calc(test_DQN,state_set1,\
                                         action_set2, action_space, cluster_expectations)
@@ -368,7 +378,7 @@ for e in range(episodes):
                                    action2=action_set2, reward2=reward2, next_state2 = state_set2)
                         
                 else:
-                    state_set = deepcopy(state_set2)
+                    state_set = [state_set1,state_set2] #needs the previous two instances
                     
                     action_set = test_DQN.calc_action(state=state_set, args=args, \
                                             ep_greed = ep_greed1)
@@ -376,7 +386,9 @@ for e in range(episodes):
                     reward1, state_set1 = reward_state_calc(test_DQN,state_set,\
                                         action_set, action_space,cluster_expectations)
                 
-                    action_set2 = test_DQN.calc_action(state=state_set1, \
+                    state_set = [state_set2,state_set1] #temporal remap
+                    
+                    action_set2 = test_DQN.calc_action(state=state_set, \
                                                        args=args,ep_greed = ep_greed2)
                     
                     reward2, state_set2 = reward_state_calc(test_DQN,state_set1,\
