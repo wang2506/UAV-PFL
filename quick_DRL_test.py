@@ -317,7 +317,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     ## calculate penalty for not visiting certain nodes (25% of their nominal value)
     penalty = 0
     for i,j in enumerate(next_state_visits):
-        penalty += next_state_visits[j] * 0.25 * cluster_expectations[j]
+        penalty += j * 0.25 * cluster_expectations[i]
     current_reward -= penalty
     
     next_state_set += next_state_visits
