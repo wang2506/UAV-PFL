@@ -237,12 +237,18 @@ class DQN:
         else:
             
             for item in minibatch:
-                print(item)
+                # print(item)
+                
+                if type(item[0][0]) == list:
+                    item[0][0] = np.array(item[0][0] )
                 
                 target = self.q_net.predict(item) #item is [args.cnn_range, args.U_swarms + args.Clusters]
                 
+                terminated = 0
+                t = self.target_network.predict(item)
+                target[0][item[0][1]] = reward + self.g_discount * np.amax(t)
                 
-                
+                self.q_net.fit(item,target,epochs=1,verbose=0)
                 
 
 # %% confirmation testing
