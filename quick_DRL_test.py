@@ -242,9 +242,12 @@ class DQN:
         else: #follows the format of linear
             
             for item in minibatch:
-                # print('item printing')
-                # print(item)
-                # print(item[-1])
+                print('item printing')
+                print(item)
+                print(item[-1])
+                
+                # raise NameError('Int')
+                
                 
                 ## bugged
                 if type(item[0][0]) == np.ndarray:
@@ -255,13 +258,16 @@ class DQN:
                     
                     
                 state = [item[0][0], item[0][-1][0] ]
+                print('state check')
                 print(state)
-                
                 
                 state = np.reshape(state,[1,self.input_size[0],self.input_size[1]])
                 
                 next_state = [item[-1][0],item[-1][-1]]
                 next_state = np.reshape(next_state,[1,self.input_size[0],self.input_size[1]])
+                
+                print('next state check')
+                print(next_state)
                 
                 target = self.q_net.predict(state) #item is [args.cnn_range, args.U_swarms + args.Clusters]
                 
