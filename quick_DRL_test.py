@@ -201,6 +201,8 @@ class DQN:
             
             if args.linear == True:
                 state = np.reshape(state,[1,self.input_size])
+            else:
+                state = np.reshape(state,[1,self.input_size[0],self.input_size[1]])
             
             q_values = self.q_net.predict(state)
             action_indexes = np.argmax(q_values[0])
