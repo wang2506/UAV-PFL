@@ -21,6 +21,7 @@ from tensorflow.keras import Model, Sequential
 from tensorflow.keras.layers import Dense, Embedding, Reshape, Flatten, \
     Conv1D, MaxPooling1D, Dropout
 from tensorflow.keras.optimizers import Adam
+import tensorflow as tf
 
 np.random.seed(1)
 random.seed(1)
@@ -243,6 +244,7 @@ class DQN:
                     item[0][0] = np.array(item[0][0])
                 
                 item = [np.array(i) for i in item]
+                item = tf.convert_to_tensor(item)
                 
                 print(item)
                 
@@ -433,8 +435,8 @@ for e in range(episodes):
             else:
                 if timestep != 0 and timestep % 2 == 0:
                     print('timestep='+str(timestep),
-                          'reward_DQN ={:.2f}'.format(reward1),
-                          'reward_DQN ={:.2f}'.format(reward2),
+                          'reward_DQN1 ={:.2f}'.format(reward1),
+                          'reward_DQN2 ={:.2f}'.format(reward2),
                           'epsilon = {:.2f}'.format(ep_greed2)
                           )
             # print(test_DQN.q_net.get_weights())
