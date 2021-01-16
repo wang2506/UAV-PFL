@@ -257,17 +257,17 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     ## calculate current_state + current_action expected gain  
     ## determine next state, also changes last visits
     next_state_set = list(current_action_space[current_action]) #deepcopy(current_state)
-    print('begin')
-    print(next_state_set)
+    # print('begin')
+    # print(next_state_set)
     
     # update last visits 
     next_state_visits = [i+1 for i in current_state[len(test_DQN.U):]]
     
-    print(current_state)
+    # print(current_state)
     
     current_reward = 0
     for i,j in enumerate(next_state_set):
-        print(i,j)
+        # print(i,j)
         
         ## reward function calculated based on elapsed time x cluster factor
         current_reward += cluster_expectations[j]*next_state_visits[j]
@@ -378,6 +378,7 @@ for e in range(episodes):
                     
                     # action_set2 = test_DQN.calc_action(state=current_state_set, \
                                                        # args=args,ep_greed = ep_greed2)
+                                                       
                     action_set2 = np.random.randint(0,len(action_space))
                     
                     reward2, state_set2 = reward_state_calc(test_DQN,state_set1,\
@@ -392,7 +393,7 @@ for e in range(episodes):
                     action_set = test_DQN.calc_action(state=state_set, args=args, \
                                             ep_greed = ep_greed1)
                         
-                    reward1, state_set1 = reward_state_calc(test_DQN,state_set,\
+                    reward1, state_set1 = reward_state_calc(test_DQN,state_set2,\
                                         action_set, action_space,cluster_expectations)
                 
                     state_set = [state_set2,state_set1] #temporal remap
