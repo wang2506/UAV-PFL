@@ -48,7 +48,7 @@ parser.add_argument('--g_discount',type=float,default=0.7,\
                     help='gamma discount factor')
 parser.add_argument('--replay_bs',type=int,default=10,\
                     help='experience replay batch size')
-parser.add_argument('--linear',type=bool,default=True,\
+parser.add_argument('--linear',type=bool,default=False,\
                     help='MLP or CNN')
 parser.add_argument('--cnn_range',type=int, default=2,\
                     help='conv1d range')
@@ -94,7 +94,7 @@ class DQN:
             self.target_network = self.build_linear_NN()
 
         else:
-            self.input_size = [args.cnn_range, args.U_swarms + args.Clusters ]
+            self.input_size = (args.cnn_range, args.U_swarms + args.Clusters)
             
             self.q_net = self.build_CNN()
             self.target_network = self.build_CNN()
@@ -169,16 +169,19 @@ class DQN:
     def build_CNN(self):
         model = Sequential()
         
-        model.add(Conv1D(filters=64,kernel_size=3,activation='relu',\
-                         input_shape = [self.input_size] ))
-        model.add(Conv1D(filters=64,kernel_size=3,activation='relu'))
-        model.add(MaxPooling1D(pool_size=2))
+        model.add(Conv1D(filters=4,kernel_size=1,activation='relu',\
+                         input_shape = self.input_size ))
+        model.add(Conv1D(filters=16,kernel_size=1,activation='relu'))
+        # model.add(Dropout(0.5))
+        model.add(MaxPooling1D(pool_size=1))
         model.add(Flatten())
-        model.add(Dense(100,activation='relu'))
+        model.add(Dense(20,activation='relu'))
         model.add(Dense(self.action_size,activation='softmax'))
-
+        
         model.compile(loss='categorical_crossentropy',optimizer=self.optimizer, metrics=['accuracy'])
-
+        
+        return model
+    
     def align_target_model(self):
         self.target_network.set_weights(self.q_net.get_weights())
 
@@ -234,6 +237,9 @@ test_DQN.target_network.summary()
 
 def reward_state_calc(test_DQN,current_state,current_action,current_action_space,\
                       cluster_expectations):
+    
+    ## ali - add penalty for not visiting nodes; want to ensure visit the nodes not being visited
+    
     ## calculate current_state + current_action expected gain  
     ## determine next state, also changes last visits
     next_state_set = list(current_action_space[current_action]) #deepcopy(current_state)
@@ -331,6 +337,8 @@ for e in range(episodes):
                 ## store experiences
                 test_DQN.store(current_state_set,action_set,rewards,state_set)
             
+            reward_DQN[0,0,timestep] = rewards
+            
         else:
             if timestep != 0 and timestep % 2 == 0:
                 ep_greed1 = np.max([args.ep_min, args.ep_greed*(1-10**(-3))**(timestep-1)])
@@ -372,16 +380,22 @@ for e in range(episodes):
                     test_DQN.store(init_state_set,action_set,reward1,state_set1,\
                                    action2=action_set2, reward2=reward2, next_state2 = state_set2)
                 
-            
-        reward_DQN[0,0,timestep] = rewards
         
         ## printing check up
         if timestep % 10 == 0:
             #print(state_set)
-            print('timestep='+str(timestep),
-                  'reward_DQN ={:.2f}'.format(np.sum(reward_DQN,axis=0)[e][timestep]),
-                  'epsilon = {:.2f}'.format(ep_greed)
-                  )
+            if args.linear == True:
+                print('timestep='+str(timestep),
+                      'reward_DQN ={:.2f}'.format(np.sum(reward_DQN,axis=0)[e][timestep]),
+                      'epsilon = {:.2f}'.format(ep_greed)
+                      )
+            else:
+                if timestep != 0 and timestep % 2 == 0:
+                    print('timestep='+str(timestep),
+                          'reward_DQN ={:.2f}'.format(reward1),
+                          'reward_DQN ={:.2f}'.format(reward2),
+                          'epsilon = {:.2f}'.format(ep_greed2)
+                          )
             # print(test_DQN.q_net.get_weights())
 
 
@@ -395,12 +409,17 @@ for e in range(episodes):
             test_DQN.align_target_model()
         
         #print(test_DQN.past_exps)
-        reward_storage.append(rewards)
-        state_set_all.append(state_set)
+        if args.linear == True:
+            reward_storage.append(rewards)
+        else: 
+            if timestep != 0 and timestep % 2 == 0:
+                reward_storage.append(reward1)
+                reward_storage.append(reward2)
+        # state_set_all.append(state_set)
+        
         
         if timestep % 100 == 0:
             print(test_DQN.q_net.get_weights()[-1])
-            
             
             plt.figure(fig_no) # plot reward change over time - move this to separate file later
             

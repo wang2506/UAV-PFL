@@ -24,12 +24,13 @@ with open(cwd+'/data/'+str(0)+'_30_epsilon_10000_lr_small','rb') as f:
     data = pickle.load(f)
 
 # plot average reward per 10 iterations
-# data_fixer = [sum(data[j:j+10])/10 for j,jj in enumerate(data) if j % 10 == 0]
+# data_fixer = [sum(data[j:j+1000])/1000 for j,jj in enumerate(data) if j % 1000 == 0]
 
-data_fixer = moving_average(data,1000)
+data_fixer = moving_average(data,100)
 
 plt.figure()
 plt.plot(data_fixer[:])
+plt.title('moving avg 100')
     # plt.xlabel('10th iterations instance')
     # plt.ylabel('average reward over the latest 10 iterations')
     # plt.title('final iteration was ' +str(10*i))
@@ -42,14 +43,14 @@ min_data = [min(data[j:j+1000]) for j,jj in enumerate(data) if j % 1000 == 0]
 
 plt.figure(2)
 plt.plot(min_data[:-1])
-
+plt.title('min')
 
 
 median_data = [median(data[j:j+1000]) for j,jj in enumerate(data) if j%1000 == 0]
 
 plt.figure(3)
 plt.plot(median_data)
-
+plt.title('median')
 
 
 
