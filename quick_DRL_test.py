@@ -244,7 +244,7 @@ class DQN:
             for item in minibatch:
                 print('item printing')
                 print(item)
-                
+                print(item[-1])
                 
                 ## bugged
                 item2 = []
