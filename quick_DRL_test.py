@@ -18,7 +18,8 @@ from math import factorial
 import matplotlib.pyplot as plt
 
 from tensorflow.keras import Model, Sequential
-from tensorflow.keras.layers import Dense, Embedding, Reshape, Flatten, MaxPooling2D, Dropout
+from tensorflow.keras.layers import Dense, Embedding, Reshape, Flatten, \
+    Conv1D, MaxPooling1D, Dropout
 from tensorflow.keras.optimizers import Adam
 
 np.random.seed(1)
@@ -140,6 +141,18 @@ class DQN:
 
         return model
 
+    def build_CNN(self):
+        model = Sequential()
+        
+        model.add(Conv1D(filters=64,kernel_size=3,activation='relu',input_shape = [self.input_size] ))
+        model.add(Conv1D(filters=64,kernel_size=3,activation='relu'))
+        model.add(MaxPooling1D(pool_size=2))
+        model.add(Flatten())
+        model.add(Dense(100,activation='relu'))
+        model.add(Dense(self.action_size,activation='softmax'))
+
+        model.compile(loss='categorical_crossentropy',optimizer=self.optimizer, metrics=['accuracy'])
+
     def align_target_model(self):
         self.target_network.set_weights(self.q_net.get_weights())
 
@@ -205,7 +218,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     current_reward = 0
     for i,j in enumerate(next_state_set):
         ## reward function calculated based on elapsed time x cluster factor
-        current_reward += np.min([cluster_expectations[j]**next_state_visits[j],2000])
+        current_reward += cluster_expectations[j]*next_state_visits[j]
         #previously was cluster_expectations[j] * next_state_visits[j]
         next_state_visits[j] = 0 # zero out since now it will be visited
     
