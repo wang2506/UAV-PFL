@@ -247,7 +247,10 @@ class DQN:
                 # print(item[-1])
                 
                 ## bugged
-                state = [item[0][0],item[0][-1] ]
+                state = [[item[0][0]],[item[0][-1] ]]
+                print(state)
+                
+                
                 state = np.reshape(state,[1,self.input_size[0],self.input_size[1]])
                 
                 next_state = [item[-1][0],item[-1][-1]]
