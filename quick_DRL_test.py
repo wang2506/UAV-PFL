@@ -254,7 +254,7 @@ class DQN:
                     item[0][-1] = item[0][-1].tolist()
                     
                     
-                state = [item[0][0],item[0][-1] ]
+                state = [item[0][0], item[0][-1][0] ]
                 print(state)
                 
                 
