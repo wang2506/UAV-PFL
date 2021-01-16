@@ -243,8 +243,9 @@ class DQN:
                 if type(item[0][0]) == list:
                     item[0][0] = np.array(item[0][0])
                 
-                item = [np.array(i) for i in item]
-                item = tf.ragged.constant(item)
+                print(item)
+                
+                item = tf.convert_to_tensor(item)
                 
                 print(item)
                 
