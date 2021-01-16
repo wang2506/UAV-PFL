@@ -205,6 +205,9 @@ class DQN:
             else:
                 state = np.reshape(state,[1,self.input_size[0],self.input_size[1]])
             
+            print('state')
+            print(state)
+            
             q_values = self.q_net.predict(state)
             action_indexes = np.argmax(q_values[0])
         
@@ -243,6 +246,7 @@ class DQN:
                 if type(item[0][0]) == list:
                     item[0][0] = np.array(item[0][0])
                 
+                print(self.input_size)
                 print(item)
                 
                 # item = tf.convert_to_tensor(item)
