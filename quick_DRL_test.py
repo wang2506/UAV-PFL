@@ -250,6 +250,8 @@ class DQN:
                 ## bugged
                 item2 = [item[-1][0],item[-1][-1]]
                 
+                item2 = np.reshape(item2,[1,self.input_size[0],self.input_size[1]])
+                
                 target = self.q_net.predict(item2) #item is [args.cnn_range, args.U_swarms + args.Clusters]
                 
                 terminated = 0
