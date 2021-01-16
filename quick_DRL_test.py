@@ -242,23 +242,25 @@ class DQN:
         else: #follows the format of linear
             
             for item in minibatch:
-                print('item printing')
-                print(item)
-                print(item[-1])
-                
+                # print('item printing')
+                # print(item)
+                # print(item[-1])
                 
                 ## bugged
-                item2 = [item[-1][0],item[-1][-1]]
+                state = [item[0][0],item[0][-1] ]
+                state = np.reshape(state,[1,self.input_size[0],self.input_size[1]])
                 
-                item2 = np.reshape(item2,[1,self.input_size[0],self.input_size[1]])
+                next_state = [item[-1][0],item[-1][-1]]
+                next_state = np.reshape(next_state,[1,self.input_size[0],self.input_size[1]])
                 
-                target = self.q_net.predict(item2) #item is [args.cnn_range, args.U_swarms + args.Clusters]
+                target = self.q_net.predict(state) #item is [args.cnn_range, args.U_swarms + args.Clusters]
                 
-                terminated = 0
-                t = self.target_network.predict(item2)
-                target[0][item[-1][1]] = reward + self.g_discount * np.amax(t)
+                ## terminated training later
                 
-                self.q_net.fit(item2,target,epochs=1,verbose=0)
+                t = self.target_network.predict(next_state)
+                target[0][item[-1][1]] = item[-1][-2] + self.g_discount * np.amax(t)
+                
+                self.q_net.fit(state,target,epochs=1,verbose=0)
                 
 
 # %% confirmation testing
