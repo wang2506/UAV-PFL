@@ -205,14 +205,14 @@ class DQN:
             else:
                 state = np.reshape(state,[1,self.input_size[0],self.input_size[1]])
             
-            print('state')
-            print(state)
-            print('end state')
-            
             q_values = self.q_net.predict(state)
             action_indexes = np.argmax(q_values[0])
         
             #print(q_values)
+            
+        print('state')
+        print(state)
+        print('end state')
         
         return action_indexes #which index the swarm should go to next
     
@@ -370,7 +370,7 @@ for e in range(episodes):
                 ## store experiences
                 test_DQN.store(init_state_set,action_set,rewards,state_set)
                 
-            else:                
+            else:
                 current_state_set = deepcopy(state_set)
                 
                 action_set = test_DQN.calc_action(state=current_state_set, \
@@ -421,7 +421,7 @@ for e in range(episodes):
                     
                     action_set = test_DQN.calc_action(state=state_set, args=args, \
                                             ep_greed = ep_greed1)
-                        
+                    
                     reward1, state_set1 = reward_state_calc(test_DQN,state_set2,\
                                         action_set, action_space,cluster_expectations)
                 
