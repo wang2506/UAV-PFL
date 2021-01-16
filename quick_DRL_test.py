@@ -242,7 +242,10 @@ class DQN:
                 if type(item[0][0]) == list:
                     item[0][0] = np.array(item[0][0])
                 
+                item = np.asarray(item)
+                
                 print(item)
+                
                 target = self.q_net.predict(item) #item is [args.cnn_range, args.U_swarms + args.Clusters]
                 
                 terminated = 0
