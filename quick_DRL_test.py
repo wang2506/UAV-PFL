@@ -242,7 +242,7 @@ class DQN:
                 if type(item[0][0]) == list:
                     item[0][0] = np.array(item[0][0])
                 
-                item = np.array(item)
+                item = [np.array(i) for i in item]
                 
                 print(item)
                 
