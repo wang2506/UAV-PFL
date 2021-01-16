@@ -9,6 +9,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
+from statistics import median
+
 # %% moving average function
 
 def moving_average(x, w):
@@ -35,19 +37,18 @@ plt.plot(data_fixer[:])
 
 
 
-    # min_data = [min(data[j:j+10]) for j,jj in enumerate(data) if j % 10 == 0]
-    
-    
-    # plt.figure(10*i)
-    # plt.plot(min_data[:-1])
-    # plt.xlabel('10th iterations instance')
-    # plt.ylabel('min reward over the latest 10 iterations')
-    # plt.title('final iteration was ' +str(100*i))
+min_data = [min(data[j:j+1000]) for j,jj in enumerate(data) if j % 1000 == 0]
+
+
+plt.figure(2)
+plt.plot(min_data[:-1])
 
 
 
+median_data = [median(data[j:j+1000]) for j,jj in enumerate(data) if j%1000 == 0]
 
-
+plt.figure(3)
+plt.plot(median_data)
 
 
 
