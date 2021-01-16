@@ -198,7 +198,10 @@ class DQN:
             action_indexes = np.random.randint(0,self.action_size)
         else:
             ## choose action with highest q-value
-            state = np.reshape(state,[1,self.input_size])
+            
+            if args.linear == True:
+                state = np.reshape(state,[1,self.input_size])
+                
             q_values = self.q_net.predict(state)
             action_indexes = np.argmax(q_values[0])
         
