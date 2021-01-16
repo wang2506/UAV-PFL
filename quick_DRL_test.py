@@ -242,13 +242,8 @@ class DQN:
         else:
             
             for item in minibatch:
-                # print(item)  
-                # if type(item[0][0]) == list:
-                #     item[0][0] = np.array(item[0][0])
-                # print(self.input_size)
-                # print(item)
-                # item = tf.convert_to_tensor(item)
-                # print(item)
+                print('item priting)')
+                print(item)
                 
                 
                 ## bugged
@@ -412,10 +407,10 @@ for e in range(episodes):
                                    action2=action_set2, reward2=reward2, next_state2 = state_set2)
                         
                 else:
-                    print(timestep)
-                    print('state_set1 check')
-                    print(state_set1)
-                    print('state_set1 end')
+                    # print(timestep)
+                    # print('state_set1 check')
+                    # print(state_set1)
+                    # print('state_set1 end')
                     
                     state_set = [state_set1,state_set2] #needs the previous two instances
                     
