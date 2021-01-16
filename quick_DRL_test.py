@@ -210,9 +210,9 @@ class DQN:
         
             #print(q_values)
             
-        print('state')
-        print(state)
-        print('end state')
+        # print('state')
+        # print(state)
+        # print('end state')
         
         return action_indexes #which index the swarm should go to next
     
@@ -242,20 +242,21 @@ class DQN:
         else:
             
             for item in minibatch:
-                print('item priting)')
+                print('item printing')
                 print(item)
                 
                 
                 ## bugged
-                item = []
-                for state,action,reward,next_state in minibatch: 
-                    item.append(state)
+                item2 = []
+                for state,action,reward,next_state in item[-1]: 
+                    item2.append(state)
+                    item2.append(next_state)
                 
-                target = self.q_net.predict(item) #item is [args.cnn_range, args.U_swarms + args.Clusters]
+                target = self.q_net.predict(item2) #item is [args.cnn_range, args.U_swarms + args.Clusters]
                 
                 terminated = 0
-                t = self.target_network.predict(item)
-                target[0][item[0][1]] = reward + self.g_discount * np.amax(t)
+                t = self.target_network.predict(item2)
+                target[0][item[-1][1]] = reward + self.g_discount * np.amax(t)
                 
                 self.q_net.fit(item,target,epochs=1,verbose=0)
                 
