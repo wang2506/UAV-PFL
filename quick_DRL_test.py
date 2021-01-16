@@ -245,9 +245,9 @@ class DQN:
                 
                 print(item)
                 
-                item = tf.convert_to_tensor(item)
+                # item = tf.convert_to_tensor(item)
                 
-                print(item)
+                # print(item)
                 
                 target = self.q_net.predict(item) #item is [args.cnn_range, args.U_swarms + args.Clusters]
                 
