@@ -399,7 +399,7 @@ for e in range(episodes):
                                                   args=args,ep_greed =ep_greed)
                 
                 rewards, state_set = reward_state_calc(test_DQN,current_state_set,action_set,\
-                        action_space,cluster_expectations)
+                        action_space,cluster_expectations,cluster_limits)
                 
                 ## store experiences
                 test_DQN.store(current_state_set,action_set,rewards,state_set)
