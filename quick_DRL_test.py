@@ -237,9 +237,13 @@ class DQN:
         else:
             
             for item in minibatch:
+                print(item)
                 
                 target = self.q_net.predict(item) #item is [args.cnn_range, args.U_swarms + args.Clusters]
-            
+                
+                
+                
+                
 
 # %% confirmation testing
 test_DQN = DQN(args)
