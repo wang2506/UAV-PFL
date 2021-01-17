@@ -51,7 +51,7 @@ parser.add_argument('--g_discount',type=float,default=0.7,\
                     help='gamma discount factor')
 parser.add_argument('--replay_bs',type=int,default=10,\
                     help='experience replay batch size')
-parser.add_argument('--linear',type=bool,default=False,\
+parser.add_argument('--linear',type=bool,default=True,\
                     help='MLP or CNN') ## argpase cannot evaluate booleans OOB - fix later
 parser.add_argument('--cnn_range',type=int, default=2,\
                     help='conv1d range')
@@ -82,7 +82,8 @@ class DQN:
         self.total_time = args.G_timesteps
         ## (swarm 0 position, swarm 0 min energy),... , (latest cluster visit times), ...
         
-        self.action_size = factorial(args.Clusters)/factorial(args.Clusters-args.U_swarms) # all possible permutations
+        self.action_size = factorial(args.Clusters+args.recharge_points)\
+            /factorial(args.Clusters+args.recharge_points-args.U_swarms) # all possible permutations
         
         #self.ep_greed = args.ep_greed
         self.g_discount = args.g_discount
@@ -93,7 +94,7 @@ class DQN:
         # RL Q-function nets
         if args.linear == True:
             # uav positions, cluster last visit times, uav min battery levels
-            self.input_size = args.U_swarms + args.Clusters + args.U_swarms
+            self.input_size = args.U_swarms + args.Clusters + args.recharge_points + args.U_swarms
             
             self.q_net = self.build_linear_NN()
             #self.target_network = deepcopy(self.q_net) #deepcopy fails on TF pickled objects
@@ -291,45 +292,64 @@ test_DQN.target_network.summary()
 # %% function to calculate rewards
 
 def reward_state_calc(test_DQN,current_state,current_action,current_action_space,\
-                      cluster_expectations,cluster_limits):
-    
-    ## ali - add penalty for not visiting nodes; want to ensure visit the nodes not being visited
+                      cluster_expectations,cluster_limits,cluster_bat_drain):
     
     ## calculate current_state + current_action expected gain  
+    
     ## determine next state, also changes last visits
+    ## so far, this only determines the next UAV positions
     next_state_set = list(current_action_space[current_action]) #deepcopy(current_state)
-    # print('begin')
-    # print(next_state_set)
     
-    # update last visits 
-    next_state_visits = [i+1 for i in current_state[len(test_DQN.U):]]
+    ## update last visits 
+    # includes recharge stations
+    # state = [uav positions, cluster visit times, recharge visit times, min battery levels]
+    next_state_visits = [i+1 for i in current_state[len(test_DQN.U):-len(test_DQN.U)]]
+    battery_status = [i for i in current_state[-len(test_DQN.U):]]
     
-    # print(current_state)
     
     current_reward = 0
     for i,j in enumerate(next_state_set):
         # print(i,j)
         
-        ## reward function calculated based on elapsed time x cluster factor
-        if cluster_expectations[j]*next_state_visits[j] < cluster_limits[j]:
-            current_reward += cluster_expectations[j]*next_state_visits[j]
-        else:
-            current_reward += cluster_limits[j]
+        ## filter for device cluster or recharge station
+        if j < len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
+            battery_status[i] -= cluster_bat_drain[j] # drain by cluster needs
+        
+            ## reward function calculated based on elapsed time x cluster factor
+            if battery_status[i] > 0:
+                if cluster_expectations[j]*next_state_visits[j] < cluster_limits[j]:
+                    current_reward += cluster_expectations[j]*next_state_visits[j]
+                else:
+                    current_reward += cluster_limits[j]
+            
+        else: #it is a recharge station
+            battery_status[i] = 100 #reset to 100
 
         #previously was cluster_expectations[j] * next_state_visits[j]
         next_state_visits[j] = 0 # zero out since now it will be visited
     
+    
     ## calculate penalty for not visiting certain nodes (25% of their nominal value)
     penalty = 0
+    
     for i,j in enumerate(next_state_visits):
-        if j * 0.25 * cluster_expectations[i] > 0.5 * cluster_limits[i]:
-            penalty += 0.5* cluster_limits[i]
-        else:
-            penalty += j * 0.25 * cluster_expectations[i]
-        
+        if i < len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
+            
+            if j * 0.25 * cluster_expectations[i] > 0.5 * cluster_limits[i]:
+                penalty += 0.5* cluster_limits[i]
+            else:
+                penalty += j * 0.25 * cluster_expectations[i]
+    
+    # check for battery failures (cannot afford to lose any UAVs)
+    for i,j in battery_status:
+        if j < 0:
+            penalty += 20000
+    
     current_reward -= penalty
     
-    next_state_set += next_state_visits
+    ## calculate the next state
+    next_state_set += next_state_visits #update visits
+    next_state_set += battery_status # update min battery
 
     return current_reward, next_state_set
 
@@ -355,10 +375,15 @@ else:
     print('only centralized is currently supported')
 
 # static action space - as finite swarm movement choices
-action_space = action_space_calc(list(range(args.Clusters)))
+action_space = action_space_calc(list(range(args.Clusters + args.recharge_points)))
+
 #cluster_expectations = 100*np.random.rand(args.Clusters) # the distribution change over time
 cluster_expectations = 100*np.array([0.005,1.6,0.8,3,0.3,0.02])
 cluster_limits = 100*np.array([1,2.2,1.3,5,1.1,2.1])
+
+cluster_bat_drain = np.array([3,5,5,6,2,1])
+min_battery_levels = (100*np.ones(args.U_swarms)).tolist() # initialize full battery
+
 
 # saving some plots for debugging
 fig_no = 0
@@ -377,12 +402,17 @@ for e in range(episodes):
     temp_C_set = list(range(args.Clusters))
     for i,j in enumerate(test_DQN.U):
         init_rng_index = np.random.randint(0,len(temp_C_set))
-        init_state_set.append(temp_C_set[init_rng_index])
+        init_state_set.append(temp_C_set[init_rng_index]) #populates swarm pos
         init_last_visit[temp_C_set[init_rng_index]] = 0
         
         del temp_C_set[init_rng_index]
 
     init_state_set += [int(i) for i in init_last_visit]
+
+    ## include recharge stations in the init_state_set
+    init_state_set += [1,1] #as we don't visit the recharge stations initially
+    init_state_set += min_battery_levels #add in the battery levels
+    
 
     ## iterate over the timesteps
     for timestep in range(args.G_timesteps):
@@ -396,7 +426,8 @@ for e in range(episodes):
                                                   args=args,ep_greed =ep_greed)
                 
                 rewards, state_set = reward_state_calc(test_DQN,init_state_set,action_set,\
-                                action_space,cluster_expectations,cluster_limits)
+                                action_space,cluster_expectations,cluster_limits,\
+                                    cluster_bat_drain)
                 
                 ## store experiences
                 test_DQN.store(init_state_set,action_set,rewards,state_set)
@@ -408,7 +439,8 @@ for e in range(episodes):
                                                   args=args,ep_greed =ep_greed)
                 
                 rewards, state_set = reward_state_calc(test_DQN,current_state_set,action_set,\
-                        action_space,cluster_expectations,cluster_limits)
+                        action_space,cluster_expectations,cluster_limits,\
+                            cluster_bat_drain)
                 
                 ## store experiences
                 test_DQN.store(current_state_set,action_set,rewards,state_set)
