@@ -341,7 +341,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
                 penalty += j * 0.25 * cluster_expectations[i]
     
     # check for battery failures (cannot afford to lose any UAVs)
-    for i,j in battery_status:
+    for i,j in enumerate(battery_status):
         if j < 0:
             penalty += 20000
     
