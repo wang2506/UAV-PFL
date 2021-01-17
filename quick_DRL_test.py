@@ -368,6 +368,7 @@ def action_space_calc(all_clusters,num_swarms=args.U_swarms):
 # %% building the sequence for DRL
 episodes = 1
 reward_storage = []
+battery_storage = []
 
 if args.centralized == True:
     reward_DQN = np.zeros((1,1,args.G_timesteps))
@@ -384,6 +385,7 @@ cluster_limits = 100*np.array([1,2.2,1.3,5,1.1,2.1])
 cluster_bat_drain = np.array([3,5,5,6,2,1])
 min_battery_levels = (100*np.ones(args.U_swarms)).tolist() # initialize full battery
 
+## TODO: swarm battery plots
 
 # saving some plots for debugging
 fig_no = 0
@@ -530,7 +532,12 @@ for e in range(episodes):
         
         #print(test_DQN.past_exps)
         if args.linear == True:
+            # reward save for plots
             reward_storage.append(rewards)
+            
+            # battery save for plots
+            print(state_set[-args.U_swarms:])
+            battery_storage.append(state_set[-args.U_swarms:])
         else: 
             if timestep != 0 and timestep % 2 == 0:
                 reward_storage.append(reward1)
@@ -549,16 +556,20 @@ for e in range(episodes):
             plt.title('reward over time')    
             
             # save image
-            plt.savefig(cwd+'/plots/'+str(fig_no)+'_30_ep_CNN.png')
+            plt.savefig(cwd+'/plots/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'linear.png')
             
             plt.clf()
             
             # save data
-            with open(cwd+'/data/'+str(fig_no)+'_30_ep_CNN','wb') as f:
+            with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'reward','wb') as f:
                 pk.dump(reward_storage,f)
+            
+            with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'battery','wb') as f:
+                pk.dump(battery_storage,f)
             
             # with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small_states','wb') as f:
             #     pk.dump(state_set_all,f)
+            
             
             
             
