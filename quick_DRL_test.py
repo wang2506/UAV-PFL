@@ -51,11 +51,11 @@ parser.add_argument('--g_discount',type=float,default=0.7,\
                     help='gamma discount factor')
 parser.add_argument('--replay_bs',type=int,default=10,\
                     help='experience replay batch size')
-parser.add_argument('--linear',type=bool,default=True,\
-                    help='MLP or CNN')
+parser.add_argument('--linear',type=bool,default=False,\
+                    help='MLP or CNN') ## argpase cannot evaluate booleans OOB - fix later
 parser.add_argument('--cnn_range',type=int, default=2,\
                     help='conv1d range')
-    
+
 # ovr parameters
 parser.add_argument('--G_timesteps',type=int,default=5000,\
                     help='number of swarm movements')
