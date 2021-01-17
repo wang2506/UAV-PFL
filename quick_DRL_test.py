@@ -39,7 +39,9 @@ parser.add_argument('--total_UAVs',type=int,default=6,\
                     help='aggregate number of UAVs')
 parser.add_argument('--UAV_init_ratio',type=float,default=0.8,\
                     help='initial worker to coorindator ratio')
-
+parser.add_argument('--recharge_points',type=int, default=2,\
+                    help='number of recharge points')
+    
 ## RL probs (epsilon and gamma)
 parser.add_argument('--ep_greed',type=float,default=0.6,\
                     help='epsilon greedy val')
@@ -75,6 +77,8 @@ class DQN:
         self.C = np.random.randint(0,10,size=args.Clusters) # measures their difficulty (i.e., need more revisits)
         self.total_UAVs = args.total_UAVs
         
+        self.recharge_points = np.arange(0,args.recharge_points,1) ## assume that recharging takes T?
+        
         self.total_time = args.G_timesteps
         ## (swarm 0 position, swarm 0 min energy),... , (latest cluster visit times), ...
         
@@ -88,7 +92,8 @@ class DQN:
         
         # RL Q-function nets
         if args.linear == True:
-            self.input_size = args.U_swarms + args.Clusters 
+            # uav positions, cluster last visit times, uav min battery levels
+            self.input_size = args.U_swarms + args.Clusters + args.U_swarms
             
             self.q_net = self.build_linear_NN()
             #self.target_network = deepcopy(self.q_net) #deepcopy fails on TF pickled objects
@@ -317,7 +322,11 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     ## calculate penalty for not visiting certain nodes (25% of their nominal value)
     penalty = 0
     for i,j in enumerate(next_state_visits):
-        penalty += j * 0.25 * cluster_expectations[i]
+        if j * 0.25 * cluster_expectations[i] > 0.5 * cluster_limits[i]:
+            penalty += 0.5* cluster_limits[i]
+        else:
+            penalty += j * 0.25 * cluster_expectations[i]
+        
     current_reward -= penalty
     
     next_state_set += next_state_visits
@@ -508,12 +517,12 @@ for e in range(episodes):
             plt.title('reward over time')    
             
             # save image
-            plt.savefig(cwd+'/plots/'+str(fig_no)+'_30_epsilon_10000_lr_small.png')
+            plt.savefig(cwd+'/plots/'+str(fig_no)+'_30_ep_CNN.png')
             
             plt.clf()
             
             # save data
-            with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small','wb') as f:
+            with open(cwd+'/data/'+str(fig_no)+'_30_ep_CNN','wb') as f:
                 pk.dump(reward_storage,f)
             
             # with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small_states','wb') as f:
