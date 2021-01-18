@@ -43,7 +43,7 @@ parser.add_argument('--recharge_points',type=int, default=2,\
                     help='number of recharge points')
     
 ## RL probs (epsilon and gamma)
-parser.add_argument('--ep_greed',type=float,default=0.7,\
+parser.add_argument('--ep_greed',type=float,default=0.5,\
                     help='epsilon greedy val')
 parser.add_argument('--ep_min',type=float,default=0.005,\
                     help='epsilon minimum')
@@ -57,7 +57,7 @@ parser.add_argument('--cnn_range',type=int, default=2,\
                     help='conv1d range')
 
 # ovr parameters
-parser.add_argument('--G_timesteps',type=int,default=5000,\
+parser.add_argument('--G_timesteps',type=int,default=20000,\
                     help='number of swarm movements')
 parser.add_argument('--training',type=int,default=1,\
                     help='training or testing the DRL')
