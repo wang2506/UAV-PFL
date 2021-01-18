@@ -43,7 +43,7 @@ parser.add_argument('--recharge_points',type=int, default=2,\
                     help='number of recharge points')
     
 ## RL probs (epsilon and gamma)
-parser.add_argument('--ep_greed',type=float,default=0.6,\
+parser.add_argument('--ep_greed',type=float,default=0.7,\
                     help='epsilon greedy val')
 parser.add_argument('--ep_min',type=float,default=0.005,\
                     help='epsilon minimum')
@@ -536,7 +536,7 @@ for e in range(episodes):
             reward_storage.append(rewards)
             
             # battery save for plots
-            print(state_set[-args.U_swarms:])
+            # print(state_set[-args.U_swarms:])
             battery_storage.append(state_set[-args.U_swarms:])
         else: 
             if timestep != 0 and timestep % 2 == 0:
