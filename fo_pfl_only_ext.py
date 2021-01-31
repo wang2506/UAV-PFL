@@ -93,7 +93,7 @@ for i in range(total_time):
 
 
 # random data qty per label
-avg_qty = int(len(dataset_train)/(sum(nodes_per_cluster)*swarm_period)) #*total_time))
+avg_qty = int(len(dataset_train)/(sum(nodes_per_cluster))) #*total_time))
 
 # need to determine data per device and total data per swarm
 static_qty = np.random.normal(avg_qty,avg_qty/10,size=(sum(nodes_per_cluster))).astype(int)
@@ -185,8 +185,8 @@ for i in HF_hn_pfl_swarm_models:
     i.train()
 
 ## ovr ML params setup
+lr = 1e-2
 lr = 1e-3
-# lr = 1e-2
 
 # %% running for all time
 fl_acc = []
