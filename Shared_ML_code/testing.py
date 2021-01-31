@@ -45,7 +45,7 @@ def test_img(net_g, datatest,bs):
     return accuracy, test_loss
 
 
-def test_img2(net_g, datatest,bs,indexes):
+def test_img2(net_g, datatest,bs,indexes,device=torch.device('cpu')):
     net_g.eval()
     # testing
     test_loss = 0
@@ -56,8 +56,8 @@ def test_img2(net_g, datatest,bs,indexes):
     # print('line 56 testing.py')
     
     for idx, (data, target) in enumerate(data_loader):
-        data = data.to(torch.device('cuda:1'))
-        target = target.to(torch.device('cuda:1'))
+        data = data.to(device)
+        target = target.to(device)
         
         # data = data.to(torch.device('cpu'))
         # target = target.to(torch.device('cpu'))
