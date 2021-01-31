@@ -274,7 +274,7 @@ for t in range(total_time):
             # print(test_img2(ii,dataset_test,bs=10,\
             #         indexes=cluster_test_sets[i])[0])
             FO_hn_pfl_acc_temp += test_img2(ii,dataset_test,bs=10,\
-                    indexes=cluster_test_sets[i])[0] * static_data_per_swarm[i] \
+                    indexes=cluster_test_sets[i],device=device)[0] * static_data_per_swarm[i] \
                 / sum(static_data_per_swarm)
             
             

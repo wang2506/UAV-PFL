@@ -268,7 +268,7 @@ for t in range(total_time):
         for i,ii in enumerate(fl_swarm_models):
             ii.eval()
             fl_acc_temp += test_img2(ii,dataset_test,bs=10,\
-                    indexes=cluster_test_sets[i])[0] * static_data_per_swarm[i] \
+                    indexes=cluster_test_sets[i],device=device)[0] * static_data_per_swarm[i] \
                 / sum(static_data_per_swarm)
     
         fl_acc.append(fl_acc_temp/len(fl_swarm_models))
