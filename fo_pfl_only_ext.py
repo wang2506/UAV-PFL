@@ -185,8 +185,8 @@ for i in HF_hn_pfl_swarm_models:
     i.train()
 
 ## ovr ML params setup
-lr = 1e-2
 lr = 1e-3
+# lr = 1e-3
 
 # %% running for all time
 fl_acc = []
@@ -278,8 +278,8 @@ for t in range(total_time):
                 / sum(static_data_per_swarm)
             
             
-        FO_hn_pfl_acc.append(FO_hn_pfl_acc_temp/len(FO_hn_pfl_swarm_models))
-    
+        # FO_hn_pfl_acc.append(FO_hn_pfl_acc_temp/len(FO_hn_pfl_swarm_models))
+        FO_hn_pfl_acc.append(FO_hn_pfl_acc)
         print(FO_hn_pfl_acc[-1])
     
     

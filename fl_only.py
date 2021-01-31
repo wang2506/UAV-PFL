@@ -271,10 +271,11 @@ for t in range(total_time):
                     indexes=cluster_test_sets[i],device=device)[0] * static_data_per_swarm[i] \
                 / sum(static_data_per_swarm)
     
-        fl_acc.append(fl_acc_temp/len(fl_swarm_models))
+        # fl_acc.append(fl_acc_temp/len(fl_swarm_models))
+        fl_acc.append(fl_acc_temp)
         
-        print(fl_acc_temp)
-        print(fl_acc[-1])
+        # print(fl_acc_temp)
+        # print(fl_acc[-1])
 
     
 # %% saving results 
