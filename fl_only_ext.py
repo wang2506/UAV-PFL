@@ -274,7 +274,7 @@ for t in range(total_time):
     
         # fl_acc.append(fl_acc_temp/len(fl_swarm_models))
         fl_acc.append(fl_acc_temp)
-        # print(fl_acc[-1])
+        print(fl_acc[-1])
 
     
 # %% saving results 

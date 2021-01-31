@@ -279,7 +279,7 @@ for t in range(total_time):
             
             
         # FO_hn_pfl_acc.append(FO_hn_pfl_acc_temp/len(FO_hn_pfl_swarm_models))
-        FO_hn_pfl_acc.append(FO_hn_pfl_acc)
+        FO_hn_pfl_acc.append(FO_hn_pfl_acc_temp)
         print(FO_hn_pfl_acc[-1])
     
     
