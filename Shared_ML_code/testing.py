@@ -52,15 +52,15 @@ def test_img2(net_g, datatest,bs,indexes):
     correct = 0
     data_loader = DataLoader(segmentdataset(datatest,indexes),batch_size=bs,shuffle=True)
     
-    print('currently on cpu')
-    print('line 56 testing.py')
+    # print('currently on cpu')
+    # print('line 56 testing.py')
     
     for idx, (data, target) in enumerate(data_loader):
-        #data = data.to(torch.device('cuda:1'))
-        #target = target.to(torch.device('cuda:1'))
+        data = data.to(torch.device('cuda:1'))
+        target = target.to(torch.device('cuda:1'))
         
-        data = data.to(torch.device('cpu'))
-        target = target.to(torch.device('cpu'))
+        # data = data.to(torch.device('cpu'))
+        # target = target.to(torch.device('cpu'))
         
         log_probs = net_g(data)
         # sum up batch loss
