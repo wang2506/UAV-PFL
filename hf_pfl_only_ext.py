@@ -185,8 +185,8 @@ for i in HF_hn_pfl_swarm_models:
     i.train()
 
 ## ovr ML params setup
-lr = 1e-3
-# lr2 = 1e-3
+lr = 1e-2
+lr2 = 1e-3
 
 # %% running for all time
 fl_acc = []
@@ -211,7 +211,7 @@ for t in range(total_time):
     uav_counter = 0
     for ind_i,val_i in enumerate(nodes_per_cluster):
         for j in range(val_i): # each uav in i
-            local_obj = LocalUpdate_HF_PFL(device,bs=10,lr1=lr,lr2=lr,epochs=swarm_period,\
+            local_obj = LocalUpdate_HF_PFL(device,bs=10,lr1=lr,lr2=lr2,epochs=swarm_period,\
                     dataset=dataset_train,indexes=static_nts[uav_counter])
             _,w,loss = local_obj.train(net=deepcopy(HF_hn_pfl_swarm_models[ind_i]).to(device))
             
@@ -241,7 +241,7 @@ for t in range(total_time):
             w_swarms.append(w_avg_swarm)
         
         # global agg
-        w_global = FedAvg2(w_swarms,t_swarm_total_qty)
+        w_global = FPAvg(w_swarms)#,t_swarm_total_qty)
         
         
         for i in HF_hn_pfl_swarm_models:
