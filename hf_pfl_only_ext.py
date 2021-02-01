@@ -54,7 +54,7 @@ clusters = 3
 swarms = 3
 swarm_period = 2#5
 global_period = 2
-cycles = 20
+cycles = 10
 total_time = swarm_period*global_period*cycles
 
 nodes_per_cluster = [np.random.randint(2,6) for i in range(swarms)]
@@ -186,7 +186,7 @@ for i in HF_hn_pfl_swarm_models:
 
 ## ovr ML params setup
 lr = 1e-2
-lr2 = 1e-3
+lr2 = 1e-4
 
 # %% running for all time
 fl_acc = []
