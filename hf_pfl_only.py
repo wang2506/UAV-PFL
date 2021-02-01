@@ -185,7 +185,7 @@ for i in HF_hn_pfl_swarm_models:
     i.train()
 
 ## ovr ML params setup
-lr = 1e-2
+lr = 1e-4
 lr2 = 1e-4
 
 # %% running for all time
