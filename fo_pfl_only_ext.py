@@ -53,9 +53,9 @@ data_source = 'mnist' # delete once argparse is configured
 clusters = 3
 swarms = 3
 swarm_period = 2#5
-global_period = 2
-cycles = 20
-total_time = swarm_period*global_period*cycles
+# global_period = 2
+# cycles = 20
+total_time = 40 #swarm_period*global_period*cycles
 
 nodes_per_cluster = [np.random.randint(2,6) for i in range(swarms)]
 
@@ -63,7 +63,7 @@ nodes_per_cluster = [np.random.randint(2,6) for i in range(swarms)]
 #labels_set = {i: [] for i in range(nodes)} #randomly determined based on labels_per_node
 
 # labels_per_node (i.e., distribution) changes over time...
-static_lpc = [np.random.randint(2,5) for i in range(swarms)] #static qty of labels per node
+static_lpc = [np.random.randint(1,3) for i in range(swarms)] #static qty of labels per node
 # static_lpc = [8 for i in range(swarms)]
 
 static_ls = {i: [] for i in range(swarms)} # actual labels at each node
@@ -162,132 +162,141 @@ cwd = os.getcwd()
 with open(cwd+'/data/default_w','rb') as f:
     default_w = pickle.load(f)
 
-# one central model object for each swarm
-fl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(swarms)]
-for i in fl_swarm_models:
-    i.load_state_dict(default_w)
-    i.train()
+# # one central model object for each swarm
+# fl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(swarms)]
+# for i in fl_swarm_models:
+#     i.load_state_dict(default_w)
+#     i.train()
 
-## setup PFL - same as FL, just an additional object
-pfl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(swarms)]
-for i in pfl_swarm_models:
-    i.load_state_dict(default_w)
-    i.train()
+# ## setup PFL - same as FL, just an additional object
+# pfl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(swarms)]
+# for i in pfl_swarm_models:
+#     i.load_state_dict(default_w)
+    # i.train()
 
-FO_hn_pfl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(swarms)]
-for i in FO_hn_pfl_swarm_models:
-    i.load_state_dict(default_w)
-    i.train()
 
-HF_hn_pfl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(swarms)]
-for i in HF_hn_pfl_swarm_models:
-    i.load_state_dict(default_w)
-    i.train()
+
+# HF_hn_pfl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(swarms)]
+# for i in HF_hn_pfl_swarm_models:
+#     i.load_state_dict(default_w)
+#     i.train()
 
 ## ovr ML params setup
 lr = 1e-3
 # lr = 1e-3
 
 # %% running for all time
-fl_acc = []
-hn_pfl_acc = [] 
-FO_hn_pfl_acc = []
-HF_hn_pfl_acc = []
 
-for t in range(total_time):
-    swarm_w = {i:[] for i in range(swarms)}
-    # data_processed = {i:0 for i in range(swarms)}
+for ratio in [0.5,1,1.5,2,2.5]:
+    global_period = swarm_period*ratio
+    cycles = total_time/(swarm_period*global_period)
+    # total_time = swarm_period*global_period*cycles
+
+
+    fl_acc = []
+    hn_pfl_acc = [] 
+    FO_hn_pfl_acc = []
+    HF_hn_pfl_acc = []
     
-    #### Hierarchical-FL procedure 
-    ### 1. create object for each node/device
-    ### 2. after \tau1 = swarm_period iterations, aggregate cluster-wise (weighed)
-    ### 3. after \tau2 = global_period swarm-wide aggregations, aggregate globally (weighted again)
-    
-    print('iteration:{}'.format(t))
-    
-    print('HN-FO-PFL begins here')
-    FO_swarm_w = {i:[] for i in range(swarms)}
-    
-    uav_counter = 0
-    for ind_i,val_i in enumerate(nodes_per_cluster):
-        for j in range(val_i): # each uav in i
-            local_obj = LocalUpdate_FO_PFL(device,bs=10,lr1=lr,lr2=lr,epochs=swarm_period,\
-                    dataset=dataset_train,indexes=static_nts[uav_counter])
-            _,w,loss = local_obj.train(net=deepcopy(FO_hn_pfl_swarm_models[ind_i]).to(device))
-            
-            # print(loss)
-            
-            FO_swarm_w[ind_i].append(w)
-            
-            uav_counter += 1
-    
-    if (t+1) % (swarm_period*global_period) == 0:
-        ## then a swarm-wide agg followed immediately by a global
-        # swarm-wide agg
-        t_static_qty = deepcopy(static_qty).tolist()
+    FO_hn_pfl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(swarms)]
+    for i in FO_hn_pfl_swarm_models:
+        i.load_state_dict(default_w)
+        i.train()
+
+    for t in range(total_time):
+        swarm_w = {i:[] for i in range(swarms)}
+        # data_processed = {i:0 for i in range(swarms)}
         
-        t_swarm_total_qty = []
-        w_swarms = []
+        #### Hierarchical-FL procedure 
+        ### 1. create object for each node/device
+        ### 2. after \tau1 = swarm_period iterations, aggregate cluster-wise (weighed)
+        ### 3. after \tau2 = global_period swarm-wide aggregations, aggregate globally (weighted again)
         
+        print('iteration:{}'.format(t))
+        
+        print('HN-FO-PFL begins here')
+        FO_swarm_w = {i:[] for i in range(swarms)}
+        
+        uav_counter = 0
         for ind_i,val_i in enumerate(nodes_per_cluster):
-            t2_static_qty = t_static_qty[:val_i]
-            del t_static_qty[:val_i]
-            
-            t3_static_qty = [i*swarm_period for i in t2_static_qty]
-            
-            w_avg_swarm = FedAvg2(FO_swarm_w[ind_i],t3_static_qty)
-            
-            t_swarm_total_qty.append(sum(t3_static_qty))
-            w_swarms.append(w_avg_swarm)
+            for j in range(val_i): # each uav in i
+                local_obj = LocalUpdate_FO_PFL(device,bs=10,lr1=lr,lr2=lr,epochs=swarm_period,\
+                        dataset=dataset_train,indexes=static_nts[uav_counter])
+                _,w,loss = local_obj.train(net=deepcopy(FO_hn_pfl_swarm_models[ind_i]).to(device))
+                
+                # print(loss)
+                
+                FO_swarm_w[ind_i].append(w)
+                
+                uav_counter += 1
         
-        # global agg
-        w_global = FedAvg2(w_swarms,t_swarm_total_qty)
-        
-        
-        for i in FO_hn_pfl_swarm_models:
-            i.load_state_dict(w_global)
-            i.train()
+        if (t+1) % (swarm_period*global_period) == 0:
+            ## then a swarm-wide agg followed immediately by a global
+            # swarm-wide agg
+            t_static_qty = deepcopy(static_qty).tolist()
             
-    else:
-        ## run FL swarm-wide aggregation only
-        t_static_qty = deepcopy(static_qty).tolist()
-        
-        for ind_i,val_i in enumerate(nodes_per_cluster):
-            t2_static_qty = t_static_qty[:val_i]
-            del t_static_qty[:val_i]
+            t_swarm_total_qty = []
+            w_swarms = []
             
-            t3_static_qty = [i*swarm_period for i in t2_static_qty]
+            for ind_i,val_i in enumerate(nodes_per_cluster):
+                t2_static_qty = t_static_qty[:val_i]
+                del t_static_qty[:val_i]
+                
+                t3_static_qty = [i*swarm_period for i in t2_static_qty]
+                
+                w_avg_swarm = FedAvg2(FO_swarm_w[ind_i],t3_static_qty)
+                
+                t_swarm_total_qty.append(sum(t3_static_qty))
+                w_swarms.append(w_avg_swarm)
             
-            w_avg_swarm = FedAvg2(FO_swarm_w[ind_i],t3_static_qty)
-
-            FO_hn_pfl_swarm_models[ind_i].load_state_dict(w_avg_swarm)
-            FO_hn_pfl_swarm_models[ind_i].train()
-
+            # global agg
+            w_global = FPAvg(w_swarms)#,t_swarm_total_qty)
+            
+            
+            for i in FO_hn_pfl_swarm_models:
+                i.load_state_dict(w_global)
+                i.train()
+                
+        else:
+            ## run FL swarm-wide aggregation only
+            t_static_qty = deepcopy(static_qty).tolist()
+            
+            for ind_i,val_i in enumerate(nodes_per_cluster):
+                t2_static_qty = t_static_qty[:val_i]
+                del t_static_qty[:val_i]
+                
+                t3_static_qty = [i*swarm_period for i in t2_static_qty]
+                
+                w_avg_swarm = FedAvg2(FO_swarm_w[ind_i],t3_static_qty)
     
-    ## for clarity, splitting this outside of the other if-else statement
-    ## evaluate model performance
-    if (t+1) % (swarm_period*global_period) == 0:
-        FO_hn_pfl_acc_temp = 0
-        for i,ii in enumerate(FO_hn_pfl_swarm_models):
-            ii.eval()
-            # print(test_img2(ii,dataset_test,bs=10,indexes=cluster_test_sets[i]))
-            # print(test_img2(ii,dataset_test,bs=10,\
-            #         indexes=cluster_test_sets[i])[0])
-            FO_hn_pfl_acc_temp += test_img2(ii,dataset_test,bs=10,\
-                    indexes=cluster_test_sets[i],device=device)[0] * static_data_per_swarm[i] \
-                / sum(static_data_per_swarm)
-            
-            
-        # FO_hn_pfl_acc.append(FO_hn_pfl_acc_temp/len(FO_hn_pfl_swarm_models))
-        FO_hn_pfl_acc.append(FO_hn_pfl_acc_temp)
-        print(FO_hn_pfl_acc[-1])
+                FO_hn_pfl_swarm_models[ind_i].load_state_dict(w_avg_swarm)
+                FO_hn_pfl_swarm_models[ind_i].train()
     
+        
+        ## for clarity, splitting this outside of the other if-else statement
+        ## evaluate model performance
+        if (t+1) % (swarm_period*global_period) == 0:
+            FO_hn_pfl_acc_temp = 0
+            for i,ii in enumerate(FO_hn_pfl_swarm_models):
+                ii.eval()
+                # print(test_img2(ii,dataset_test,bs=10,indexes=cluster_test_sets[i]))
+                # print(test_img2(ii,dataset_test,bs=10,\
+                #         indexes=cluster_test_sets[i])[0])
+                FO_hn_pfl_acc_temp += test_img2(ii,dataset_test,bs=10,\
+                        indexes=cluster_test_sets[i],device=device)[0] * static_data_per_swarm[i] \
+                    / sum(static_data_per_swarm)
+                
+                
+            # FO_hn_pfl_acc.append(FO_hn_pfl_acc_temp/len(FO_hn_pfl_swarm_models))
+            FO_hn_pfl_acc.append(FO_hn_pfl_acc_temp)
+            print(FO_hn_pfl_acc[-1])
+        
+        
+    # saving results 
+    cwd = os.getcwd()
     
-# %% saving results 
-cwd = os.getcwd()
-
-with open(cwd+'/data/FO_hn_pfl_acc_test_noniid','wb') as f:
-    pickle.dump(FO_hn_pfl_acc,f)
+    with open(cwd+'/data/FO_hn_pfl_acc_test_noniid_'+str(ratio),'wb') as f:
+        pickle.dump(FO_hn_pfl_acc,f)
 
 
 
