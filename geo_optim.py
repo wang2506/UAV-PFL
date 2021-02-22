@@ -385,7 +385,7 @@ gamma_u_F, gamma_F = 10, 10
 delta_u_holder = []
 # init_delta_u = 50 #1e-10
 
-max_approx_iters = 2 #50 #100 #100 #200 #50
+max_approx_iters = 100 #50 #100 #100 #200 #50
 plot_obj = []
 plot_energy = []
 plot_acc = []
