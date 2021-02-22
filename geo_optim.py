@@ -15,6 +15,9 @@ import cvxpy as cp
 import mosek
 import pickle as pk
 
+import sys
+sys.setrecursionlimit(10000)
+
 #### this is the cvxpy optimization file
 ## for lists - first element must be nonzero for dgp to accept
 ## also, cp.sum, sum, np.sum the underlying wrapper starts with a 0 then +=
@@ -33,9 +36,9 @@ params_to_bits = 1e4 #2
 
 swarms = 1
 leaders = 1 #same as swarms
-workers = 5 #2
-coordinators = 3 #2
-devices = 10 #2 
+workers = 5#5 #2
+coordinators = 5 #2
+devices = 10#5 #2 
 #5 uavs, 10 device, 10 uavs, 15 devices, 100 iterations
 
 ## powers and communication rates
