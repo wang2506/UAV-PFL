@@ -36,9 +36,9 @@ params_to_bits = 1e4 #2
 
 swarms = 1
 leaders = 1 #same as swarms
-workers = 5#5 #2
+workers = 10 #5 #2
 coordinators = 5 #2
-devices = 10#5 #2 
+devices = 10 #5 #2 
 #5 uavs, 10 device, 10 uavs, 15 devices, 100 iterations
 
 ## powers and communication rates
