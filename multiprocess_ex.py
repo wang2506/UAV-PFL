@@ -76,11 +76,11 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1):
     cwd = os.getcwd()
     
     with open(cwd+'/geo_optim_chars/workers_swarm_no'+str(swarm_no),'rb') as f:
-        workers = pk.load(f)
+        workers = pk.load(f)[0]
     with open(cwd+'/geo_optim_chars/coordinators_swarm_no'+str(swarm_no),'rb') as f:
-        coordinators = pk.load(f)
+        coordinators = pk.load(f)[0]
     with open(cwd+'/geo_optim_chars/devices_cluster_no'+str(cluster_no),'rb') as f:
-        devices = pk.load(f)
+        devices = pk.load(f)[0]
         
     # workers = 2 #5 #2-5 #3-5
     # coordinators = 1 #3 #2 #1-2
@@ -958,7 +958,7 @@ if __name__ == '__main__':
     clusters_vec = range(10)
     swarms_vec = range(4)    
     
-    with Pool(4) as p:
+    with Pool(10) as p:
         # print(p.map(geo_optim_solve,[0,1,2,3]))
         # print('done, commence next iter')
         print('begin running')
