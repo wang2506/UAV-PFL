@@ -271,25 +271,52 @@ for ratio in [0.5,1,1.5,2,2.5]:
                 fl_swarm_models[ind_i].load_state_dict(w_avg_swarm)
                 fl_swarm_models[ind_i].train()
     
-        
+        # break 
         ## for clarity, splitting this outside of the other if-else statement
         ## evaluate model performance
-        if (t+1) % (swarm_period*global_period) == 0:
+        if ((t+1) % (swarm_period*global_period) == 0) or t == 0:
             fl_acc_temp = 0
+            total_loss = 0
             for i,ii in enumerate(fl_swarm_models):
                 ii.eval()
-                fl_acc_temp += test_img2(ii,dataset_test,bs=10,\
+                temp_acc, loss = test_img2(ii,dataset_test,bs=10,\
                         indexes=cluster_test_sets[i],device=device)[0] * static_data_per_swarm[i] \
                     / sum(static_data_per_swarm)
-        
+                
+                fl_acc_temp += temp_acc
+                total_loss += loss
             # fl_acc.append(fl_acc_temp/len(fl_swarm_models))
             fl_acc.append(fl_acc_temp)
             print(fl_acc[-1])
+            print(total_loss)
     
+    # ### calculate optim variables    
+    # swarm_w_prev = default_w # used to calc optim variables
+    # comp_w = swarm_w[0] # arbitrary
+    
+    # ## B_j, need magnitude
+    # mag_B_j = 0
+    # for i in default_w.keys():
+    #     mag_B_j += torch.norm(1/lr*default_w[i] - 1/lr*comp_w[i])
         
+    #     grad_diffs[0].append(1/lr*default_w[i] - 1/lr*comp_w[i])
+    #     grad_diffs[1].append(1/lr*default_w[i] - 1/lr*swarm_w[1][i])
+        
+    # print(mag_B_j)
+    # mu_j = 0
+    # mu_j_grad = 0
+    # mu_j_params = 0
+    # for i in default_w.keys():
+    #     mu_j_grad += torch.norm(1/lr * comp_w[i] - 1/lr * swarm_w[1][i])
+    #     mu_j_params += torch.norm(comp_w[ )
+    
+    
+    
+    # B_j = [i - swarm_w] 
+        
+    
     # saving results 
     cwd = os.getcwd()
-    
     with open(cwd+'/data/fl_acc_test_noniid_'+str(ratio),'wb') as f:
         pickle.dump(fl_acc,f)
 
