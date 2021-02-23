@@ -47,7 +47,7 @@ def geo_optim_solve(garb):
     leaders = 1 #same as swarms
     workers = 2 #5 #2-5 #3-5
     coordinators = 1 #3 #2 #1-2
-    devices = 10 #2  #9-12
+    devices = 6 #2  #9-12
     #5 uavs, 10 device, 10 uavs, 15 devices, 100 iterations
     
     ## powers and communication rates
