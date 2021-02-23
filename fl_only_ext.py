@@ -280,11 +280,12 @@ for ratio in [0.5,1,1.5,2,2.5]:
             for i,ii in enumerate(fl_swarm_models):
                 ii.eval()
                 temp_acc, loss = test_img2(ii,dataset_test,bs=10,\
-                        indexes=cluster_test_sets[i],device=device)[0] * static_data_per_swarm[i] \
-                    / sum(static_data_per_swarm)
+                        indexes=cluster_test_sets[i],device=device)
                 
-                fl_acc_temp += temp_acc
-                total_loss += loss
+                fl_acc_temp += temp_acc * static_data_per_swarm[i] \
+                    / sum(static_data_per_swarm)
+                total_loss += loss * static_data_per_swarm[i] \
+                    / sum(static_data_per_swarm)
             # fl_acc.append(fl_acc_temp/len(fl_swarm_models))
             fl_acc.append(fl_acc_temp)
             print(fl_acc[-1])
