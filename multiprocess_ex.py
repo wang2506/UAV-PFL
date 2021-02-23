@@ -36,15 +36,15 @@ def build_char_vectors(swarms=4,clusters=10):
     cwd = os.getcwd()
     
     for i in range(swarms):
-        workers = np.random.randint(3,6,1) #3-5
-        coordinators = np.random.randint(1,4,1) #1-3
+        workers = np.random.randint(3,6,1) #3-5; 
+        coordinators = np.random.randint(1,3,1) #1-2
         with open(cwd+'/geo_optim_chars/workers_swarm_no'+str(i),'wb') as f:
             pk.dump(workers,f)
         with open(cwd+'/geo_optim_chars/coordinators_swarm_no'+str(i),'wb') as f:
             pk.dump(coordinators,f)
             
     for i in range(clusters):
-        devices = np.random.randint(10,16,1) #10-16
+        devices = np.random.randint(8,11,1) #8-12
         with open(cwd+'/geo_optim_chars/devices_cluster_no'+str(i),'wb') as f:
             pk.dump(devices,f)
 
