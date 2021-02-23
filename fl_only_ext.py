@@ -316,9 +316,9 @@ for ratio in [0.5,1,1.5,2,2.5]:
         
     
     # saving results 
-    cwd = os.getcwd()
-    with open(cwd+'/data/fl_acc_test_noniid_'+str(ratio),'wb') as f:
-        pickle.dump(fl_acc,f)
+    # cwd = os.getcwd()
+    # with open(cwd+'/data/fl_acc_test_noniid_'+str(ratio),'wb') as f:
+    #     pickle.dump(fl_acc,f)
 
 
 # %% graveyard
