@@ -65,7 +65,7 @@ parser.add_argument('--cnn_range',type=int, default=2,\
                     help='conv1d range')
 
 # ovr parameters
-parser.add_argument('--G_timesteps',type=int,default=200,\
+parser.add_argument('--G_timesteps',type=int,default=5000,\
                     help='number of swarm movements') #
 parser.add_argument('--training',type=int,default=1,\
                     help='training or testing the DRL')
