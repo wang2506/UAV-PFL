@@ -751,15 +751,15 @@ for e in range(episodes):
             
             # save data
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'reward'\
-                      +'test','wb') as f:
+                      +'test1','wb') as f:
                 pk.dump(reward_storage,f)
             
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'battery'\
-                      +'test','wb') as f:
+                      +'test1','wb') as f:
                 pk.dump(battery_storage,f)
             
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'all_states'\
-                      +'test','wb') as f:
+                      +'test1','wb') as f:
                 pk.dump(state_save,f)
                 
             # with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small_states','wb') as f:
