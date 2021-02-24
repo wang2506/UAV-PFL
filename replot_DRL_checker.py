@@ -20,9 +20,9 @@ cwd = os.getcwd()
 # for i in np.arange(15,16,1):
 # with open(cwd+'/data/'+str(0)+'_30_ep_CNN','rb') as f:
 #     data = pickle.load(f)
-ep_start = 0.6
+ep_start = 0.7
 
-with open(cwd+'/data/0_'+str(ep_start)+'_rewardtest','rb') as f:
+with open(cwd+'/data/0_'+str(ep_start)+'_rewardtest2','rb') as f:
     data = pickle.load(f)
 
 # plot average reward per 10 iterations
@@ -39,7 +39,7 @@ plt.title('moving avg 1000, reward, ep_start='+str(ep_start))
 
 
 # plots for battery
-with open(cwd+'/data/0_'+str(ep_start)+'_batterytest','rb') as f:
+with open(cwd+'/data/0_'+str(ep_start)+'_batterytest2','rb') as f:
     data_b = pickle.load(f)
 
 data_b2 = [mean(i) for i in data_b]
