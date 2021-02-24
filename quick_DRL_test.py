@@ -399,9 +399,11 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     
     ## build reward vector/matrix
     reward_vec = np.zeros(shape=len(test_DQN.U)).tolist()
+    index_counter = 0
     for i,j in enumerate(reward_vec):
         if new_positions[i] < 8:
-            reward_vec[i] = 1000*5/ historical_data[i][0][-1]
+            reward_vec[i] = 1000*5/ historical_data[index_counter][0][-1]
+            index_counter += 1
     
     current_reward = 0
     for i,j in enumerate(new_positions): #next_state_set 
