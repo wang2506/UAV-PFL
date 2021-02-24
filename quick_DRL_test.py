@@ -390,11 +390,11 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     ## determine cluster_bat_drain - this is based on historical data
     # filter historical data
     cluster_bat_drain = np.zeros(shape=len(test_DQN.U)).tolist()
+    index_counter = 0
     for i,j in enumerate(cluster_bat_drain):
         if new_positions[i] < 8:
-            print(i)
-            print(historical_data)
-            cluster_bat_drain[i] = historical_data[i][2][-1] 
+            cluster_bat_drain[i] = historical_data[index_counter][2][-1] 
+            index_counter += 1
             #fixed indexing because 3rd is energy, and final is consumption
     
     ## build reward vector/matrix
