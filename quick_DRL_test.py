@@ -392,6 +392,8 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     cluster_bat_drain = np.zeros(shape=len(test_DQN.U)).tolist()
     for i,j in enumerate(cluster_bat_drain):
         if new_positions[i] < 8:
+            print(i)
+            print(historical_data)
             cluster_bat_drain[i] = historical_data[i][2][-1] 
             #fixed indexing because 3rd is energy, and final is consumption
     
@@ -718,7 +720,9 @@ for e in range(episodes):
             # battery_storage.append(state_set[-args.U_swarms:])
             state_set_bat2 = -args.Clusters - args.recharge_points -3
             state_set_bat1 = -args.U_swarms -args.Clusters - args.recharge_points -3
+            
             print(state_set[ state_set_bat1: state_set_bat2 ])
+            
             battery_storage.append(state_set[ state_set_bat1 : state_set_bat2 ])
             
         else: 
