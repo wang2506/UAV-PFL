@@ -215,10 +215,9 @@ class DQN:
     def build_linear_NN(self):
         model = Sequential()
 
-        model.add(Dense(100,activation='relu',input_shape = [self.input_size]))
-        model.add(Dense(100,activation='relu'))
-        model.add(Dense(100,activation='relu'))
-#        model.add(Dense(60,activation='relu'))
+        model.add(Dense(60,activation='relu',input_shape = [self.input_size]))
+        model.add(Dense(80,activation='relu'))
+        model.add(Dense(60,activation='relu'))
         # model.add(Dense(100,activation='relu'))
         model.add(Dense(self.action_size,activation='linear')) ##this should be the size of the action space
 
@@ -403,7 +402,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     index_counter = 0
     for i,j in enumerate(reward_vec):
         if new_positions[i] < 8:
-            reward_vec[i] = 1000*5/ historical_data[index_counter][0][-1]
+            reward_vec[i] = 1000*10/ historical_data[index_counter][0][-1]
             index_counter += 1
     
     current_reward = 0
@@ -468,7 +467,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     # model drift
     next_state_set += (np.multiply(cluster_expectations,\
                         next_state_visits[:len(test_DQN.C)] )  ).tolist()
-    next_state_set += battery_status # update battery status
+    next_state_set += [1000,1000,1000]#battery_status # update battery status
     next_state_set += next_state_visits #update visits; active low
 
     next_state_set += [ts_start,taus1_next,taus2_next]
@@ -536,7 +535,7 @@ cluster_bat_drain = np.array([3,5,5,6,2,1])
 init_battery_levels = (1000* np.ones(args.U_swarms)).tolist() #70600
 max_battery_levels = deepcopy(init_battery_levels)
 
-min_battery_levels = (360*np.ones(args.U_swarms)).tolist() # initialize full battery
+min_battery_levels = (200*np.ones(args.U_swarms)).tolist() # initialize full battery
 
 Ts = [180,220,260]
 taus1 = [1,2]
@@ -752,15 +751,15 @@ for e in range(episodes):
             
             # save data
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'reward'\
-                      +'test3','wb') as f:
+                      +'test1','wb') as f:
                 pk.dump(reward_storage,f)
             
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'battery'\
-                      +'test3','wb') as f:
+                      +'test1','wb') as f:
                 pk.dump(battery_storage,f)
             
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'all_states'\
-                      +'test3','wb') as f:
+                      +'test1','wb') as f:
                 pk.dump(state_save,f)
                 
             # with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small_states','wb') as f:
