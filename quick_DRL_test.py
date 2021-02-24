@@ -51,7 +51,7 @@ parser.add_argument('--recharge_points',type=int, default=2,\
                     help='number of recharge points') #50% of total clusters; 3
 
 ## RL probs (epsilon and gamma)
-parser.add_argument('--ep_greed',type=float,default=0.6,\
+parser.add_argument('--ep_greed',type=float,default=0.7,\
                     help='epsilon greedy val')
 parser.add_argument('--ep_min',type=float,default=0.005,\
                     help='epsilon minimum')
@@ -217,7 +217,7 @@ class DQN:
 
         model.add(Dense(60,activation='relu',input_shape = [self.input_size]))
         model.add(Dense(80,activation='relu'))
-        # model.add(Dense(60,activation='relu'))
+        model.add(Dense(60,activation='relu'))
         # model.add(Dense(100,activation='relu'))
         model.add(Dense(self.action_size,activation='linear')) ##this should be the size of the action space
 
