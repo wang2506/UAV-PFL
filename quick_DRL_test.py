@@ -215,9 +215,10 @@ class DQN:
     def build_linear_NN(self):
         model = Sequential()
 
-        model.add(Dense(60,activation='relu',input_shape = [self.input_size]))
-        model.add(Dense(80,activation='relu'))
-        model.add(Dense(60,activation='relu'))
+        model.add(Dense(100,activation='relu',input_shape = [self.input_size]))
+        model.add(Dense(100,activation='relu'))
+        model.add(Dense(100,activation='relu'))
+#        model.add(Dense(60,activation='relu'))
         # model.add(Dense(100,activation='relu'))
         model.add(Dense(self.action_size,activation='linear')) ##this should be the size of the action space
 
@@ -751,15 +752,15 @@ for e in range(episodes):
             
             # save data
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'reward'\
-                      +'test1','wb') as f:
+                      +'test3','wb') as f:
                 pk.dump(reward_storage,f)
             
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'battery'\
-                      +'test1','wb') as f:
+                      +'test3','wb') as f:
                 pk.dump(battery_storage,f)
             
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'all_states'\
-                      +'test1','wb') as f:
+                      +'test3','wb') as f:
                 pk.dump(state_save,f)
                 
             # with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small_states','wb') as f:
