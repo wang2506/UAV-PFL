@@ -65,7 +65,7 @@ parser.add_argument('--cnn_range',type=int, default=2,\
                     help='conv1d range')
 
 # ovr parameters
-parser.add_argument('--G_timesteps',type=int,default=5000,\
+parser.add_argument('--G_timesteps',type=int,default=20000,\
                     help='number of swarm movements') #
 parser.add_argument('--training',type=int,default=1,\
                     help='training or testing the DRL')
@@ -425,7 +425,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
                 current_reward += reward_vec[i] #from gradient
                 
         else: #it is a recharge station
-            battery_status[i] = 500 #100 #reset to 100%
+            battery_status[i] = 2000 #100 #reset to 100%
 
         #previously was cluster_expectations[j] * next_state_visits[j]
         next_state_visits[j] = 0 # zero out since now it will be visited
@@ -532,7 +532,7 @@ cluster_limits = 3*cluster_expectations
 
 
 cluster_bat_drain = np.array([3,5,5,6,2,1])
-init_battery_levels = (500* np.ones(args.U_swarms)).tolist() #70600
+init_battery_levels = (2000* np.ones(args.U_swarms)).tolist() #70600
 max_battery_levels = deepcopy(init_battery_levels)
 
 min_battery_levels = (200*np.ones(args.U_swarms)).tolist() # initialize full battery
@@ -751,15 +751,15 @@ for e in range(episodes):
             
             # save data
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'reward'\
-                      +'test_small','wb') as f:
+                      +'test_large','wb') as f:
                 pk.dump(reward_storage,f)
             
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'battery'\
-                      +'test_small','wb') as f:
+                      +'test_large','wb') as f:
                 pk.dump(battery_storage,f)
             
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'all_states'\
-                      +'test_small','wb') as f:
+                      +'test_large','wb') as f:
                 pk.dump(state_save,f)
                 
             # with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small_states','wb') as f:
