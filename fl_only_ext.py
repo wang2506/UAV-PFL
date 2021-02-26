@@ -308,7 +308,7 @@ for save_type in ['extreme','mild','iid']:
             # break 
             ## for clarity, splitting this outside of the other if-else statement
             ## evaluate model performance
-            if ((t+1) % (swarm_period*global_period) == 0) or t == 0:
+            if ((t+1) % (swarm_period*global_period) == 0):
                 fl_acc_temp = 0
                 total_loss_temp = 0
                 for i,ii in enumerate(fl_swarm_models):
@@ -324,7 +324,7 @@ for save_type in ['extreme','mild','iid']:
                 fl_acc.append(fl_acc_temp)
                 total_loss.append(total_loss_temp)
                 print(fl_acc[-1])
-                print(total_loss)
+                # print(total_loss)
         
         # ### calculate optim variables    
         # swarm_w_prev = default_w # used to calc optim variables
