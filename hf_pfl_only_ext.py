@@ -95,7 +95,8 @@ def pop_labels(temp_lpn,temp_ls,max_labels=10):
     return temp_ls
 
 # pop holders
-static_ls = pop_labels(static_lpc,static_ls)
+# static_ls = pop_labels(static_lpc,static_ls)
+static_ls = {0:[0,1,2,3],1:[5,6,7],2:[4,8,9]}
 
 for i in range(total_time):
     var_ls[i] = pop_labels(var_lpc[i,:],var_ls[i])
