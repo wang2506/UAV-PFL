@@ -35,8 +35,8 @@ dataset_train = torchvision.datasets.MNIST('./data/mnist/',train=True,download=F
 dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=False,\
                                           transform=trans_mnist)
 
-d_train_fmnist = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False)
-d_test_fmnist = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False)
+# dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False)
+# dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False)
 
 device = torch.device('cuda:2')
 #device = torch.device('cpu')
@@ -52,10 +52,11 @@ for index, (pixels,label) in enumerate(dataset_test):
     test[label].append(index)    
 
 data_source = 'mnist' # delete once argparse is configured
+#data_source = 'fmnist'
 
 # assign datasets to nodes
-clusters = 3
-swarms = 3
+clusters = 10
+swarms = 10
 
 total_time = 120
 swarm_period = 2
@@ -86,15 +87,30 @@ var_ls = {j: {i: [] for i in range(swarms)} for j in range(total_time)}
 
 # %% populating ML label holders
 ## TODO: epsilon based changes - see KL divergence     
-def pop_labels(temp_lpn,temp_ls,max_labels=10):
+def pop_labels(temp_lpn,temp_ls,max_labels=10,flag=True):
+    starting_list = list(range(10))
     for i,j in enumerate(temp_lpn):
         j = int(j)
-        temp_ls[i] = sorted(random.sample(range(max_labels),j))
+        tts = sorted(random.sample(range(max_labels),j))
+        
+        if flag == True:
+            if tts[0] in starting_list:
+                temp_ls[i] = tts
+                del starting_list[starting_list.index(tts[0])]
+            else:
+                sl_temp = starting_list[np.random.randint(0,len(starting_list))]
+                temp_ls[i].append(sl_temp)
+                
+                del starting_list[starting_list.index(sl_temp)]
+        else:
+            temp_ls[i] = tts
+            
     return temp_ls
 
 # pop holders
-# static_ls = pop_labels(static_lpc,static_ls)
-static_ls = {0:[0,1,2,3],1:[5,6,7],2:[4,8,9]}
+static_ls = pop_labels(static_lpc,static_ls)
+# static_ls = pop_labels(static_lpc,static_ls,flag=False)
+# static_ls = {0:[0,1,2,3],1:[5,6,7],2:[4,8,9]}
 
 for i in range(total_time):
     var_ls[i] = pop_labels(var_lpc[i,:],var_ls[i])
@@ -206,6 +222,7 @@ for ratio in [1]: #[0.5,1,1.5,2,2.5]:
     hn_pfl_acc = [] 
     FO_hn_pfl_acc = []
     HF_hn_pfl_acc = []
+    total_loss = []
     
     fl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(swarms)]
     for i in fl_swarm_models:
@@ -283,7 +300,7 @@ for ratio in [1]: #[0.5,1,1.5,2,2.5]:
         ## evaluate model performance
         if ((t+1) % (swarm_period*global_period) == 0) or t == 0:
             fl_acc_temp = 0
-            total_loss = 0
+            total_loss_temp = 0
             for i,ii in enumerate(fl_swarm_models):
                 ii.eval()
                 temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
@@ -291,10 +308,11 @@ for ratio in [1]: #[0.5,1,1.5,2,2.5]:
                 
                 fl_acc_temp += temp_acc * static_data_per_swarm[i] \
                     / sum(static_data_per_swarm)
-                total_loss += loss * static_data_per_swarm[i] \
+                total_loss_temp += loss * static_data_per_swarm[i] \
                     / sum(static_data_per_swarm)
             # fl_acc.append(fl_acc_temp/len(fl_swarm_models))
             fl_acc.append(fl_acc_temp)
+            total_loss.append(total_loss_temp)
             print(fl_acc[-1])
             print(total_loss)
     
@@ -318,17 +336,18 @@ for ratio in [1]: #[0.5,1,1.5,2,2.5]:
     #     mu_j_grad += torch.norm(1/lr * comp_w[i] - 1/lr * swarm_w[1][i])
     #     mu_j_params += torch.norm(comp_w[ )
     
-    
-    
+
     # B_j = [i - swarm_w] 
         
     
     # saving results 
     cwd = os.getcwd()
-    with open(cwd+'/data/fl_acc_test_extreme_noniid_'+str(ratio),'wb') as f:
+    with open(cwd+'/data/fl_acc_extreme_noniid_'+str(ratio),'wb') as f:
         pickle.dump(fl_acc,f)
 
-
+    with open(cwd+'/data/fl_loss_extreme_noniid_'+str(ratio),'wb') as f:
+        pickle.dump(total_loss,f)
+        
 # %% graveyard
 
 #### HN-PFL procedure 
