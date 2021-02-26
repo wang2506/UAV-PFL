@@ -57,7 +57,7 @@ data_source = 'mnist' # delete once argparse is configured
 clusters = 3
 swarms = 3
 
-total_time = 40
+total_time = 120
 swarm_period = 2
 # global_period = 2
 # cycles = 20
@@ -69,7 +69,8 @@ nodes_per_cluster = [np.random.randint(2,6) for i in range(swarms)]
 #labels_set = {i: [] for i in range(nodes)} #randomly determined based on labels_per_node
 
 # labels_per_node (i.e., distribution) changes over time...
-static_lpc = [np.random.randint(1,3) for i in range(swarms)] #static qty of labels per node
+# static_lpc = [np.random.randint(1,3) for i in range(swarms)] #static qty of labels per node
+static_lpc = [1 for i in range(swarms)] #
 # static_lpc = [8 for i in range(swarms)]
 
 static_ls = {i: [] for i in range(swarms)} # actual labels at each node
@@ -322,7 +323,7 @@ for ratio in [1]: #[0.5,1,1.5,2,2.5]:
     
     # saving results 
     cwd = os.getcwd()
-    with open(cwd+'/data/fl_acc_test_noniid_'+str(ratio),'wb') as f:
+    with open(cwd+'/data/fl_acc_test_extreme_noniid_'+str(ratio),'wb') as f:
         pickle.dump(fl_acc,f)
 
 
