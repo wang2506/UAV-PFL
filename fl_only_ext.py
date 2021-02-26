@@ -34,6 +34,10 @@ dataset_train = torchvision.datasets.MNIST('./data/mnist/',train=True,download=F
                                             transform=trans_mnist)
 dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=False,\
                                           transform=trans_mnist)
+
+d_train_fmnist = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False)
+d_test_fmnist = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False)
+
 device = torch.device('cuda:2')
 #device = torch.device('cpu')
 
@@ -188,8 +192,8 @@ lr = 1e-3
 # lr2 = 1e-3
 
 # %% running for all time
-
-for ratio in [0.5,1,1.5,2,2.5]:
+batch_size = 12 #evenly divisible by 3
+for ratio in [1]: #[0.5,1,1.5,2,2.5]:
     global_period = swarm_period*ratio
     cycles = total_time/(swarm_period*global_period)
     # total_time = swarm_period*global_period*cycles
@@ -221,7 +225,7 @@ for ratio in [0.5,1,1.5,2,2.5]:
         uav_counter = 0
         for ind_i,val_i in enumerate(nodes_per_cluster):
             for j in range(val_i): # each uav in i
-                local_obj = LocalUpdate(device,bs=10,lr=lr,epochs=swarm_period,\
+                local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=swarm_period,\
                         dataset=dataset_train,indexes=static_nts[uav_counter])
                 _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
                 
@@ -279,7 +283,7 @@ for ratio in [0.5,1,1.5,2,2.5]:
             total_loss = 0
             for i,ii in enumerate(fl_swarm_models):
                 ii.eval()
-                temp_acc, loss = test_img2(ii,dataset_test,bs=10,\
+                temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
                         indexes=cluster_test_sets[i],device=device)
                 
                 fl_acc_temp += temp_acc * static_data_per_swarm[i] \

@@ -34,6 +34,13 @@ dataset_train = torchvision.datasets.MNIST('./data/mnist/',train=True,download=F
                                             transform=trans_mnist)
 dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=False,\
                                           transform=trans_mnist)
+
+d_train_fmnist = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False)
+d_test_fmnist = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False)
+
+# d_train_cifar10 = torchvision.datasets.CIFAR10('./data/cifar10/',train=True,download=False)
+# d_test_cifar10 = torchvision.datasets.CIFAR10('./data/cifar10',train=False,download=False)
+
 device = torch.device('cuda')
 #device = torch.device('cpu')
 
@@ -48,6 +55,7 @@ for index, (pixels,label) in enumerate(dataset_test):
     test[label].append(index)    
 
 data_source = 'mnist' # delete once argparse is configured
+# data_source = 'fmnist'
 
 # assign datasets to nodes
 clusters = 3
@@ -185,7 +193,8 @@ lr = 1e-4
 lr2 = 1e-4
 
 # %% running for all time
-for ratio in [0.5,1,1.5,2,2.5]:
+batch_size = 12
+for ratio in [1]: #[0.5,1,1.5,2,2.5]:
     global_period = swarm_period*ratio
     cycles = total_time/(swarm_period*global_period)
     # total_time = swarm_period*global_period*cycles
@@ -219,7 +228,7 @@ for ratio in [0.5,1,1.5,2,2.5]:
         uav_counter = 0
         for ind_i,val_i in enumerate(nodes_per_cluster):
             for j in range(val_i): # each uav in i
-                local_obj = LocalUpdate_HF_PFL(device,bs=10,lr1=lr,lr2=lr2,epochs=swarm_period,\
+                local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr1=lr,lr2=lr2,epochs=swarm_period,\
                         dataset=dataset_train,indexes=static_nts[uav_counter])
                 _,w,loss = local_obj.train(net=deepcopy(HF_hn_pfl_swarm_models[ind_i]).to(device))
                 
@@ -281,7 +290,7 @@ for ratio in [0.5,1,1.5,2,2.5]:
                 # print(test_img2(ii,dataset_test,bs=10,indexes=cluster_test_sets[i]))
                 # print(test_img2(ii,dataset_test,bs=10,\
                 #         indexes=cluster_test_sets[i])[0])
-                HF_hn_pfl_acc_temp += test_img2(ii,dataset_test,bs=10,\
+                HF_hn_pfl_acc_temp += test_img2(ii,dataset_test,bs=batch_size,\
                         indexes=cluster_test_sets[i],device=device)[0] * static_data_per_swarm[i] \
                     / sum(static_data_per_swarm)
                 
