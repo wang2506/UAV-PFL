@@ -30,13 +30,15 @@ torch.manual_seed(init_seed)
 # data import and device spec
 trans_mnist = transforms.Compose([transforms.ToTensor(), \
                                   transforms.Normalize((0.1307,),(0.3081,))])
-dataset_train = torchvision.datasets.MNIST('./data/mnist/',train=True,download=False,\
-                                            transform=trans_mnist)
+# dataset_train = torchvision.datasets.MNIST('./data/mnist/',train=True,download=False,\
+#                                             transform=trans_mnist)
 # dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=False,\
 #                                           transform=trans_mnist)
 
-dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False)
-dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False)
+dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False,\
+                                transform=transforms.ToTensor())
+dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
+                                transform=transforms.ToTensor())
 
 device = torch.device('cuda:2')
 #device = torch.device('cpu')

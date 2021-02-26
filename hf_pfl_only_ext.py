@@ -35,8 +35,10 @@ trans_mnist = transforms.Compose([transforms.ToTensor(), \
 # dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=False,\
 #                                           transform=trans_mnist)
 
-dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False)
-dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False)
+dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False,\
+                                transform=transforms.ToTensor())
+dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
+                                transform=transforms.ToTensor())
 
 # d_train_cifar10 = torchvision.datasets.CIFAR10('./data/cifar10/',train=True,download=False)
 # d_test_cifar10 = torchvision.datasets.CIFAR10('./data/cifar10',train=False,download=False)
