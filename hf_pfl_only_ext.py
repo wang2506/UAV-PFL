@@ -71,8 +71,8 @@ nodes_per_cluster = [np.random.randint(2,6) for i in range(swarms)]
 #labels_set = {i: [] for i in range(nodes)} #randomly determined based on labels_per_node
 
 # labels_per_node (i.e., distribution) changes over time...
-# static_lpc = [np.random.randint(1,3) for i in range(swarms)] #static qty of labels per node
-static_lpc = [1 for i in range(swarms)] #static qty of labels per node
+static_lpc = [np.random.randint(1,3) for i in range(swarms)] #static qty of labels per node
+#static_lpc = [1 for i in range(swarms)] #static qty of labels per node
 # static_lpc = [8 for i in range(swarms)]
 
 static_ls = {i: [] for i in range(swarms)} # actual labels at each node
@@ -327,10 +327,10 @@ for ratio in [1]: #[0.5,1,1.5,2,2.5]:
     # saving results 
     cwd = os.getcwd()
     
-    with open(cwd+'/data/hn_pfl_acc_extreme_noniid_'+str(ratio)+'_'+str(data_source),'wb') as f:
+    with open(cwd+'/data/hn_pfl_acc_mild_noniid_'+str(ratio)+'_'+str(data_source),'wb') as f:
         pickle.dump(HF_hn_pfl_acc,f)
 
-    with open(cwd+'/data/hn_pfl_loss_extreme_noniid_'+str(ratio)+'_'+str(data_source),'wb') as f:
+    with open(cwd+'/data/hn_pfl_loss_mild_noniid_'+str(ratio)+'_'+str(data_source),'wb') as f:
         pickle.dump(total_loss,f)
 
 # %% graveyard
