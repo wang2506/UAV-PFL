@@ -362,9 +362,9 @@ class LocalUpdate_HF_PFL(object):
         self.dataset = dataset
         self.indexes = indexes
         self.epochs = epochs
-        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=bs/3,shuffle=True)
-        self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=bs/3,shuffle=True)
-        self.ldr_train3 = DataLoader(segmentdataset(dataset,indexes),batch_size=bs/3,shuffle=True)
+        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        self.ldr_train3 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
         self.loss_func = nn.CrossEntropyLoss()
         
     def train(self,net):
