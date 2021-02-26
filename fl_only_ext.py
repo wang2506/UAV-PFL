@@ -35,10 +35,10 @@ dataset_train = torchvision.datasets.MNIST('./data/mnist/',train=True,download=F
 dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=False,\
                                           transform=trans_mnist)
 
-#dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False,\
-#                                transform=transforms.ToTensor())
-#dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
-#                                transform=transforms.ToTensor())
+# dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False,\
+#                                 transform=transforms.ToTensor())
+# dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
+#                                 transform=transforms.ToTensor())
 
 device = torch.device('cuda:2')
 #device = torch.device('cpu')
@@ -54,13 +54,13 @@ for index, (pixels,label) in enumerate(dataset_test):
     test[label].append(index)    
 
 data_source = 'mnist' # delete once argparse is configured
-#data_source = 'fmnist'
+# data_source = 'fmnist'
 
 # assign datasets to nodes
 clusters = 10
 swarms = 10
 
-total_time = 120
+total_time = 40 #120
 swarm_period = 2
 # global_period = 2
 # cycles = 20
@@ -124,7 +124,7 @@ for save_type in ['extreme','mild','iid']:
     
     # random data qty per label
     # avg_qty = int(len(dataset_train)/(sum(nodes_per_cluster)*total_time))
-    avg_qty = 500
+    avg_qty = 650
     
     # need to determine data per device and total data per swarm
     static_qty = np.random.normal(avg_qty,avg_qty/10,size=(sum(nodes_per_cluster))).astype(int)
@@ -218,8 +218,8 @@ for save_type in ['extreme','mild','iid']:
     
     # %% running for all time
     batch_size = 12 #evenly divisible by 3
-    swarm_period = 1
-    for ratio in [0,1,2,3]: #[0.5,1,1.5,2,2.5]:
+    swarm_period = 2
+    for ratio in [1]: #[0,1,2,3]: #[0.5,1,1.5,2,2.5]:
         if ratio == 0:
             global_period = 1
         else:    
@@ -313,8 +313,11 @@ for save_type in ['extreme','mild','iid']:
                 total_loss_temp = 0
                 for i,ii in enumerate(fl_swarm_models):
                     ii.eval()
-                    temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
-                            indexes=cluster_test_sets[i],device=device)
+                    # temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
+                    #         indexes=cluster_test_sets[i],device=device)
+                        
+                    temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size\
+                            ,device=device)
                     
                     fl_acc_temp += temp_acc * static_data_per_swarm[i] \
                         / sum(static_data_per_swarm)
@@ -348,7 +351,7 @@ for save_type in ['extreme','mild','iid']:
         
     
         # B_j = [i - swarm_w] 
-            
+        
         
         # saving results 
         cwd = os.getcwd()

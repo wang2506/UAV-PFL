@@ -35,10 +35,10 @@ dataset_train = torchvision.datasets.MNIST('./data/mnist/',train=True,download=F
 dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=False,\
                                           transform=trans_mnist)
 
-#dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False,\
-#                                transform=transforms.ToTensor())
-#dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
-#                                transform=transforms.ToTensor())
+# dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False,\
+#                                 transform=transforms.ToTensor())
+# dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
+#                                 transform=transforms.ToTensor())
 
 # d_train_cifar10 = torchvision.datasets.CIFAR10('./data/cifar10/',train=True,download=False)
 # d_test_cifar10 = torchvision.datasets.CIFAR10('./data/cifar10',train=False,download=False)
@@ -57,7 +57,7 @@ for index, (pixels,label) in enumerate(dataset_test):
     test[label].append(index)    
 
 data_source = 'mnist' # delete once argparse is configured
-#data_source = 'fmnist'
+# data_source = 'fmnist'
 
 # assign datasets to nodes
 clusters = 10#3
@@ -74,7 +74,7 @@ nodes_per_cluster = [np.random.randint(2,6) for i in range(swarms)]
 
 # labels_per_node (i.e., distribution) changes over time...
 
-for save_type in ['mild']: #['extreme','mild','iid']:
+for save_type in ['extreme','mild','iid']:
     if save_type == 'extreme':
         static_lpc = [1 for i in range(swarms)] #static qty of labels per node
     elif save_type == 'mild':
@@ -126,7 +126,7 @@ for save_type in ['mild']: #['extreme','mild','iid']:
     
     # random data qty per label
     # avg_qty = int(len(dataset_train)/(sum(nodes_per_cluster)*total_time))
-    avg_qty = 500
+    avg_qty = 650
     
     # need to determine data per device and total data per swarm
     static_qty = np.random.normal(avg_qty,avg_qty/10,size=(sum(nodes_per_cluster))).astype(int)
@@ -220,8 +220,8 @@ for save_type in ['mild']: #['extreme','mild','iid']:
     # %% running for all time
     batch_size = 12
     
-    swarm_period = 1
-    for ratio in [0,1,2,3]: #[0.5,1,1.5,2,2.5]:
+    swarm_period = 2
+    for ratio in [1]: #[0,1,2,3]: #[0.5,1,1.5,2,2.5]:
         if ratio == 0:
             global_period = 1
         else:    
@@ -322,9 +322,12 @@ for save_type in ['mild']: #['extreme','mild','iid']:
                     # print(test_img2(ii,dataset_test,bs=10,indexes=cluster_test_sets[i]))
                     # print(test_img2(ii,dataset_test,bs=10,\
                     #         indexes=cluster_test_sets[i])[0])
-                    temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
-                            indexes=cluster_test_sets[i],device=device)
+                    # temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
+                    #         indexes=cluster_test_sets[i],device=device)
                     
+                    temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
+                            device=device)                    
+                        
                     HF_hn_pfl_acc_temp += temp_acc * static_data_per_swarm[i] \
                         / sum(static_data_per_swarm)
                     
