@@ -30,10 +30,10 @@ torch.manual_seed(init_seed)
 # data import and device spec
 trans_mnist = transforms.Compose([transforms.ToTensor(), \
                                   transforms.Normalize((0.1307,),(0.3081,))])
-# dataset_train = torchvision.datasets.MNIST('./data/mnist/',train=True,download=False,\
-#                                             transform=trans_mnist)
-# dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=False,\
-#                                           transform=trans_mnist)
+dataset_train = torchvision.datasets.MNIST('./data/mnist/',train=True,download=False,\
+                                            transform=trans_mnist)
+dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=False,\
+                                          transform=trans_mnist)
 
 dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False,\
                                 transform=transforms.ToTensor())
@@ -74,7 +74,7 @@ nodes_per_cluster = [np.random.randint(2,6) for i in range(swarms)]
 
 # labels_per_node (i.e., distribution) changes over time...
 
-for save_type in ['extreme','mild','iid']:
+for save_type in ['mild']: #['extreme','mild','iid']:
     if save_type == 'extreme':
         static_lpc = [1 for i in range(swarms)] #static qty of labels per node
     elif save_type == 'mild':
@@ -219,8 +219,14 @@ for save_type in ['extreme','mild','iid']:
     
     # %% running for all time
     batch_size = 12
-    for ratio in [1]: #[0.5,1,1.5,2,2.5]:
-        global_period = swarm_period*ratio
+    
+    swarm_period = 1
+    for ratio in [0,1,2,3]: #[0.5,1,1.5,2,2.5]:
+        if ratio == 0:
+            global_period = 1
+        else:    
+            global_period = swarm_period*ratio
+            
         cycles = total_time/(swarm_period*global_period)
         # total_time = swarm_period*global_period*cycles
         
@@ -335,23 +341,29 @@ for save_type in ['extreme','mild','iid']:
         cwd = os.getcwd()
         
         if save_type == 'extreme':
-            with open(cwd+'/data/hn_pfl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source),'wb') as f:
+            with open(cwd+'/data/hn_pfl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
                 pickle.dump(HF_hn_pfl_acc,f)
         
-            with open(cwd+'/data/hn_pfl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source),'wb') as f:
+            with open(cwd+'/data/hn_pfl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
                 pickle.dump(total_loss,f)
                 
         elif save_type == 'mild':
-            with open(cwd+'/data/hn_pfl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source),'wb') as f:
+            with open(cwd+'/data/hn_pfl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
                 pickle.dump(HF_hn_pfl_acc,f)
         
-            with open(cwd+'/data/hn_pfl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source),'wb') as f:
+            with open(cwd+'/data/hn_pfl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
                 pickle.dump(total_loss,f)
         else:
-            with open(cwd+'/data/hn_pfl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source),'wb') as f:
+            with open(cwd+'/data/hn_pfl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
                 pickle.dump(HF_hn_pfl_acc,f)
         
-            with open(cwd+'/data/hn_pfl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source),'wb') as f:
+            with open(cwd+'/data/hn_pfl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
                 pickle.dump(total_loss,f)
         
 
