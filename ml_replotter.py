@@ -24,7 +24,7 @@ save_loc = cwd+'/ml_plots/'
 data_loc = cwd+'/data/'
 
 data_source = 'mnist'
-# data_source = 'fmnist'
+data_source = 'fmnist'
 
 # %% plot 1 fl vs pfl extreme nonidd comparison
 # static ratio - 1,1 at taus1=taus2=2
@@ -45,15 +45,17 @@ for iid_style in ['extreme','mild']: #'iid' crashed on frankie for some reason..
 
 ## subplots method with iid, mild, extreme 
 plt.figure(1)
-f,ax = plt.subplots(1,3,figsize=(10,6))
+f,ax = plt.subplots(1,3,figsize=(10,6),sharey=True)
 
-ind = 0
-ax[ind].plot(total_fl_accs[ind],label='fl_acc',marker='x',color='forestgreen',linestyle='dashed')
+ind = 0 #[1:20]; [:19]
+ax[ind].plot(total_fl_accs[ind][1:],label='fl_acc',marker='x',color='forestgreen',linestyle='dashed')
 ax[ind].plot(total_pfl_accs[ind],label='pfl acc',marker='o',color='darkblue',linestyle='dashed')
+ax[ind].set_title('extreme noniid')
 
 ind = 1
-ax[ind].plot(total_fl_accs[ind],label='fl_acc',marker='x',color='forestgreen',linestyle='dashed')
-ax[ind].plot(total_pfl_accs[ind],label='pfl acc',marker='o',color='darkblue',linestyle='dashed')
+ax[ind].plot(total_fl_accs[ind][1:20],label='fl_acc',marker='x',color='forestgreen',linestyle='dashed')
+ax[ind].plot(total_pfl_accs[ind][:19],label='pfl acc',marker='o',color='darkblue',linestyle='dashed')
+ax[ind].set_title('moderate noniid')
 
 
 

@@ -214,8 +214,8 @@ for save_type in ['extreme','mild','iid']:
     
     
     ## ovr ML params setup
-    lr = 1e-4
-    lr2 = 1e-4
+    lr = 1e-5 #1e-4 previously
+    lr2 = 1e-5
     
     # %% running for all time
     batch_size = 12
