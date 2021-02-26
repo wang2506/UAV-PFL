@@ -322,12 +322,9 @@ for save_type in ['extreme','mild','iid']:
                     # print(test_img2(ii,dataset_test,bs=10,indexes=cluster_test_sets[i]))
                     # print(test_img2(ii,dataset_test,bs=10,\
                     #         indexes=cluster_test_sets[i])[0])
-                    # temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
-                    #         indexes=cluster_test_sets[i],device=device)
-                    
                     temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
-                            device=device)                    
-                        
+                            indexes=cluster_test_sets[i],device=device)                   
+                    
                     HF_hn_pfl_acc_temp += temp_acc * static_data_per_swarm[i] \
                         / sum(static_data_per_swarm)
                     

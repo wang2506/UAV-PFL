@@ -313,12 +313,9 @@ for save_type in ['extreme','mild','iid']:
                 total_loss_temp = 0
                 for i,ii in enumerate(fl_swarm_models):
                     ii.eval()
-                    # temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
-                    #         indexes=cluster_test_sets[i],device=device)
-                        
-                    temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size\
-                            ,device=device)
-                    
+                    temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
+                            indexes=cluster_test_sets[i],device=device)
+
                     fl_acc_temp += temp_acc * static_data_per_swarm[i] \
                         / sum(static_data_per_swarm)
                     total_loss_temp += loss * static_data_per_swarm[i] \
