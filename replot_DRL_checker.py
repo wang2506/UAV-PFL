@@ -22,7 +22,7 @@ cwd = os.getcwd()
 #     data = pickle.load(f)
 ep_start = 0.7
 
-with open(cwd+'/data/0_'+str(ep_start)+'_rewardtest_ALI','rb') as f:
+with open(cwd+'/data/0_'+str(ep_start)+'_rewardtest_large','rb') as f:
     data = pickle.load(f)
 
 # plot average reward per 10 iterations
@@ -31,7 +31,7 @@ with open(cwd+'/data/0_'+str(ep_start)+'_rewardtest_ALI','rb') as f:
 data_fixer = moving_average(data,1000)
 
 plt.figure()
-plt.plot(data_fixer[:])
+plt.plot(data_fixer[:10000])
 plt.title('moving avg 1000, reward, ep_start='+str(ep_start))
     # plt.xlabel('10th iterations instance')
     # plt.ylabel('average reward over the latest 10 iterations')
@@ -39,7 +39,7 @@ plt.title('moving avg 1000, reward, ep_start='+str(ep_start))
 
 
 # plots for battery
-with open(cwd+'/data/0_'+str(ep_start)+'_batterytest_ALI','rb') as f:
+with open(cwd+'/data/0_'+str(ep_start)+'_batterytest_large','rb') as f:
     data_b = pickle.load(f)
 
 data_b2 = [mean(i) for i in data_b]
@@ -49,7 +49,7 @@ data_b2_2 = [i[1] for i in data_b]
 data_b2 = moving_average(data_b2,1000)
 
 plt.figure(2)
-plt.plot(data_b2)
+plt.plot(data_b2[:10000])
 plt.title('moving avg 1000, avg battery levels,'+str(ep_start))
 
 # plt.figure(3)

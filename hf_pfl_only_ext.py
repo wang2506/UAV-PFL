@@ -65,7 +65,7 @@ swarms = 10#3
 swarm_period = 2#5
 # global_period = 2
 # cycles = 10
-total_time = 120 #swarm_period*global_period*cycles
+total_time = 40 #120 #swarm_period*global_period*cycles
 
 nodes_per_cluster = [np.random.randint(2,6) for i in range(swarms)]
 
@@ -74,7 +74,7 @@ nodes_per_cluster = [np.random.randint(2,6) for i in range(swarms)]
 
 # labels_per_node (i.e., distribution) changes over time...
 
-for save_type in ['extreme','mild','iid']:
+for save_type in ['mild']: #['extreme','mild','iid']:
     if save_type == 'extreme':
         static_lpc = [1 for i in range(swarms)] #static qty of labels per node
     elif save_type == 'mild':
@@ -220,8 +220,8 @@ for save_type in ['extreme','mild','iid']:
     # %% running for all time
     batch_size = 12
     
-    swarm_period = 2
-    for ratio in [1]: #[0,1,2,3]: #[0.5,1,1.5,2,2.5]:
+    swarm_period = 1
+    for ratio in [0,1,2,4]: #[0.5,1,1.5,2,2.5]:
         if ratio == 0:
             global_period = 1
         else:    
@@ -314,7 +314,8 @@ for save_type in ['extreme','mild','iid']:
             
             ## for clarity, splitting this outside of the other if-else statement
             ## evaluate model performance
-            if (t+1) % (swarm_period*global_period) == 0:
+            # if (t+1) % (swarm_period*global_period) == 0:
+            if True: #every iteration
                 HF_hn_pfl_acc_temp = 0
                 total_loss_temp = 0
                 for i,ii in enumerate(HF_hn_pfl_swarm_models):
