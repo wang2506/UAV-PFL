@@ -220,11 +220,15 @@ for save_type in ['mild']: #['extreme','mild','iid']:
     batch_size = 12 #evenly divisible by 3
     
     swarm_period = 1
-    for ratio in [0,1,2,4]: #[0.5,1,1.5,2,2.5]:
+    global_period = 1
+    for ratio in [2,4]: #[0.5,1,1.5,2,2.5]:
         if ratio == 0:
-            global_period = 1
+            # global_period = 1
+            swarm_period = 1
         else:    
+            # global_period = swarm_period*ratio
             global_period = swarm_period*ratio
+            
         cycles = total_time/(swarm_period*global_period)
         # total_time = swarm_period*global_period*cycles
     
