@@ -35,15 +35,15 @@ dataset_train = torchvision.datasets.MNIST('./data/mnist/',train=True,download=F
 dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=False,\
                                           transform=trans_mnist)
 
-dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False,\
-                                transform=transforms.ToTensor())
-dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
-                                transform=transforms.ToTensor())
+# dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False,\
+#                                 transform=transforms.ToTensor())
+# dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
+#                                 transform=transforms.ToTensor())
 
 # d_train_cifar10 = torchvision.datasets.CIFAR10('./data/cifar10/',train=True,download=False)
 # d_test_cifar10 = torchvision.datasets.CIFAR10('./data/cifar10',train=False,download=False)
 
-device = torch.device('cuda')
+device = torch.device('cuda:1')
 #device = torch.device('cpu')
 
 # %% filtering the ML data
@@ -57,7 +57,7 @@ for index, (pixels,label) in enumerate(dataset_test):
     test[label].append(index)    
 
 data_source = 'mnist' # delete once argparse is configured
-data_source = 'fmnist'
+# data_source = 'fmnist'
 
 # assign datasets to nodes
 clusters = 10#3
@@ -65,7 +65,7 @@ swarms = 10#3
 swarm_period = 2#5
 # global_period = 2
 # cycles = 10
-total_time = 40 #120 #swarm_period*global_period*cycles
+total_time = 120 #swarm_period*global_period*cycles
 
 nodes_per_cluster = [np.random.randint(2,6) for i in range(swarms)]
 
@@ -74,7 +74,7 @@ nodes_per_cluster = [np.random.randint(2,6) for i in range(swarms)]
 
 # labels_per_node (i.e., distribution) changes over time...
 
-for save_type in ['mild']: #['extreme','mild','iid']:
+for save_type in ['extreme','mild']: #['extreme','mild','iid']:
     if save_type == 'extreme':
         static_lpc = [1 for i in range(swarms)] #static qty of labels per node
     elif save_type == 'mild':
@@ -222,13 +222,13 @@ for save_type in ['mild']: #['extreme','mild','iid']:
     
     swarm_period = 1
     global_period = 1
-    for ratio in [2,4]: #[0.5,1,1.5,2,2.5]:
+    for ratio in [1,2,4]: #[0.5,1,1.5,2,2.5]:
         if ratio == 0:
-#            global_period = 1
-            swarm_period = 1
+            global_period = 1
+            # swarm_period = 1
         else:    
-#            global_period = swarm_period*ratio
-            swarm_period = global_period*ratio
+            global_period = swarm_period*ratio
+            # swarm_period = global_period*ratio
             
         cycles = total_time/(swarm_period*global_period)
         # total_time = swarm_period*global_period*cycles

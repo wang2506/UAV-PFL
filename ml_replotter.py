@@ -85,7 +85,7 @@ leg1 = ax[0].legend(h[:],l[:],bbox_to_anchor=(0.8,1.05,1.5,0.2),\
 ax[0].add_artist(leg1)
 plt.subplots_adjust(top=0.8,wspace=0.05,hspace=0.15)
 
-
+plt.savefig(str(data_source)+'2_2_ratio_1.png',dpi=500)
 # %% plot 2 ratio plots with taus1 = 1
 
 
