@@ -581,7 +581,6 @@ Ts = [180,220,260]
 taus1 = [1,2]
 taus2 = [1,2]
 ## TODO: swarm battery plots
-## git
 # saving some plots for debugging
 fig_no = 0
 cwd = os.getcwd()
@@ -794,15 +793,15 @@ for e in range(episodes):
             
             # save data
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'reward'\
-                      +'test_large','wb') as f:
+                      +'test_large'+'_'+str(args.g_discount),'wb') as f:
                 pk.dump(reward_storage,f)
             
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'battery'\
-                      +'test_large','wb') as f:
+                      +'test_large'+'_'+str(args.g_discount),'wb') as f:
                 pk.dump(battery_storage,f)
             
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'all_states'\
-                      +'test_large','wb') as f:
+                      +'test_large'+'_'+str(args.g_discount),'wb') as f:
                 pk.dump(state_save,f)
                 
             # with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small_states','wb') as f:
