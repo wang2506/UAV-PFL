@@ -52,11 +52,11 @@ parser.add_argument('--recharge_points',type=int, default=2,\
 
 ## RL probs (epsilon and gamma)
 parser.add_argument('--ep_greed',type=float,default=0.7,\
-                    help='epsilon greedy val')
+                    help='epsilon greedy val') #0.6,0.7,0.8
 parser.add_argument('--ep_min',type=float,default=0.005,\
                     help='epsilon minimum')
 parser.add_argument('--g_discount',type=float,default=0.7,\
-                    help='gamma discount factor')
+                    help='gamma discount factor') #0.6,0.7,0.8
 parser.add_argument('--replay_bs',type=int,default=20,\
                     help='experience replay batch size')
 parser.add_argument('--linear',type=bool,default=True,\
@@ -65,7 +65,7 @@ parser.add_argument('--cnn_range',type=int, default=2,\
                     help='conv1d range')
 
 # ovr parameters
-parser.add_argument('--G_timesteps',type=int,default=20000,\
+parser.add_argument('--G_timesteps',type=int,default=10000,\
                     help='number of swarm movements') #
 parser.add_argument('--training',type=int,default=1,\
                     help='training or testing the DRL')
@@ -341,7 +341,8 @@ test_DQN.target_network.summary()
 # %% function to calculate rewards
 
 def reward_state_calc(test_DQN,current_state,current_action,current_action_space,\
-        cluster_expectations,cluster_limits,min_battery_levels,historical_results):
+        cluster_expectations,cluster_limits,min_battery_levels,historical_results,\
+        travel_energy,current_swarm_pos):
     
     ## calculate current_state + current_action expected gain  
 
@@ -408,6 +409,8 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     current_reward = 0
     for i,j in enumerate(new_positions): #next_state_set 
         # print(i,j)
+        # travel cost
+        battery_status[i] -= travel_energy[current_swarm_pos[i],j]
         
         ## filter for device cluster or recharge station
         if j < 8: #len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
@@ -425,7 +428,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
                 current_reward += reward_vec[i] #from gradient
                 
         else: #it is a recharge station
-            battery_status[i] = 500 #100 #reset to 100%
+            battery_status[i] = 2000 #100 #reset to 100%
 
         #previously was cluster_expectations[j] * next_state_visits[j]
         next_state_visits[j] = 0 # zero out since now it will be visited
@@ -474,7 +477,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     
     print(next_state_set)
 
-    return current_reward, next_state_set
+    return current_reward, next_state_set, new_positions
 
 
 # %% function to calculate action space
@@ -530,9 +533,46 @@ action_space = action_space_calc(list(range(args.Clusters + args.recharge_points
 cluster_expectations = 20*np.random.rand(args.Clusters)
 cluster_limits = 3*cluster_expectations
 
+# calculate real movement costs from cluster to cluster to recharge station
+min_dist = 200 #meters
+max_dist = 400 #1km
+# speed = 5000 #5km/hr
+scaling = 0.1
 
+min_speed_uav = 5 #m/s -> 0.5/1000 * 60 * 60 km/h
+seconds_conversion = 2 #5
+air_density = 1.225 
+zero_lift_drag_max = 0.0378 #based on sopwith camel 
+zero_lift_breakpoint = 0.0269
+zero_lift_drag_min = 0.0161 #based on p-51 mustang
+wing_area_max = 3 #m^2
+wing_area_breakpoint = 1.75
+wing_area_min = 0.5
+oswald_eff = 0.8 #0.7 to 0.85
+aspect_ratio = 4.5 #2 to 7 
+weight_max = 10 #kg
+weight_breakpoint = 5.05
+weight_min = 0.1 #100g
+kg_newton = 9.8 
+
+
+c1 = 0.5 * air_density * (zero_lift_breakpoint +\
+    (zero_lift_drag_max-zero_lift_breakpoint)*np.random.rand()) * \
+    (wing_area_breakpoint + (wing_area_max - wing_area_breakpoint)*np.random.rand())
+
+c2 = 2 * (weight_breakpoint + (weight_max - weight_breakpoint)*np.random.rand())**2 \
+    / (np.pi * oswald_eff * (wing_area_breakpoint + \
+    (wing_area_max - wing_area_breakpoint)*np.random.rand()) * air_density**3 )   
+
+move_dists = min_dist + (max_dist-min_dist)*\
+    np.random.rand(args.Clusters+args.recharge_points,args.Clusters+args.recharge_points)
+
+temp_energy = scaling * move_dists/min_speed_uav * (c1 * (min_speed_uav**3) + c2/min_speed_uav)
+
+
+## return to prev
 cluster_bat_drain = np.array([3,5,5,6,2,1])
-init_battery_levels = (500* np.ones(args.U_swarms)).tolist() #70600
+init_battery_levels = (2000* np.ones(args.U_swarms)).tolist() #70600
 max_battery_levels = deepcopy(init_battery_levels)
 
 min_battery_levels = (200*np.ones(args.U_swarms)).tolist() # initialize full battery
@@ -562,10 +602,13 @@ for e in range(episodes):
     init_last_visit = np.ones(args.Clusters) # building the last visit structure
     
     temp_C_set = list(range(args.Clusters))
+    init_swarm_pos = [ ]
     for i,j in enumerate(test_DQN.U):
         init_rng_index = np.random.randint(0,len(temp_C_set))
         # init_state_set.append(temp_C_set[init_rng_index]) #populates swarm pos
         init_last_visit[temp_C_set[init_rng_index]] = 0
+        
+        init_swarm_pos.append(init_rng_index)
         
         del temp_C_set[init_rng_index]
     
@@ -601,9 +644,9 @@ for e in range(episodes):
                 # rewards, state_set = reward_state_calc(test_DQN,init_state_set,action_set,\
                 #                 action_space,cluster_expectations,cluster_limits,\
                 #                     cluster_bat_drain)
-                rewards, state_set = reward_state_calc(test_DQN,init_state_set,action_set,\
-                    action_space,cluster_expectations,cluster_limits,\
-                    min_battery_levels,historical_results)
+                rewards, state_set,next_swarm_pos = reward_state_calc(test_DQN,init_state_set,\
+                    action_set,action_space,cluster_expectations,cluster_limits,\
+                    min_battery_levels,historical_results,temp_energy, init_swarm_pos)
                 # cluster exepectatiosn + cluster limits are the model drift factors
                 
                     
@@ -617,9 +660,9 @@ for e in range(episodes):
                 action_set = test_DQN.calc_action(state=current_state_set, \
                                                   args=args,ep_greed =ep_greed)
                 
-                rewards, state_set = reward_state_calc(test_DQN,current_state_set,action_set,\
-                    action_space,cluster_expectations,cluster_limits,\
-                    min_battery_levels,historical_results) # cluster_bat_drain)
+                rewards, state_set,next_swarm_pos = reward_state_calc(test_DQN,current_state_set,\
+                    action_set,action_space,cluster_expectations,cluster_limits,\
+                    min_battery_levels,historical_results,temp_energy,next_swarm_pos) # cluster_bat_drain)
                 
                 ## store experiences
                 test_DQN.store(current_state_set,action_set,rewards,state_set)
@@ -751,15 +794,15 @@ for e in range(episodes):
             
             # save data
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'reward'\
-                      +'test_small','wb') as f:
+                      +'test_large','wb') as f:
                 pk.dump(reward_storage,f)
             
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'battery'\
-                      +'test_small','wb') as f:
+                      +'test_large','wb') as f:
                 pk.dump(battery_storage,f)
             
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'all_states'\
-                      +'test_small','wb') as f:
+                      +'test_large','wb') as f:
                 pk.dump(state_save,f)
                 
             # with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small_states','wb') as f:
