@@ -222,13 +222,13 @@ for save_type in ['mild']: #['extreme','mild','iid']:
     
     swarm_period = 1
     global_period = 1
-    for ratio in [2,4]: #[0.5,1,1.5,2,2.5]:
+    for ratio in [1,2,4]: #[0.5,1,1.5,2,2.5]:
         if ratio == 0:
-            # global_period = 1
-            swarm_period = 1
+            global_period = 1
+            # swarm_period = 1
         else:    
-            # global_period = swarm_period*ratio
             global_period = swarm_period*ratio
+            # swarm_period = global_period*ratio
             
         cycles = total_time/(swarm_period*global_period)
         # total_time = swarm_period*global_period*cycles
@@ -317,8 +317,8 @@ for save_type in ['mild']: #['extreme','mild','iid']:
             
             ## for clarity, splitting this outside of the other if-else statement
             ## evaluate model performance
-            # if (t+1) % (swarm_period*global_period) == 0:
-            if True: #every iteration
+            if (t+1) % (swarm_period*global_period) == 0:
+            # if True: #every iteration
                 HF_hn_pfl_acc_temp = 0
                 total_loss_temp = 0
                 for i,ii in enumerate(HF_hn_pfl_swarm_models):
