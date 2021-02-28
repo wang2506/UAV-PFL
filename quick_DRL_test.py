@@ -403,10 +403,12 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     index_counter = 0
     for i,j in enumerate(reward_vec):
         if new_positions[i] < 8:
-            reward_vec[i] = 1000*10/ historical_data[index_counter][0][-1]
+            # reward_vec[i] = 1000*10/ historical_data[index_counter][0][-1] #1000*10
+            reward_vec[i] = historical_data[index_counter][0][-1]
             index_counter += 1
     
     current_reward = 0
+    cluster_bat_drains = 0
     for i,j in enumerate(new_positions): #next_state_set 
         # print(i,j)
         # travel cost
@@ -415,6 +417,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
         ## filter for device cluster or recharge station
         if j < 8: #len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
             battery_status[i] -= cluster_bat_drain[i] #[j] # drain by cluster needs
+            cluster_bat_drains += cluster_bat_drain[i]
             
             ## reward function calculated based on elapsed time x cluster factor
             if battery_status[i] > min_battery_levels[i] :#0: #min thresh
@@ -433,6 +436,8 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
         #previously was cluster_expectations[j] * next_state_visits[j]
         next_state_visits[j] = 0 # zero out since now it will be visited
     
+    #c1= c2, c3 =0.1 , C is 50
+    current_reward = 1e6/(1*current_reward + 0.1*cluster_bat_drains)
     
     ## calculate penalty for not visiting certain nodes (25% of their nominal value)
     penalty = 0
@@ -451,10 +456,12 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
                 penalty += j * 0.5* cluster_expectations[i]    
     
     # check for battery failures (cannot afford to lose any UAVs)
+    # bat_penalty = 0
     for i,j in enumerate(battery_status):
         if j < min_battery_levels[i]: #0:
             penalty += 1000 #20000
-    
+            # bat_penalty = 1000
+            
     current_reward -= penalty
     
     ## calculate the next state
@@ -793,15 +800,15 @@ for e in range(episodes):
             
             # save data
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'reward'\
-                      +'test_large'+'_'+str(args.g_discount),'wb') as f:
+                      +'test_large'+'_'+str(args.g_discount)+'_ALI','wb') as f:
                 pk.dump(reward_storage,f)
             
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'battery'\
-                      +'test_large'+'_'+str(args.g_discount),'wb') as f:
+                      +'test_large'+'_'+str(args.g_discount)+'_ALI','wb') as f:
                 pk.dump(battery_storage,f)
             
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'all_states'\
-                      +'test_large'+'_'+str(args.g_discount),'wb') as f:
+                      +'test_large'+'_'+str(args.g_discount)+'_ALI','wb') as f:
                 pk.dump(state_save,f)
                 
             # with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small_states','wb') as f:
