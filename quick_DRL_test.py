@@ -66,13 +66,13 @@ parser.add_argument('--cnn_range',type=int, default=2,\
 
 # ovr parameters
 parser.add_argument('--G_timesteps',type=int,default=10000,\
-                    help='number of swarm movements') #
+                    help='number of swarm movements') #10,000
 parser.add_argument('--training',type=int,default=1,\
                     help='training or testing the DRL')
 parser.add_argument('--centralized',type=bool,default=True,\
                     help='centralized or decentralized')
-parser.add_argument('--DQN_update_period',type=int,default=50,\
-                    help='DQN update period')
+parser.add_argument('--DQN_update_period',type=int,default=10,\
+                    help='DQN update period') #50
 #8,3,2,4,2,2
 
 args = parser.parse_args()
@@ -437,27 +437,8 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
         #previously was cluster_expectations[j] * next_state_visits[j]
         next_state_visits[j] = 0 # zero out since now it will be visited
     
-    #c1= c2, c3 =0.1 , C is 50
-    grad_decay = 0
-    for i,j in enumerate(next_state_visits):
-        if i < len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
-            
-            # if j * 0.25 * cluster_expectations[i] > 0.5 * cluster_limits[i]:
-            #     penalty += 0.5* cluster_limits[i]
-            # else:
-            #     penalty += j * 0.25 * cluster_expectations[i]
-    
-            if j * 0.5* cluster_expectations[i] > 0.5*cluster_limits[i]:
-                grad_decay += cluster_limits[i]
-            else:
-                grad_decay += j * 0.5* cluster_expectations[i]
-    
-    current_reward = 1e4/(0.05*current_reward + 0.2*grad_decay + 0.005*cluster_bat_drains)
-    
-    ## calculate penalty for not visiting certain nodes (25% of their nominal value)
-    penalty = 0
-    
-    # # old DRL reward calc 
+    # #c1= c2, c3 =0.1 , C is 50
+    # grad_decay = 0
     # for i,j in enumerate(next_state_visits):
     #     if i < len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
             
@@ -467,9 +448,28 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     #         #     penalty += j * 0.25 * cluster_expectations[i]
     
     #         if j * 0.5* cluster_expectations[i] > 0.5*cluster_limits[i]:
-    #             penalty += cluster_limits[i]
+    #             grad_decay += cluster_limits[i]
     #         else:
-    #             penalty += j * 0.5* cluster_expectations[i]
+    #             grad_decay += j * 0.5* cluster_expectations[i]
+    
+    # current_reward = 1e4/(0.05*current_reward + 0.2*grad_decay + 0.005*cluster_bat_drains)
+    
+    ## calculate penalty for not visiting certain nodes (25% of their nominal value)
+    penalty = 0
+    
+    # old DRL reward calc 
+    for i,j in enumerate(next_state_visits):
+        if i < len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
+            
+            # if j * 0.25 * cluster_expectations[i] > 0.5 * cluster_limits[i]:
+            #     penalty += 0.5* cluster_limits[i]
+            # else:
+            #     penalty += j * 0.25 * cluster_expectations[i]
+    
+            if j * 0.5* cluster_expectations[i] > 0.5*cluster_limits[i]:
+                penalty += cluster_limits[i]
+            else:
+                penalty += j * 0.5* cluster_expectations[i]
     
     # check for battery failures (cannot afford to lose any UAVs)
     # bat_penalty = 0
@@ -609,6 +609,8 @@ fig_no = 0
 cwd = os.getcwd()
 state_set_all = []
 
+freq_visits = {e:np.zeros(args.Clusters+args.recharge_points) for e in range(args.G_timesteps)}
+
 ## full loop beginning
 for e in range(episodes):
     ## calculate and build a set of states for the UAV swarms
@@ -659,9 +661,11 @@ for e in range(episodes):
             ep_greed = np.max([args.ep_min, args.ep_greed*(1-10**(-3))**timestep])
             
             if timestep == 0:
+                freq_visits[timestep] = np.array(init_state_set[-13:3])
+                
                 action_set = test_DQN.calc_action(state=init_state_set, \
                                                   args=args,ep_greed =ep_greed)
-                # map action_set to a movement
+                # map action_set to a movement                
                 
                 # rewards, state_set = reward_state_calc(test_DQN,init_state_set,action_set,\
                 #                 action_space,cluster_expectations,cluster_limits,\
@@ -671,13 +675,14 @@ for e in range(episodes):
                     min_battery_levels,historical_results,temp_energy, init_swarm_pos)
                 # cluster exepectatiosn + cluster limits are the model drift factors
                 
-                    
-                    
                 ## store experiences
                 test_DQN.store(init_state_set,action_set,rewards,state_set)
                 
             else:
                 current_state_set = deepcopy(state_set)
+                
+                freq_visits[timestep] = freq_visits[timestep-1] + \
+                    np.array(current_state_set[-13:3])
                 
                 action_set = test_DQN.calc_action(state=current_state_set, \
                                                   args=args,ep_greed =ep_greed)
@@ -800,7 +805,7 @@ for e in range(episodes):
         
         
         if timestep % 100 == 0:
-            print(test_DQN.q_net.get_weights()[-1])
+            # print(test_DQN.q_net.get_weights()[-1])
             
             plt.figure(fig_no) # plot reward change over time - move this to separate file later
             
@@ -816,20 +821,24 @@ for e in range(episodes):
             
             # save data
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'reward'\
-                      +'test_large'+'_'+str(args.g_discount)+'_ALI','wb') as f:
+                      +'test_large'+'_'+str(args.g_discount)+'_extra','wb') as f:
                 pk.dump(reward_storage,f)
             #
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'battery'\
-                      +'test_large'+'_'+str(args.g_discount)+'_ALI','wb') as f:
+                      +'test_large'+'_'+str(args.g_discount)+'_extra','wb') as f:
                 pk.dump(battery_storage,f)
             
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'all_states'\
-                      +'test_large'+'_'+str(args.g_discount)+'_ALI','wb') as f:
+                      +'test_large'+'_'+str(args.g_discount)+'_extra','wb') as f:
                 pk.dump(state_save,f)
-                
+            
+            with open(cwd+'/data/'+str(args.ep_greed)+'_'+'visit_freq_large'+\
+                      '_'+str(args.g_discount),'wb') as f:
+                pk.dump(freq_visits,f)
+            
             # with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small_states','wb') as f:
             #     pk.dump(state_set_all,f)
-            print(time.time()-start)
+            # print(time.time()-start)
             
             
             
