@@ -404,8 +404,8 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     for i,j in enumerate(reward_vec):
         if new_positions[i] < 8:
             ## this previous working result
-            # reward_vec[i] = 1000*10/ historical_data[index_counter][0][-1] #1000*10
-            reward_vec[i] = historical_data[index_counter][0][-1]
+            reward_vec[i] = 1000*60/ historical_data[index_counter][0][-1] #1000*10
+            # reward_vec[i] = historical_data[index_counter][0][-1]
             index_counter += 1
     
     current_reward = 0
@@ -821,18 +821,18 @@ for e in range(episodes):
             
             # save data
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'reward'\
-                      +'test_large'+'_'+str(args.g_discount)+'_extra','wb') as f:
+                      +'test_large'+'_'+str(args.g_discount),'wb') as f:
                 pk.dump(reward_storage,f)
-            #
+            #+'_extra'
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'battery'\
-                      +'test_large'+'_'+str(args.g_discount)+'_extra','wb') as f:
+                      +'test_large'+'_'+str(args.g_discount),'wb') as f:
                 pk.dump(battery_storage,f)
             
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'all_states'\
-                      +'test_large'+'_'+str(args.g_discount)+'_extra','wb') as f:
+                      +'test_large'+'_'+str(args.g_discount),'wb') as f:
                 pk.dump(state_save,f)
             
-            with open(cwd+'/data/'+str(args.ep_greed)+'_'+'visit_freq_large'+\
+            with open(cwd+'/data/original'+str(args.ep_greed)+'_'+'visit_freq_large'+\
                       '_'+str(args.g_discount),'wb') as f:
                 pk.dump(freq_visits,f)
             
