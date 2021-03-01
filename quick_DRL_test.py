@@ -437,7 +437,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
         next_state_visits[j] = 0 # zero out since now it will be visited
     
     #c1= c2, c3 =0.1 , C is 50
-    # current_reward = 1e5/(2*current_reward + 0.1*cluster_bat_drains)
+    current_reward = 1e5/(2*current_reward + 0.1*cluster_bat_drains)
     
     ## calculate penalty for not visiting certain nodes (25% of their nominal value)
     penalty = 0
@@ -801,15 +801,15 @@ for e in range(episodes):
             
             # save data
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'reward'\
-                      +'test_large'+'_'+str(args.g_discount)+'_ALI','wb') as f:
+                      +'test_large'+'_'+str(args.g_discount),'wb') as f:
                 pk.dump(reward_storage,f)
-            
+            #+'_ALI'
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'battery'\
-                      +'test_large'+'_'+str(args.g_discount)+'_ALI','wb') as f:
+                      +'test_large'+'_'+str(args.g_discount),'wb') as f:
                 pk.dump(battery_storage,f)
             
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'all_states'\
-                      +'test_large'+'_'+str(args.g_discount)+'_ALI','wb') as f:
+                      +'test_large'+'_'+str(args.g_discount),'wb') as f:
                 pk.dump(state_save,f)
                 
             # with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small_states','wb') as f:
