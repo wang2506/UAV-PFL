@@ -23,7 +23,7 @@ cwd = os.getcwd()
 ep_start = 0.7
 # gamma = 0.8 #gamma = 0.7 by default
 
-with open(cwd+'/data/0_'+str(ep_start)+'_rewardtest_large','rb') as f:
+with open(cwd+'/data/0_'+str(ep_start)+'_rewardtest_large_0.6_ALI','rb') as f:
     data = pickle.load(f)
 
 # with open(cwd+'/data/0_'+str(ep_start)+'_'+'reward'\
@@ -44,7 +44,7 @@ plt.title('moving avg 1000, reward, ep_start='+str(ep_start))
 
 
 # plots for battery
-with open(cwd+'/data/0_'+str(ep_start)+'_batterytest_large','rb') as f:
+with open(cwd+'/data/0_'+str(ep_start)+'_batterytest_large_0.6_ALI','rb') as f:
     data_b = pickle.load(f)
 
 # with open(cwd+'/data/0_'+str(ep_start)+'_'+'battery'\
