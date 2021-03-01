@@ -498,7 +498,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
 
     next_state_set += [ts_start,taus1_next,taus2_next]
     
-    print(next_state_set)
+    # print(next_state_set)
 
     return current_reward, next_state_set, new_positions
 
@@ -683,6 +683,8 @@ for e in range(episodes):
             else:
                 current_state_set = deepcopy(state_set)
                 
+                #general base start
+                freq_visits[timestep] = deepcopy(freq_visits[timestep-1])
                 for freq_val in np.where(np.array(current_state_set[-13:-3]) == 0.0)[0]:
                     freq_visits[timestep][freq_val] = \
                         freq_visits[timestep-1][freq_val] + 1
@@ -728,7 +730,7 @@ for e in range(episodes):
                         
                     test_DQN.store(init_state_set,action_set,reward1,state_set1,\
                                    action2=action_set2, reward2=reward2, next_state2 = state_set2)
-                        
+                    
                 else:
                     # print(timestep)
                     # print('state_set1 check')
@@ -762,7 +764,7 @@ for e in range(episodes):
             if args.linear == True:
                 print('timestep='+str(timestep),
                       'reward_DQN ={:.2f}'.format(np.sum(reward_DQN,axis=0)[e][timestep]),
-                      'epsilon = {:.2f}'.format(ep_greed)
+                      'epsilon = {:.2f}'.format(args.ep_greed)
                       )
             else:
                 if timestep != 0 and timestep % 2 == 0:
@@ -799,7 +801,7 @@ for e in range(episodes):
             state_set_bat2 = -args.Clusters - args.recharge_points -3
             state_set_bat1 = -args.U_swarms -args.Clusters - args.recharge_points -3
             
-            print(state_set[ state_set_bat1: state_set_bat2 ])
+            # print(state_set[ state_set_bat1: state_set_bat2 ])
             
             battery_storage.append(state_set[ state_set_bat1 : state_set_bat2 ])
             
@@ -820,7 +822,7 @@ for e in range(episodes):
             plt.ylabel('reward')
             plt.title('reward over time')    
             
-            # save image
+            # # save image
             plt.savefig(cwd+'/plots/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'linear.png')
             
             plt.clf()
