@@ -662,7 +662,8 @@ for e in range(episodes):
             ep_greed = np.max([args.ep_min, args.ep_greed*(1-10**(-3))**timestep])
             
             if timestep == 0:
-                freq_visits[timestep] = np.array(init_state_set[-13:-3])
+                for freq_val in np.where(np.array(init_state_set[-13:-3]) == 0.0)[0]:
+                    freq_visits[timestep][freq_val] = 1 #np.array(init_state_set[-13:-3])
                 
                 action_set = test_DQN.calc_action(state=init_state_set, \
                                                   args=args,ep_greed =ep_greed)
@@ -682,8 +683,12 @@ for e in range(episodes):
             else:
                 current_state_set = deepcopy(state_set)
                 
-                freq_visits[timestep] = freq_visits[timestep-1] + \
-                    np.array(current_state_set[-13:-3])
+                for freq_val in np.where(np.array(current_state_set[-13:-3]) == 0.0)[0]:
+                    freq_visits[timestep][freq_val] = \
+                        freq_visits[timestep-1][freq_val] + 1
+                
+                # freq_visits[timestep] = freq_visits[timestep-1] + \
+                #     np.array(current_state_set[-13:-3])
                 
                 action_set = test_DQN.calc_action(state=current_state_set, \
                                                   args=args,ep_greed =ep_greed)
