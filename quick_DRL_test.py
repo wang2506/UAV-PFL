@@ -437,11 +437,12 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
         next_state_visits[j] = 0 # zero out since now it will be visited
     
     #c1= c2, c3 =0.1 , C is 50
-    current_reward = 1e5/(1*current_reward + 0.1*cluster_bat_drains)
+    # current_reward = 1e5/(2*current_reward + 0.1*cluster_bat_drains)
     
     ## calculate penalty for not visiting certain nodes (25% of their nominal value)
     penalty = 0
     
+    # old DRL reward calc 
     for i,j in enumerate(next_state_visits):
         if i < len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
             
@@ -453,7 +454,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
             if j * 0.5* cluster_expectations[i] > 0.5*cluster_limits[i]:
                 penalty += cluster_limits[i]
             else:
-                penalty += j * 0.5* cluster_expectations[i]    
+                penalty += j * 0.5* cluster_expectations[i]
     
     # check for battery failures (cannot afford to lose any UAVs)
     # bat_penalty = 0
