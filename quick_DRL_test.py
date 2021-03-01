@@ -826,19 +826,20 @@ for e in range(episodes):
             plt.clf()
             
             # save data
-            with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'reward'\
+            with open(cwd+'/data/10'+'_'+str(args.ep_greed)+'_'+'reward'\
                       +'test_large'+'_'+str(args.g_discount),'wb') as f:
                 pk.dump(reward_storage,f)
             #+'_extra'
-            with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'battery'\
+            #str(fig_no)+
+            with open(cwd+'/data/10'+'_'+str(args.ep_greed)+'_'+'battery'\
                       +'test_large'+'_'+str(args.g_discount),'wb') as f:
                 pk.dump(battery_storage,f)
-            
-            with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'all_states'\
+            #str(fig_no)+
+            with open(cwd+'/data/10'+'_'+str(args.ep_greed)+'_'+'all_states'\
                       +'test_large'+'_'+str(args.g_discount),'wb') as f:
                 pk.dump(state_save,f)
             
-            with open(cwd+'/data/original'+str(args.ep_greed)+'_'+'visit_freq_large'+\
+            with open(cwd+'/data/10'+str(args.ep_greed)+'_'+'visit_freq_large'+\
                       '_'+str(args.g_discount),'wb') as f:
                 pk.dump(freq_visits,f)
             
