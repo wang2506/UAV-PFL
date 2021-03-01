@@ -20,10 +20,10 @@ cwd = os.getcwd()
 # for i in np.arange(15,16,1):
 # with open(cwd+'/data/'+str(0)+'_30_ep_CNN','rb') as f:
 #     data = pickle.load(f)
-ep_start = 0.6
+ep_start = 0.7
 # gamma = 0.8 #gamma = 0.7 by default
 
-with open(cwd+'/data/10_'+str(ep_start)+'_rewardtest_large_0.7','rb') as f:
+with open(cwd+'/data/10_'+str(ep_start)+'_rewardtest_large_0.8','rb') as f:
     data = pickle.load(f)
 
 # with open(cwd+'/data/0_'+str(ep_start)+'_'+'reward'\
@@ -44,7 +44,7 @@ plt.title('moving avg 1000, reward, ep_start='+str(ep_start))
 
 
 # plots for battery
-with open(cwd+'/data/10_'+str(ep_start)+'_batterytest_large_0.7','rb') as f:
+with open(cwd+'/data/10_'+str(ep_start)+'_batterytest_large_0.8','rb') as f:
     data_b = pickle.load(f)
 
 # with open(cwd+'/data/0_'+str(ep_start)+'_'+'battery'\
@@ -56,6 +56,9 @@ data_b2_1 = [i[0] for i in data_b]
 data_b2_2 = [i[1] for i in data_b]
 
 data_b2 = moving_average(data_b2,1000)
+
+drift = [ 8.63901818,  9.91918686, 13.47041835, 10.47986286, 17.13048751,
+        5.11130624, 21.95293591,  0.68468983]
 
 plt.figure(2)
 plt.plot(data_b2[:10000])
@@ -70,8 +73,21 @@ plt.title('moving avg 1000, avg battery levels,'+str(ep_start))
 # plt.title('battery level 2 '+str(ep_start))
 
 # visits
-with open(cwd+'/data/10'+str(ep_start)+'_visit_freq_large_0.7','rb') as f:
+with open(cwd+'/data/10'+str(ep_start)+'_visit_freq_large_0.8','rb') as f:
     data_freq = pickle.load(f)
+
+# plot histogram trends every 1k iterations
+g_timesteps = 10000
+
+for gt in range(g_timesteps/1000):
+    f_timestep = gt * 1000
+    
+    data_freq 
+    
+    plt.figure(10+f_timestep)
+    plt.hist()
+    
+    
 
 # data_b2 = moving_average(data_b2,1000)
 
@@ -95,7 +111,7 @@ with open(cwd+'/data/10'+str(ep_start)+'_visit_freq_large_0.7','rb') as f:
 # plt.plot(median_data)
 # plt.title('median')
 
-
+# %% replot the paper
 
 
 

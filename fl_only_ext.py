@@ -35,10 +35,10 @@ dataset_train = torchvision.datasets.MNIST('./data/mnist/',train=True,download=F
 dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=False,\
                                           transform=trans_mnist)
 
-dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False,\
-                                transform=transforms.ToTensor())
-dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
-                                transform=transforms.ToTensor())
+# dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False,\
+#                                 transform=transforms.ToTensor())
+# dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
+#                                 transform=transforms.ToTensor())
 
 device = torch.device('cuda:2')
 #device = torch.device('cpu')
@@ -54,7 +54,7 @@ for index, (pixels,label) in enumerate(dataset_test):
     test[label].append(index)    
 
 data_source = 'mnist' # delete once argparse is configured
-data_source = 'fmnist'
+# data_source = 'fmnist'
 
 # assign datasets to nodes
 clusters = 10
@@ -72,7 +72,7 @@ nodes_per_cluster = [np.random.randint(2,6) for i in range(swarms)]
 #labels_set = {i: [] for i in range(nodes)} #randomly determined based on labels_per_node
 
 # labels_per_node (i.e., distribution) changes over time...
-for save_type in ['extreme','mild']: #['extreme','mild','iid']:
+for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
     if save_type == 'extreme':
         static_lpc = [1 for i in range(swarms)] #static qty of labels per node
     elif save_type == 'mild':
@@ -213,7 +213,7 @@ for save_type in ['extreme','mild']: #['extreme','mild','iid']:
     #     i.train()
     
     ## ovr ML params setup
-    lr = 1e-3
+    lr = 1e-4
     # lr2 = 1e-3
     
     # %% running for all time
@@ -221,13 +221,13 @@ for save_type in ['extreme','mild']: #['extreme','mild','iid']:
     
     swarm_period = 1
     global_period = 1
-    for ratio in [2,4]: #[0.5,1,1.5,2,2.5]:
+    for ratio in [1,2,4]: #[0.5,1,1.5,2,2.5]:
         if ratio == 0:
-            #global_period = 1
-            swarm_period = 1
-        else:    
-            #global_period = swarm_period*ratio
-            swarm_period = global_period*ratio
+            global_period = 1
+            # swarm_period = 1
+        else:
+            global_period = swarm_period*ratio
+            # swarm_period = global_period*ratio
             
         cycles = total_time/(swarm_period*global_period)
         # total_time = swarm_period*global_period*cycles
@@ -361,11 +361,11 @@ for save_type in ['extreme','mild']: #['extreme','mild','iid']:
         
         # streamline later this if-else is unneeded, but its 2 am rn
         if save_type == 'extreme':
-            with open(cwd+'/data/fl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+            with open(cwd+'/data/2fl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
                       +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
                 pickle.dump(fl_acc,f)
         
-            with open(cwd+'/data/fl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+            with open(cwd+'/data/2fl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
                       +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
                 pickle.dump(total_loss,f)
                 
@@ -377,14 +377,14 @@ for save_type in ['extreme','mild']: #['extreme','mild','iid']:
             with open(cwd+'/data/fl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
                       +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
                 pickle.dump(total_loss,f)
-        else:
-            with open(cwd+'/data/fl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
-                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
-                pickle.dump(fl_acc,f)
+        # else:
+        #     with open(cwd+'/data/fl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+        #               +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
+        #         pickle.dump(fl_acc,f)
         
-            with open(cwd+'/data/fl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
-                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
-                pickle.dump(total_loss,f)
+        #     with open(cwd+'/data/fl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+        #               +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
+        #         pickle.dump(total_loss,f)
         
 
         

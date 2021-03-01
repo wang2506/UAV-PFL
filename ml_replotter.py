@@ -23,8 +23,8 @@ cwd = os.getcwd()
 save_loc = cwd+'/ml_plots/'
 data_loc = cwd+'/data/'
 
-data_source = 'mnist'
-# data_source = 'fmnist'
+# data_source = 'mnist'
+data_source = 'fmnist'
 
 # %% plot 1 fl vs pfl extreme nonidd comparison
 # static ratio - 1,1 at taus1=taus2=2
