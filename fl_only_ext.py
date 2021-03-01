@@ -35,10 +35,10 @@ dataset_train = torchvision.datasets.MNIST('./data/mnist/',train=True,download=F
 dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=False,\
                                           transform=trans_mnist)
 
-dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False,\
-                                transform=transforms.ToTensor())
-dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
-                                transform=transforms.ToTensor())
+# dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False,\
+#                                 transform=transforms.ToTensor())
+# dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
+#                                 transform=transforms.ToTensor())
 
 device = torch.device('cuda:2')
 #device = torch.device('cpu')
@@ -54,7 +54,7 @@ for index, (pixels,label) in enumerate(dataset_test):
     test[label].append(index)    
 
 data_source = 'mnist' # delete once argparse is configured
-data_source = 'fmnist'
+# data_source = 'fmnist'
 
 # assign datasets to nodes
 clusters = 10
@@ -213,7 +213,7 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
     #     i.train()
     
     ## ovr ML params setup
-    lr = 1e-4
+    lr = 5e-4
     # lr2 = 1e-3
     
     # %% running for all time
@@ -221,13 +221,13 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
     
     swarm_period = 1
     global_period = 1
-    for ratio in [2,4]: #[0.5,1,1.5,2,2.5]:
+    for ratio in [1,2,4]: #[0.5,1,1.5,2,2.5]:
         if ratio == 0:
-            #global_period = 1
-            swarm_period = 1
+            global_period = 1
+            # swarm_period = 1
         else:
-            #global_period = swarm_period*ratio
-            swarm_period = global_period*ratio
+            global_period = swarm_period*ratio
+            # swarm_period = global_period*ratio
             
         cycles = total_time/(swarm_period*global_period)
         # total_time = swarm_period*global_period*cycles
