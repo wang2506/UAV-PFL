@@ -403,6 +403,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     index_counter = 0
     for i,j in enumerate(reward_vec):
         if new_positions[i] < 8:
+            ## this previous working result
             # reward_vec[i] = 1000*10/ historical_data[index_counter][0][-1] #1000*10
             reward_vec[i] = historical_data[index_counter][0][-1]
             index_counter += 1
@@ -437,12 +438,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
         next_state_visits[j] = 0 # zero out since now it will be visited
     
     #c1= c2, c3 =0.1 , C is 50
-#    current_reward = 1e5/(2*current_reward + 0.1*cluster_bat_drains)
-    
-    ## calculate penalty for not visiting certain nodes (25% of their nominal value)
-    penalty = 0
-    
-    # old DRL reward calc 
+    grad_decay = 0
     for i,j in enumerate(next_state_visits):
         if i < len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
             
@@ -452,9 +448,28 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
             #     penalty += j * 0.25 * cluster_expectations[i]
     
             if j * 0.5* cluster_expectations[i] > 0.5*cluster_limits[i]:
-                penalty += cluster_limits[i]
+                grad_decay += cluster_limits[i]
             else:
-                penalty += j * 0.5* cluster_expectations[i]
+                grad_decay += j * 0.5* cluster_expectations[i]
+    
+    current_reward = 1e4/(0.05*current_reward + 0.2*grad_decay + 0.005*cluster_bat_drains)
+    
+    ## calculate penalty for not visiting certain nodes (25% of their nominal value)
+    penalty = 0
+    
+    # # old DRL reward calc 
+    # for i,j in enumerate(next_state_visits):
+    #     if i < len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
+            
+    #         # if j * 0.25 * cluster_expectations[i] > 0.5 * cluster_limits[i]:
+    #         #     penalty += 0.5* cluster_limits[i]
+    #         # else:
+    #         #     penalty += j * 0.25 * cluster_expectations[i]
+    
+    #         if j * 0.5* cluster_expectations[i] > 0.5*cluster_limits[i]:
+    #             penalty += cluster_limits[i]
+    #         else:
+    #             penalty += j * 0.5* cluster_expectations[i]
     
     # check for battery failures (cannot afford to lose any UAVs)
     # bat_penalty = 0
@@ -801,15 +816,15 @@ for e in range(episodes):
             
             # save data
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'reward'\
-                      +'test_large'+'_'+str(args.g_discount),'wb') as f:
+                      +'test_large'+'_'+str(args.g_discount)+'_ALI','wb') as f:
                 pk.dump(reward_storage,f)
-            #+'_ALI'
+            #
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'battery'\
-                      +'test_large'+'_'+str(args.g_discount),'wb') as f:
+                      +'test_large'+'_'+str(args.g_discount)+'_ALI','wb') as f:
                 pk.dump(battery_storage,f)
             
             with open(cwd+'/data/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'all_states'\
-                      +'test_large'+'_'+str(args.g_discount),'wb') as f:
+                      +'test_large'+'_'+str(args.g_discount)+'_ALI','wb') as f:
                 pk.dump(state_save,f)
                 
             # with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small_states','wb') as f:
