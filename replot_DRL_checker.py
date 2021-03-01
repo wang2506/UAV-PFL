@@ -20,10 +20,10 @@ cwd = os.getcwd()
 # for i in np.arange(15,16,1):
 # with open(cwd+'/data/'+str(0)+'_30_ep_CNN','rb') as f:
 #     data = pickle.load(f)
-ep_start = 0.7
+ep_start = 0.8
 # gamma = 0.8 #gamma = 0.7 by default
 
-with open(cwd+'/data/0_'+str(ep_start)+'_rewardtest_large_0.6','rb') as f:
+with open(cwd+'/data/0_'+str(ep_start)+'_rewardtest_large_0.7_extra','rb') as f:
     data = pickle.load(f)
 
 # with open(cwd+'/data/0_'+str(ep_start)+'_'+'reward'\
@@ -44,7 +44,7 @@ plt.title('moving avg 1000, reward, ep_start='+str(ep_start))
 
 
 # plots for battery
-with open(cwd+'/data/0_'+str(ep_start)+'_batterytest_large_0.6','rb') as f:
+with open(cwd+'/data/0_'+str(ep_start)+'_batterytest_large_0.7_extra','rb') as f:
     data_b = pickle.load(f)
 
 # with open(cwd+'/data/0_'+str(ep_start)+'_'+'battery'\
@@ -68,6 +68,17 @@ plt.title('moving avg 1000, avg battery levels,'+str(ep_start))
 # plt.figure(4)
 # plt.plot(data_b2_2)
 # plt.title('battery level 2 '+str(ep_start))
+
+# visits
+with open(cwd+'/data/'+str(ep_start)+'_visit_freq_large_0.7','rb') as f:
+    data_freq = pickle.load(f)
+
+data_b2 = moving_average(data_b2,1000)
+
+plt.figure(3)
+plt.plot(data_b2[:10000])
+plt.title('moving avg 1000, avg battery levels,'+str(ep_start))
+
 
 
 # min_data = [min(data[j:j+1000]) for j,jj in enumerate(data) if j % 1000 == 0]

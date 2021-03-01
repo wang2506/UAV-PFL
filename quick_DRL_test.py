@@ -65,13 +65,13 @@ parser.add_argument('--cnn_range',type=int, default=2,\
                     help='conv1d range')
 
 # ovr parameters
-parser.add_argument('--G_timesteps',type=int,default=10000,\
+parser.add_argument('--G_timesteps',type=int,default=2000,\
                     help='number of swarm movements') #10,000
 parser.add_argument('--training',type=int,default=1,\
                     help='training or testing the DRL')
 parser.add_argument('--centralized',type=bool,default=True,\
                     help='centralized or decentralized')
-parser.add_argument('--DQN_update_period',type=int,default=50,\
+parser.add_argument('--DQN_update_period',type=int,default=20,\
                     help='DQN update period') #50
 #8,3,2,4,2,2
 
@@ -432,7 +432,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
                 current_reward += reward_vec[i] #from gradient
                 
         else: #it is a recharge station
-            battery_status[i] = 2000 #100 #reset to 100%
+            battery_status[i] = 48600#2000 #100 #reset to 100%
 
         #previously was cluster_expectations[j] * next_state_visits[j]
         next_state_visits[j] = 0 # zero out since now it will be visited
@@ -553,16 +553,16 @@ action_space = action_space_calc(list(range(args.Clusters + args.recharge_points
 #cluster_expectations = 100*np.random.rand(args.Clusters) # the distribution change over time
 # cluster_expectations = 100*np.array([0.005,1.6,0.8,3,0.3,0.02])
 # cluster_limits = 100*np.array([1,2.2,1.3,5,1.1,2.1])
-cluster_expectations = 20*np.random.rand(args.Clusters)
-cluster_limits = 3*cluster_expectations
+cluster_expectations = 25*np.random.rand(args.Clusters) #20
+cluster_limits = 20*cluster_expectations #3
 
 # calculate real movement costs from cluster to cluster to recharge station
-min_dist = 200 #meters
-max_dist = 400 #1km
+min_dist = 500 #meters
+max_dist = 2000 #1km
 # speed = 5000 #5km/hr
 scaling = 0.1
 
-min_speed_uav = 5 #m/s -> 0.5/1000 * 60 * 60 km/h
+min_speed_uav = 10 #m/s -> 0.5/1000 * 60 * 60 km/h
 seconds_conversion = 2 #5
 air_density = 1.225 
 zero_lift_drag_max = 0.0378 #based on sopwith camel 
@@ -590,15 +590,16 @@ c2 = 2 * (weight_breakpoint + (weight_max - weight_breakpoint)*np.random.rand())
 move_dists = min_dist + (max_dist-min_dist)*\
     np.random.rand(args.Clusters+args.recharge_points,args.Clusters+args.recharge_points)
 
-temp_energy = scaling * move_dists/min_speed_uav * (c1 * (min_speed_uav**3) + c2/min_speed_uav)
+#scaling * 
+temp_energy = move_dists/min_speed_uav * (c1 * (min_speed_uav**3) + c2/min_speed_uav)
 
 
 ## return to prev
 cluster_bat_drain = np.array([3,5,5,6,2,1])
-init_battery_levels = (2000* np.ones(args.U_swarms)).tolist() #70600
+init_battery_levels = (48600* np.ones(args.U_swarms)).tolist()  #(2000* np.ones(args.U_swarms)).tolist() #70600
 max_battery_levels = deepcopy(init_battery_levels)
 
-min_battery_levels = (200*np.ones(args.U_swarms)).tolist() # initialize full battery
+min_battery_levels = (8440*np.ones(args.U_swarms)).tolist() # initialize full battery
 
 Ts = [180,220,260]
 taus1 = [1,2]
@@ -661,7 +662,7 @@ for e in range(episodes):
             ep_greed = np.max([args.ep_min, args.ep_greed*(1-10**(-3))**timestep])
             
             if timestep == 0:
-                freq_visits[timestep] = np.array(init_state_set[-13:3])
+                freq_visits[timestep] = np.array(init_state_set[-13:-3])
                 
                 action_set = test_DQN.calc_action(state=init_state_set, \
                                                   args=args,ep_greed =ep_greed)
@@ -682,7 +683,7 @@ for e in range(episodes):
                 current_state_set = deepcopy(state_set)
                 
                 freq_visits[timestep] = freq_visits[timestep-1] + \
-                    np.array(current_state_set[-13:3])
+                    np.array(current_state_set[-13:-3])
                 
                 action_set = test_DQN.calc_action(state=current_state_set, \
                                                   args=args,ep_greed =ep_greed)
