@@ -174,8 +174,9 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
     ## basically just sort the testing dataset into indexes for each cluster
     cluster_test_sets = {i:[] for i in range(clusters)} #indexed by cluster
     all_test_indexes = []
-    for i in range(10): #10 labels
-        all_test_indexes.append(test[i])
+    # for i in range(10): #10 labels
+        # all_test_indexes += test[i]
+    all_test_indexes = list(range(10000)) #10k test images in MNIST and FMNIST
     
     
     for i in range(clusters):
