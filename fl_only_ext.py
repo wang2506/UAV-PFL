@@ -35,10 +35,10 @@ dataset_train = torchvision.datasets.MNIST('./data/mnist/',train=True,download=F
 dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=False,\
                                           transform=trans_mnist)
 
-dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False,\
-                                transform=transforms.ToTensor())
-dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
-                                transform=transforms.ToTensor())
+# dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False,\
+#                                 transform=transforms.ToTensor())
+# dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
+#                                 transform=transforms.ToTensor())
 
 device = torch.device('cuda:2')
 #device = torch.device('cpu')
@@ -53,8 +53,8 @@ test = {i: [] for i in range(10)}
 for index, (pixels,label) in enumerate(dataset_test):
     test[label].append(index)    
 
-#data_source = 'mnist' # delete once argparse is configured
-data_source = 'fmnist'
+data_source = 'mnist' # delete once argparse is configured
+# data_source = 'fmnist'
 
 # assign datasets to nodes
 clusters = 10
@@ -186,17 +186,29 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
             cluster_test_sets[i] += test[j]
     
     # %% create neural networks
-    ## setup FL
-    d_in = 784 #np.prod(dataset_train[0][0].shape)
-    d_h = 64
-    d_out = 10
-    global_net = MLP(d_in,d_h,d_out).to(device)
-    print(global_net)
-    global_net.train()
-    # default_w = deepcopy(global_net.state_dict())
     cwd = os.getcwd()
-    with open(cwd+'/data/default_w','rb') as f:
-        default_w = pickle.load(f)
+    ## setup FL
+    nn_style = 'CNN'
+    if nn_style == 'MLP':
+        d_in = 784 #np.prod(dataset_train[0][0].shape)
+        d_h = 64
+        d_out = 10
+        global_net = MLP(d_in,d_h,d_out).to(device)
+        
+        with open(cwd+'/data/default_w','rb') as f:
+            default_w = pickle.load(f)  
+            
+    else:    
+        nchannels = 1
+        nclasses = 10
+        global_net = CNN(nchannels,nclasses).to(device)
+        
+        with open(cwd+'/data/CNN_default_w','rb') as f:
+            default_w = pickle.load(f)        
+    
+    print(global_net)
+    
+    global_net.train()
     
     
     # one central model object for each swarm
