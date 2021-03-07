@@ -230,8 +230,8 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     
     
     ## ovr ML params setup
-    lr = 1e-1 #1e-4 previously
-    lr2 = 1e-1 #1e-5 for both for MLP
+    lr = 1e-5 #1e-4 previously
+    lr2 = 1e-5
     
     # %% running for all time
     batch_size = 12
@@ -287,7 +287,8 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
                 for j in range(val_i): # each uav in i
                     local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr1=lr,lr2=lr2,epochs=swarm_period,\
                             dataset=dataset_train,indexes=static_nts[uav_counter])
-                    _,w,loss = local_obj.train(net=deepcopy(HF_hn_pfl_swarm_models[ind_i]).to(device))
+                    # _,w,loss = local_obj.train(net=deepcopy(HF_hn_pfl_swarm_models[ind_i]).to(device))
+                    _,w,loss = local_obj.train(net=HF_hn_pfl_swarm_models[ind_i].to(device))
                     
                     # print(loss)
                     
@@ -322,7 +323,7 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
                     i.load_state_dict(w_global)
                     i.train()
                     
-            else:
+            elif (t+1) % swarm_period == 0:
                 ## run FL swarm-wide aggregation only
                 t_static_qty = deepcopy(static_qty).tolist()
                 

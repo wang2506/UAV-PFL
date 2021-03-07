@@ -285,7 +285,8 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
                 for j in range(val_i): # each uav in i
                     local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=swarm_period,\
                             dataset=dataset_train,indexes=static_nts[uav_counter])
-                    _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
+                    # _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
+                    _,w,loss = local_obj.train(net=fl_swarm_models[ind_i].to(device))
                     
                     swarm_w[ind_i].append(w)
                     
@@ -318,7 +319,7 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
                     i.load_state_dict(w_global)
                     i.train()
                     
-            else:
+            elif (t+1)% swarm_period == 0:
                 ## run FL swarm-wide aggregation only
                 t_static_qty = deepcopy(static_qty).tolist()
                 
