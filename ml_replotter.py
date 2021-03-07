@@ -24,7 +24,7 @@ save_loc = cwd+'/ml_plots/'
 data_loc = cwd+'/data/'
 
 data_source = 'mnist'
-data_source = 'fmnist'
+# data_source = 'fmnist'
 
 # %% plot 1 fl vs pfl extreme nonidd comparison
 # static ratio - 1,1 at taus1=taus2=2
@@ -92,15 +92,23 @@ plt.subplots_adjust(top=0.8,wspace=0.05,hspace=0.15)
 total_fl_ratios = []
 total_pfl_ratios = []
 
-for ratio in [1,2]:#,4]:
+full_fl_ratios = []
+full_pfl_ratios = []
+
+for ratio in [1,2,4]:
     # ratio = 1 #, taus1,taus2 = 1,2,2
     ## reload data
     total_fl_accs, total_pfl_accs = [], []
+    full_fl_accs, full_pfl_accs = [], []
+    
+    fl_loss, pfl_loss = [], []
+    full_fl_loss, full_pfl_loss = [], []
+    
     swarm_period = 1
     global_period = ratio*swarm_period
     for iid_style in ['extreme']:#,'mild']: #,'iid']: #crashed on frankie for some reason...; wtf ,'extreme'
         
-        with open(data_loc+'2fl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
+        with open(data_loc+'fl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
                   +'_'+str(swarm_period)+'_'+str(global_period),'rb') as f:
             fl_acc = pk.load(f)
         
@@ -108,17 +116,32 @@ for ratio in [1,2]:#,4]:
                    +'_'+str(swarm_period)+'_'+str(global_period),'rb') as f:
             pfl_acc = pk.load(f)
         
+        
+        with open(data_loc+'full_fl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
+                  +'_'+str(swarm_period)+'_'+str(global_period),'rb') as f:
+            f_fl_acc = pk.load(f)
+        
+        with open(data_loc+'full_hn_pfl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
+                   +'_'+str(swarm_period)+'_'+str(global_period),'rb') as f:
+            f_pfl_acc = pk.load(f)        
+        
         total_fl_accs.append(fl_acc)
         total_pfl_accs.append(pfl_acc)
+        
+        full_fl_accs.append(f_fl_acc)
+        full_pfl_accs.append(f_pfl_acc)
     
     total_fl_ratios.append(total_fl_accs)
     total_pfl_ratios.append(total_pfl_accs)
     
+    full_fl_ratios.append(full_fl_accs)
+    full_pfl_ratios.append(full_pfl_accs)
+
 plt.figure(2)
-f2,ax2 = plt.subplots(1,2,figsize=(10,4),dpi=100,sharey=True)
+f2,ax2 = plt.subplots(1,2,figsize=(10,5),dpi=100,sharey=True)
 
 ind = 0
-for i in range(2): #3
+for i in range(3): #3
     if i == 0:
         temp_indexes = np.arange(0,120,step=1) #total_fl_ratios[i][0]
     elif i == 1:
@@ -126,51 +149,82 @@ for i in range(2): #3
     else:
         temp_indexes = np.arange(0,120,step=4)
     
-    ax2[ind].plot(temp_indexes,total_fl_ratios[i][0],label='fl_acc',\
-        marker='x',color='forestgreen',linestyle='dashed')
-    ax2[ind].plot(temp_indexes,total_pfl_ratios[i][0],label='pfl acc',\
-        marker='o',color='darkblue',linestyle='dashed')
-    
+    if i == 0:
+        ax2[ind].plot(temp_indexes,total_fl_ratios[i][0],\
+            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            color='forestgreen',linestyle='solid')
+        ax2[ind].plot(temp_indexes,total_pfl_ratios[i][0],\
+            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            color='darkblue',linestyle='solid')
+    elif i == 1:
+        ax2[ind].plot(temp_indexes,total_fl_ratios[i][0],\
+            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 2$',\
+            color='forestgreen',linestyle='dashed')
+        ax2[ind].plot(temp_indexes,total_pfl_ratios[i][0],\
+            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 2$',\
+            color='darkblue',linestyle='dashed')
+    else:
+        ax2[ind].plot(temp_indexes,total_fl_ratios[i][0],\
+            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 4$',\
+            color='forestgreen',linestyle='dotted')
+        ax2[ind].plot(temp_indexes,total_pfl_ratios[i][0],\
+            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 4$',\
+            color='darkblue',linestyle='dotted')
             
-ax2[ind].set_title('extreme non-i.i.d')
+ax2[ind].set_title(data_source.upper()+' Performance Accuracy Personalized')
+ax2[ind].set_ylabel('Accuracy (%)')
+ax2[ind].set_xlabel('Local Iteration')
+ax2[ind].grid(True)
+ax2[ind].legend()
 
-
-# ind = 1
-# for i in range(2): #3
-#     if i == 0:
-#         temp_indexes = np.arange(0,120,step=1) #total_fl_ratios[i][0]
-#     elif i == 1:
-#         temp_indexes = np.arange(0,120,step=2)
-#     else:
-#         temp_indexes = np.arange(0,120,step=4)
+ind = 1
+for i in range(3): 
+    if i == 0:
+        temp_indexes = np.arange(0,120,step=1) #total_fl_ratios[i][0]
+    elif i == 1:
+        temp_indexes = np.arange(0,120,step=2)
+    else:
+        temp_indexes = np.arange(0,120,step=4)
     
-#     ax2[ind].plot(temp_indexes,total_fl_ratios[i][ind],label='fl_acc',\
-#         marker='x',color='forestgreen',linestyle='dashed')
-#     ax2[ind].plot(temp_indexes,total_pfl_ratios[i][ind],label='pfl acc',\
-#         marker='o',color='darkblue',linestyle='dashed')
-    
+    if i == 0:
+        ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
+            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            color='forestgreen',linestyle='solid')
+        ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
+            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            color='darkblue',linestyle='solid')
+    elif i == 1:
+        ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
+            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 2$',\
+            color='forestgreen',linestyle='dashed')
+        ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
+            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 2$',\
+            color='darkblue',linestyle='dashed')
+    else:
+        ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
+            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 4$',\
+            color='forestgreen',linestyle='dotted')
+        ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
+            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 4$',\
+            color='darkblue',linestyle='dotted')
             
-# ax2[ind].set_title('moderate non-i.i.d')
-# ax[ind].set_title('moderate non-i.i.d')
-# ax[ind].legend()
+ax2[ind].set_title(data_source.upper()+' Performance Accuracy Global')
+ax2[ind].set_ylabel('Accuracy (%)')
+ax2[ind].set_xlabel('Local Iteration')
+ax2[ind].grid(True)
 
-    
-    # for i in range(3):
-    #     if i == 0:
-    #         ax[i].set_ylabel('Accuracy(%)',fontsize=12,**csfont)
-        
-    #     ax[i].set_xlabel('Global Aggregation ($k_s^{\mathsf{G}}$)', fontsize=11, **csfont)
-    #     ax[i].set_axisbelow(True)
-    #     ax[i].grid(True)
-    
-    # h,l = ax[0].get_legend_handles_labels()
-    # kw = dict(ncol=2,loc = 'lower center',frameon=False)
-    # #(x, y, width, height)
-    # leg1 = ax[0].legend(h[:],l[:],bbox_to_anchor=(0.8,1.05,1.5,0.2),\
-    #                        mode='expand',fontsize='large',**kw)
-        
-    # ax[0].add_artist(leg1)
-    # plt.subplots_adjust(top=0.8,wspace=0.05,hspace=0.15)
+
+
+h,l = ax2[0].get_legend_handles_labels()
+kw = dict(ncol=3,loc = 'lower center',frameon=False)
+kw2 = dict(ncol=3,loc = 'lower center',frameon=False)
+#(x, y, width, height)
+leg1 = ax2[0].legend(h[1::2],l[1::2],bbox_to_anchor=(0,1.1,2,0.2),\
+                       mode='expand',fontsize='large',**kw2)
+leg2 = ax2[0].legend(h[0::2],l[0::2],bbox_to_anchor=(0,1.02,2,0.2),\
+                       mode='expand',fontsize='large',**kw)
+ax2[0].add_artist(leg1)
+plt.subplots_adjust(top=0.8,wspace=0.05,hspace=0.15)
 
 
 # %% plot 3 ratio plots with taus2 = 1
