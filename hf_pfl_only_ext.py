@@ -258,7 +258,11 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
         HF_hn_pfl_acc_full = []
         total_loss_full = []
         
-        HF_hn_pfl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(swarms)]
+        if nn_style =='MLP':
+            HF_hn_pfl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(swarms)]
+        else:
+            HF_hn_pfl_swarm_models = [CNN(nchannels,nclasses).to(device) for i in range(swarms)]
+        
         for i in HF_hn_pfl_swarm_models:
             i.load_state_dict(default_w)
             i.train()

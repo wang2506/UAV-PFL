@@ -258,7 +258,11 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
         fl_acc_full = []
         total_loss_full = []
         
-        fl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(swarms)]
+        if nn_style =='MLP':
+            fl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(swarms)]
+        else:
+            fl_swarm_models = [CNN(nchannels,nclasses).to(device) for i in range(swarms)]        
+        
         for i in fl_swarm_models:
             i.load_state_dict(default_w)
             i.train()
