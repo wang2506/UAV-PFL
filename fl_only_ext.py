@@ -173,6 +173,10 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
     # %% personalize the testing dataset
     ## basically just sort the testing dataset into indexes for each cluster
     cluster_test_sets = {i:[] for i in range(clusters)} #indexed by cluster
+    all_test_indexes = []
+    for i in range(10): #10 labels
+        all_test_indexes.append(test[i])
+    
     
     for i in range(clusters):
         cluster_ls = static_ls[i]
@@ -232,12 +236,14 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
         cycles = total_time/(swarm_period*global_period)
         # total_time = swarm_period*global_period*cycles
     
-    
         fl_acc = []
         hn_pfl_acc = [] 
         FO_hn_pfl_acc = []
         HF_hn_pfl_acc = []
         total_loss = []
+        
+        fl_acc_full = []
+        total_loss_full = []
         
         fl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(swarms)]
         for i in fl_swarm_models:
@@ -317,19 +323,37 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
             # if True: # every iteration - speed check
                 fl_acc_temp = 0
                 total_loss_temp = 0
+                
+                fl_acc_temp_all = 0
+                total_loss_temp_all = 0 
+                
                 for i,ii in enumerate(fl_swarm_models):
                     ii.eval()
                     temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
                             indexes=cluster_test_sets[i],device=device)
-
+                    
+                    temp_acc_full, loss_full = test_img2(ii,dataset_test,\
+                            bs=batch_size,indexes=all_test_indexes,device=device)
+                    
                     fl_acc_temp += temp_acc * static_data_per_swarm[i] \
                         / sum(static_data_per_swarm)
                     total_loss_temp += loss * static_data_per_swarm[i] \
                         / sum(static_data_per_swarm)
+                        
+                    fl_acc_temp_all += temp_acc_full * static_data_per_swarm[i] \
+                        / sum(static_data_per_swarm)
+                    total_loss_temp_all += loss_full * static_data_per_swarm[i] \
+                        / sum(static_data_per_swarm)
+                        
                 # fl_acc.append(fl_acc_temp/len(fl_swarm_models))
                 fl_acc.append(fl_acc_temp)
                 total_loss.append(total_loss_temp)
+                
+                fl_acc_full.append(fl_acc_temp_all)
+                total_loss_full.append(total_loss_temp_all)
+                
                 print(fl_acc[-1])
+                print(fl_acc_full[-1])
                 # print(total_loss)
         
         # ### calculate optim variables    
@@ -355,7 +379,6 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
     
         # B_j = [i - swarm_w] 
         
-        
         # saving results 
         cwd = os.getcwd()
         
@@ -368,7 +391,15 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
             with open(cwd+'/data/2fl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
                       +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
                 pickle.dump(total_loss,f)
-                
+            
+            with open(cwd+'/data/2fl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
+                pickle.dump(fl_acc_full,f)
+        
+            with open(cwd+'/data/2fl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
+                pickle.dump(total_loss_full,f)            
+            
         elif save_type == 'mild':
             with open(cwd+'/data/fl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
                       +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:

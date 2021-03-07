@@ -26,21 +26,43 @@ plt.figure(1)
 
 f1,ax1 = plt.subplots(1,2,figsize=(10,4))
 
-for gamma in [0.6,0.7,0.8]:
+for ep_start in [0.6,0.8]:
+    for gamma in [0.7,0.8]:
+        
+        with open(cwd+'/data/10_'+str(ep_start)+'_rewardtest_large_'+str(gamma),'rb') as f:
+            data = pickle.load(f)
     
-    with open(cwd+'/data/10_'+str(ep_start)+'_rewardtest_large_'+str(gamma),'rb') as f:
-        data = pickle.load(f)
+        data_fixer = moving_average(data,2000)
+        
+        if ep_start == 0.6:
+            if gamma == 0.6:
+                ax1[0].plot(data_fixer[:10000],label=str(gamma),linestyle='dotted')
+            elif gamma == 0.7:
+                ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ = '+str(gamma) \
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', color = 'forestgreen')
+            else:
+                ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ = '+str(gamma) \
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', color = 'darkblue')
+        elif ep_start == 0.7:
+            if gamma == 0.6:
+                ax1[0].plot(data_fixer[:10000],label=str(gamma),linestyle='dotted')
+            elif gamma == 0.7:
+                ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ = '+str(gamma) \
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', color = 'forestgreen')
+            else:
+                ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ = '+str(gamma) \
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', color = 'darkblue')
+        else:
+            if gamma == 0.6:
+                ax1[0].plot(data_fixer[:10000],label=str(gamma),linestyle='dotted')
+            elif gamma == 0.7:
+                ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ = '+str(gamma) \
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted',color = 'forestgreen')
+            else:
+                ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ = '+str(gamma) \
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted',color = 'darkblue')
 
-    data_fixer = moving_average(data,2000)
-    
-    if gamma == 0.6:
-        ax1[0].plot(data_fixer[:10000],label=str(gamma),linestyle='solid')
-    elif gamma == 0.7:
-        ax1[0].plot(data_fixer[:10000],label=str(gamma),linestyle='dashed')
-    else:
-        ax1[0].plot(data_fixer[:10000],label=str(gamma),linestyle='dotted')
-
-ax1[0].set_title('moving avg 1000, reward, ep_start = ' + str(ep_start))
+ax1[0].set_title(r'Moving Average 2000 Epochs')
 ax1[0].grid(True)
 ax1[0].set_xlabel('Epoch')
 ax1[0].set_ylabel('Reward')
@@ -57,22 +79,61 @@ ax1[0].legend()
 # plot average reward per 10 iterations
 # data_fixer = [sum(data[j:j+1000])/1000 for j,jj in enumerate(data) if j % 1000 == 0]
 # plots for battery
+for ep_start in [0.6,0.8]:
+    for gamma in [0.7,0.8]:
+        with open(cwd+'/data/10_'+str(ep_start)+'_batterytest_large_'+str(gamma),'rb') as f:
+            data_b = pickle.load(f)
+        
+        data_b2 = [mean(i) for i in data_b]
+        data_b2 = moving_average(data_b2,1000)
+    
+        if ep_start == 0.6:
+            if gamma == 0.6:
+                ax1[1].plot(data_b2[:10000],label=str(gamma),linestyle='dotted')
+            elif gamma == 0.7:
+                ax1[1].plot(data_b2[:10000],label=r'$\gamma$ = '+str(gamma) \
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', color = 'forestgreen')
+            else:
+                ax1[1].plot(data_b2[:10000],label=r'$\gamma$ = '+str(gamma) \
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', color = 'darkblue')
+        elif ep_start == 0.7:
+            if gamma == 0.6:
+                ax1[1].plot(data_b2[:10000],label=str(gamma),linestyle='dotted')
+            elif gamma == 0.7:
+                ax1[1].plot(data_b2[:10000],label=r'$\gamma$ = '+str(gamma) \
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', color = 'forestgreen')
+            else:
+                ax1[1].plot(data_b2[:10000],label=r'$\gamma$ = '+str(gamma) \
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', color = 'darkblue')
+        else:
+            if gamma == 0.6:
+                ax1[1].plot(data_b2[:10000],label=str(gamma),linestyle='dotted')
+            elif gamma == 0.7:
+                ax1[1].plot(data_b2[:10000],label=r'$\gamma$ = '+str(gamma) \
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted',color = 'forestgreen')
+            else:
+                ax1[1].plot(data_b2[:10000],label=r'$\gamma$ = '+str(gamma) \
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted',color = 'darkblue')    
+    
+    
+ax1[1].set_title('Moving Average 2000 Epochs')
+ax1[1].grid(True)
+ax1[1].set_xlabel('Epoch')
+ax1[1].set_ylabel('Average Battery Level (J)')
+# ax1[1].legend()
 
-for gamma in [0.6,0.7,0.8]:
-    with open(cwd+'/data/10_'+str(ep_start)+'_batterytest_large_'+str(gamma),'rb') as f:
-        data_b = pickle.load(f)
-    
-    data_b2 = [mean(i) for i in data_b]
-    data_b2 = moving_average(data_b2,1000)
-    
-    if gamma == 0.6:
-        ax1[1].plot(data_b2[:10000],label=str(gamma),linestyle='solid')
-    elif gamma == 0.7:
-        ax1[1].plot(data_b2[:10000],label=str(gamma),linestyle='dashed')
-    else:
-        ax1[1].plot(data_b2[:10000],label=str(gamma),linestyle='dotted')
-    
-    
+h,l = ax1[0].get_legend_handles_labels()
+kw = dict(ncol=4,loc = 'lower center',frameon=False)
+# kw2 = dict(ncol=3,loc = 'lower center',frameon=False)
+#(x, y, width, height)
+leg1 = ax1[0].legend(h[:],l[:],bbox_to_anchor=(0.0,1.03,2,0.2),\
+                mode='expand',fontsize='large',**kw)
+# leg2 = ax1[0].legend(h[0::2],l[0::2],bbox_to_anchor=(0.1,1.11,1.8,0.2),\
+                        # mode='expand',fontsize='large',**kw)
+ax1[0].add_artist(leg1)
+
+plt.savefig(cwd+'/drl_plots/DRL.pdf',dpi=1000, bbox_inches='tight')
+
 # # with open(cwd+'/data/0_'+str(ep_start)+'_'+'battery'\
 # #           +'test_large'+'_'+str(gamma),'rb') as f:
 # #     data_b = pickle.load(f)

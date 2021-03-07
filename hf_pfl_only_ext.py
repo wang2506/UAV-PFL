@@ -35,10 +35,10 @@ dataset_train = torchvision.datasets.MNIST('./data/mnist/',train=True,download=F
 dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=False,\
                                           transform=trans_mnist)
 
-dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False,\
-                                transform=transforms.ToTensor())
-dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
-                                transform=transforms.ToTensor())
+# dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False,\
+#                                 transform=transforms.ToTensor())
+# dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
+#                                 transform=transforms.ToTensor())
 
 # d_train_cifar10 = torchvision.datasets.CIFAR10('./data/cifar10/',train=True,download=False)
 # d_test_cifar10 = torchvision.datasets.CIFAR10('./data/cifar10',train=False,download=False)
@@ -57,7 +57,7 @@ for index, (pixels,label) in enumerate(dataset_test):
     test[label].append(index)    
 
 data_source = 'mnist' # delete once argparse is configured
-data_source = 'fmnist'
+# data_source = 'fmnist'
 
 # assign datasets to nodes
 clusters = 10#3
@@ -74,7 +74,7 @@ nodes_per_cluster = [np.random.randint(2,6) for i in range(swarms)]
 
 # labels_per_node (i.e., distribution) changes over time...
 
-for save_type in ['extreme','mild']: #['extreme','mild','iid']:
+for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     if save_type == 'extreme':
         static_lpc = [1 for i in range(swarms)] #static qty of labels per node
     elif save_type == 'mild':
@@ -175,7 +175,10 @@ for save_type in ['extreme','mild']: #['extreme','mild','iid']:
     # %% personalize the testing dataset
     ## basically just sort the testing dataset into indexes for each cluster
     cluster_test_sets = {i:[] for i in range(clusters)} #indexed by cluster
-    
+    all_test_indexes = []
+    for i in range(10): #10 labels
+        all_test_indexes.append(test[i])
+        
     for i in range(clusters):
         cluster_ls = static_ls[i]
         
@@ -222,13 +225,13 @@ for save_type in ['extreme','mild']: #['extreme','mild','iid']:
     
     swarm_period = 1
     global_period = 1
-    for ratio in [2,4]: #[0.5,1,1.5,2,2.5]:
+    for ratio in [1,2,4]: #[0.5,1,1.5,2,2.5]:
         if ratio == 0:
-            #global_period = 1
-            swarm_period = 1
+            global_period = 1
+            # swarm_period = 1
         else:    
-            #global_period = swarm_period*ratio
-            swarm_period = global_period*ratio
+            global_period = swarm_period*ratio
+            # swarm_period = global_period*ratio
             
         cycles = total_time/(swarm_period*global_period)
         # total_time = swarm_period*global_period*cycles
@@ -238,6 +241,9 @@ for save_type in ['extreme','mild']: #['extreme','mild','iid']:
         FO_hn_pfl_acc = []
         HF_hn_pfl_acc = []
         total_loss = []
+        
+        HF_hn_pfl_acc_full = []
+        total_loss_full = []
         
         HF_hn_pfl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(swarms)]
         for i in HF_hn_pfl_swarm_models:
@@ -321,6 +327,10 @@ for save_type in ['extreme','mild']: #['extreme','mild','iid']:
             # if True: #every iteration
                 HF_hn_pfl_acc_temp = 0
                 total_loss_temp = 0
+                
+                HF_hn_pfl_acc_temp_all = 0
+                total_loss_temp_all = 0
+                
                 for i,ii in enumerate(HF_hn_pfl_swarm_models):
                     ii.eval()
                     # print(test_img2(ii,dataset_test,bs=10,indexes=cluster_test_sets[i]))
@@ -329,17 +339,29 @@ for save_type in ['extreme','mild']: #['extreme','mild','iid']:
                     temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
                             indexes=cluster_test_sets[i],device=device)                   
                     
+                    temp_acc_full, loss_full = test_img2(ii,dataset_test,\
+                            bs=batch_size,indexes=all_test_indexes,device=device)                        
+                        
                     HF_hn_pfl_acc_temp += temp_acc * static_data_per_swarm[i] \
                         / sum(static_data_per_swarm)
                     
                     total_loss_temp += loss * static_data_per_swarm[i] \
                         / sum(static_data_per_swarm)
                     
+                    HF_hn_pfl_acc_temp_all += temp_acc_full * static_data_per_swarm[i] \
+                        / sum(static_data_per_swarm)
+                    total_loss_temp_all += loss_full * static_data_per_swarm[i] \
+                        / sum(static_data_per_swarm)
+                    
                 # HF_hn_pfl_acc.append(HF_hn_pfl_acc_temp/len(HF_hn_pfl_swarm_models))
                 HF_hn_pfl_acc.append(HF_hn_pfl_acc_temp)
                 total_loss.append(total_loss_temp)
+                
+                HF_hn_pfl_acc_full.append(HF_hn_pfl_acc_temp_all)
+                total_loss_full.append(total_loss_temp_all)                
+                
                 print(HF_hn_pfl_acc[-1])
-    
+                print(HF_hn_pfl_acc_full[-1])
     
         # saving results 
         cwd = os.getcwd()
@@ -352,7 +374,15 @@ for save_type in ['extreme','mild']: #['extreme','mild','iid']:
             with open(cwd+'/data/hn_pfl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
                       +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
                 pickle.dump(total_loss,f)
-                
+            
+            with open(cwd+'/data/full_hn_pfl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
+                pickle.dump(HF_hn_pfl_acc_full,f)
+        
+            with open(cwd+'/data/full_hn_pfl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
+                pickle.dump(total_loss_full,f)            
+            
         elif save_type == 'mild':
             with open(cwd+'/data/hn_pfl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
                       +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
