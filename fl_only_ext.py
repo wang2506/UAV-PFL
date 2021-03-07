@@ -384,19 +384,19 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
         
         # streamline later this if-else is unneeded, but its 2 am rn
         if save_type == 'extreme':
-            with open(cwd+'/data/2fl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+            with open(cwd+'/data/fl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
                       +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
                 pickle.dump(fl_acc,f)
         
-            with open(cwd+'/data/2fl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+            with open(cwd+'/data/fl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
                       +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
                 pickle.dump(total_loss,f)
             
-            with open(cwd+'/data/2fl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+            with open(cwd+'/data/full_fl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
                       +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
                 pickle.dump(fl_acc_full,f)
         
-            with open(cwd+'/data/2fl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+            with open(cwd+'/data/full_fl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
                       +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
                 pickle.dump(total_loss_full,f)            
             
