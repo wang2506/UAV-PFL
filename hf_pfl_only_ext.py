@@ -266,7 +266,8 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
         for i in HF_hn_pfl_swarm_models:
             i.load_state_dict(default_w)
             i.train()
-        
+            
+        print(default_w['fc2.bias'])
         
         for t in range(total_time):
             swarm_w = {i:[] for i in range(swarms)}
@@ -295,6 +296,10 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
                     HF_swarm_w[ind_i].append(w)
                     
                     uav_counter += 1
+            
+            for i in HF_hn_pfl_swarm_models:
+                print(i.state_dict()['fc2.bias'])
+            
             
             if (t+1) % (swarm_period*global_period) == 0:
                 ## then a swarm-wide agg followed immediately by a global

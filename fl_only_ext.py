@@ -40,8 +40,8 @@ dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=F
 # dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
 #                                 transform=transforms.ToTensor())
 
-device = torch.device('cuda:2')
-#device = torch.device('cpu')
+# device = torch.device('cuda:2')
+device = torch.device('cpu')
 
 # %% filtering the ML data
 # label split
@@ -266,6 +266,8 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
         for i in fl_swarm_models:
             i.load_state_dict(default_w)
             i.train()
+            
+        print(default_w['fc2.bias'])
         
         for t in range(total_time):
             swarm_w = {i:[] for i in range(swarms)}
@@ -291,6 +293,10 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
                     swarm_w[ind_i].append(w)
                     
                     uav_counter += 1
+            
+            for i in swarm_w:
+                print(i.state_dict()['fc2.bias'])            
+            
             
             if (t+1) % (swarm_period*global_period) == 0:
                 ## then a swarm-wide agg followed immediately by a global
