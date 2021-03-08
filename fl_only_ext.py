@@ -294,7 +294,7 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
                     
                     uav_counter += 1
             
-            for i in swarm_w:
+            for i in fl_swarm_models:
                 print(i.state_dict()['fc2.bias'])            
             
             
