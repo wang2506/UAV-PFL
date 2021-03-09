@@ -262,12 +262,12 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
             HF_hn_pfl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(swarms)]
         else:
             HF_hn_pfl_swarm_models = [CNN(nchannels,nclasses).to(device) for i in range(swarms)]
+            print(default_w['fc2.bias'])
         
         for i in HF_hn_pfl_swarm_models:
             i.load_state_dict(default_w)
             i.train()
             
-        print(default_w['fc2.bias'])
         
         for t in range(total_time):
             swarm_w = {i:[] for i in range(swarms)}
@@ -292,6 +292,8 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
                     _,w,loss = local_obj.train(net=HF_hn_pfl_swarm_models[ind_i].to(device))
                     
                     # print(loss)
+                    print(w['fc2.bias'])
+                    
                     
                     HF_swarm_w[ind_i].append(w)
                     

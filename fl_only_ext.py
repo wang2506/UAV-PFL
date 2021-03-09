@@ -261,13 +261,13 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
         if nn_style =='MLP':
             fl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(swarms)]
         else:
-            fl_swarm_models = [CNN(nchannels,nclasses).to(device) for i in range(swarms)]        
+            fl_swarm_models = [CNN(nchannels,nclasses).to(device) for i in range(swarms)]   
+            print(default_w['fc2.bias'])            
         
         for i in fl_swarm_models:
             i.load_state_dict(default_w)
             i.train()
             
-        print(default_w['fc2.bias'])
         
         for t in range(total_time):
             swarm_w = {i:[] for i in range(swarms)}
