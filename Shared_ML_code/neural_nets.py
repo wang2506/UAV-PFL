@@ -379,7 +379,7 @@ class LocalUpdate_HF_PFL(object):
             
             # calculate the meta-function of SGD
             temp = deepcopy(net.state_dict())
-            print(temp['fc2.bias'])
+            # print(temp['fc2.bias'])
             
             
             temp_params = [] #temp_params = deepcopy(net.parameters())
@@ -399,7 +399,7 @@ class LocalUpdate_HF_PFL(object):
             
             # this produces the intermediate parameters - needed inner for all three terms
             temp_w_inner = deepcopy(net.state_dict()) #used to find intermediate loss
-            print(temp_w_inner['fc2.bias'])
+            # print(temp_w_inner['fc2.bias'])
             
             temp_w_inner_params = []
             for i,j in enumerate(net.parameters()):
@@ -421,7 +421,7 @@ class LocalUpdate_HF_PFL(object):
                 optimizer2.step()
             
             manual_w1 = deepcopy(net.state_dict()) #first of three manual add terms
-            print(manual_w1['fc2.bias'])
+            # print(manual_w1['fc2.bias'])
             
             manual_params1 = []
             for i,j in enumerate(net.parameters()):
@@ -463,6 +463,8 @@ class LocalUpdate_HF_PFL(object):
                 optim_plus2.step()
             
             optim_plus_w = deepcopy(net.state_dict())
+            print(optim_plus_w['fc2.bias'])
+            
             optim_plus_w_params = []
             for i,j in enumerate(net.parameters()):
                 optim_plus_w_params.append(deepcopy(j))
@@ -498,6 +500,8 @@ class LocalUpdate_HF_PFL(object):
                 optim_minus2.step()
                 
             optim_minus_w = deepcopy(net.state_dict())
+            print(optim_minus_w['fc2.bias'])
+            
             optim_minus_w_params = []
             for i,j in enumerate(net.parameters()):
                 optim_minus_w_params.append(deepcopy(j))
@@ -509,6 +513,8 @@ class LocalUpdate_HF_PFL(object):
             for k_i in template_w.keys():
                 template_w[k_i] = manual_w1[k_i] + optim_plus_w[k_i] \
                     + optim_minus_w[k_i] - 2*template_w[k_i]
+            
+            print(template_w['fc2.bias'])
             
             net.load_state_dict(template_w)
             
