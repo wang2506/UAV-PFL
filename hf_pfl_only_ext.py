@@ -44,7 +44,7 @@ dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=F
 # d_test_cifar10 = torchvision.datasets.CIFAR10('./data/cifar10',train=False,download=False)
 
 device = torch.device('cuda:1')
-#device = torch.device('cpu')
+# device = torch.device('cpu')
 
 # %% filtering the ML data
 # label split
@@ -292,15 +292,14 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
                     _,w,loss = local_obj.train(net=HF_hn_pfl_swarm_models[ind_i].to(device))
                     
                     # print(loss)
-                    print(w['fc2.bias'])
-                    
+                    # print(w['fc2.bias'])
                     
                     HF_swarm_w[ind_i].append(w)
                     
                     uav_counter += 1
             
-            for i in HF_hn_pfl_swarm_models:
-                print(i.state_dict()['fc2.bias'])
+            # for i in HF_hn_pfl_swarm_models:
+            #     print(i.state_dict()['fc2.bias'])
             
             
             if (t+1) % (swarm_period*global_period) == 0:

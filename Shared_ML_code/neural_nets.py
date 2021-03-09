@@ -500,7 +500,7 @@ class LocalUpdate_HF_PFL(object):
                 optim_minus2.step()
                 
             optim_minus_w = deepcopy(net.state_dict())
-            print(optim_minus_w['fc2.bias'])
+            # print(optim_minus_w['fc2.bias'])
             
             optim_minus_w_params = []
             for i,j in enumerate(net.parameters()):
@@ -514,7 +514,7 @@ class LocalUpdate_HF_PFL(object):
                 template_w[k_i] = manual_w1[k_i] + optim_plus_w[k_i] \
                     + optim_minus_w[k_i] - 2*template_w[k_i]
             
-            print(template_w['fc2.bias'])
+            # print(template_w['fc2.bias'])
             
             net.load_state_dict(template_w)
             
