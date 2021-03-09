@@ -446,6 +446,8 @@ class LocalUpdate_HF_PFL(object):
                 loss.backward() #this computes the gradient
                 optim_plus.step()
             
+            print(net.state_dict()['fc2.bias'])
+            
             # cannot use torch.optim.SGD because this grad updates original params
             optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
                             del_acc=self.lr1/(2*self.del_acc),\
@@ -463,7 +465,7 @@ class LocalUpdate_HF_PFL(object):
                 optim_plus2.step()
             
             optim_plus_w = deepcopy(net.state_dict())
-            print(optim_plus_w['fc2.bias'])
+            # print(optim_plus_w['fc2.bias'])
             
             optim_plus_w_params = []
             for i,j in enumerate(net.parameters()):
