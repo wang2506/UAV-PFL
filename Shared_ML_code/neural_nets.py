@@ -379,6 +379,9 @@ class LocalUpdate_HF_PFL(object):
             
             # calculate the meta-function of SGD
             temp = deepcopy(net.state_dict())
+            print(temp['fc2.bias'])
+            
+            
             temp_params = [] #temp_params = deepcopy(net.parameters())
             for i,j in enumerate(net.parameters()):
                 temp_params.append(deepcopy(j))
@@ -396,6 +399,8 @@ class LocalUpdate_HF_PFL(object):
             
             # this produces the intermediate parameters - needed inner for all three terms
             temp_w_inner = deepcopy(net.state_dict()) #used to find intermediate loss
+            print(temp_w_inner['fc2.bias'])
+            
             temp_w_inner_params = []
             for i,j in enumerate(net.parameters()):
                 temp_w_inner_params.append(deepcopy(j))
@@ -416,6 +421,8 @@ class LocalUpdate_HF_PFL(object):
                 optimizer2.step()
             
             manual_w1 = deepcopy(net.state_dict()) #first of three manual add terms
+            print(manual_w1['fc2.bias'])
+            
             manual_params1 = []
             for i,j in enumerate(net.parameters()):
                 manual_params1.append(deepcopy(j))
