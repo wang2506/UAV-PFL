@@ -435,7 +435,7 @@ class LocalUpdate_HF_PFL(object):
             ## del_acc terms both plus and minus optim
             # SGD optim will naturally subtract the lr
             optim_plus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=-self.del_acc)#,momentum=0.5,weight_decay=1e-4)         
+                            del_acc=-self.del_acc+0.5*self.del_acc)#,momentum=0.5,weight_decay=1e-4)         
             
             # optim_plus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
                             # del_acc=-self.del_acc,momentum=0.5,weight_decay=1e-4)       
@@ -478,7 +478,6 @@ class LocalUpdate_HF_PFL(object):
             optim_plus_w_params = []
             for i,j in enumerate(net.parameters()):
                 optim_plus_w_params.append(deepcopy(j))
-            
             
             # optim minus
             optim_minus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
