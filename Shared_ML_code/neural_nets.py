@@ -382,8 +382,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
             
             # calculate the meta-function of SGD
             temp = deepcopy(net.state_dict())
-            print('start of LocalUpdate_HF_PFL')
-            print(temp['fc2.bias'])
+            # print('start of LocalUpdate_HF_PFL')
+            # print(temp['fc2.bias'])
             
             
             temp_params = [] #temp_params = deepcopy(net.parameters())
@@ -439,7 +439,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
             
             net.load_state_dict(temp_w_inner)
             # print(temp_w_inner['fc2.bias'])
-            print('start of optim_plus')
+            # print('start of optim_plus')
             ## need to check if load_state_dict also changes net.parameters()
             ### confirmed that this works as I thought
             
@@ -452,7 +452,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
                             # del_acc=-self.del_acc,momentum=0.5,weight_decay=1e-4)       
             
             # optim plus
-            total_loss_op = 0
+            # total_loss_op = 0
             for batch_indx,(images,labels) in enumerate(self.ldr_train2):
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
@@ -462,13 +462,13 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
                 if loss.item() >= 100: #the grad result is so small, as the params are stable
                     break #need to force out otherwise the torch calc will produce nan's
 
-                total_loss_op += loss.item()
+                # total_loss_op += loss.item()
                 loss.retain_grad()
                 loss.backward() #this computes the gradient
                 optim_plus.step()
             
             # print(net.state_dict()['fc2.bias'])
-            print('loss_optim_plus = '+ str(total_loss_op))
+            # print('loss_optim_plus = '+ str(total_loss_op))
             
             # cannot use torch.optim.SGD because this grad updates original params
             optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
