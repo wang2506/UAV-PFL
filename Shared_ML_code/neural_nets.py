@@ -428,6 +428,7 @@ class LocalUpdate_HF_PFL(object):
                 manual_params1.append(deepcopy(j))
             
             net.load_state_dict(temp_w_inner)
+            print(temp_w_inner['fc2.bias'])
             ## need to check if load_state_dict also changes net.parameters()
             ### confirmed that this works as I thought
             
