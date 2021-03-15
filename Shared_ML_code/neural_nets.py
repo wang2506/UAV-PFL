@@ -380,7 +380,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
             # calculate the meta-function of SGD
             temp = deepcopy(net.state_dict())
             print('start of LocalUpdate_HF_PFL')
-            print(temp['fc2.bias'])
+            # print(temp['fc2.bias'])
             
             
             temp_params = [] #temp_params = deepcopy(net.parameters())
@@ -388,20 +388,22 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
                 temp_params.append(deepcopy(j))
                 
             ## inner params obtain - step size - eta_1
+            total_loss = 0
             for batch_indx,(images,labels) in enumerate(self.ldr_train):
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
+                total_loss += loss.item()
                 loss.retain_grad()
                 loss.backward() #this computes the gradient
                 optimizer.step()
             print('loss testing')
-            print(loss.item())
+            print(total_loss)
             
             # this produces the intermediate parameters - needed inner for all three terms
             temp_w_inner = deepcopy(net.state_dict()) #used to find intermediate loss
-            print(temp_w_inner['fc2.bias'])
+            # print(temp_w_inner['fc2.bias'])
             
             temp_w_inner_params = []
             for i,j in enumerate(net.parameters()):
@@ -423,14 +425,14 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
             
             
             manual_w1 = deepcopy(net.state_dict()) #first of three manual add terms
-            print(manual_w1['fc2.bias'])
+            # print(manual_w1['fc2.bias'])
             
             manual_params1 = []
             for i,j in enumerate(net.parameters()):
                 manual_params1.append(deepcopy(j))
             
             net.load_state_dict(temp_w_inner)
-            print(temp_w_inner['fc2.bias'])
+            # print(temp_w_inner['fc2.bias'])
             print('start of optim_plus')
             ## need to check if load_state_dict also changes net.parameters()
             ### confirmed that this works as I thought
@@ -444,16 +446,19 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
                             # del_acc=-self.del_acc,momentum=0.5,weight_decay=1e-4)       
             
             # optim plus
+            total_loss_op = 0
             for batch_indx,(images,labels) in enumerate(self.ldr_train2):
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
+                total_loss_op += loss.item()
                 loss.retain_grad()
                 loss.backward() #this computes the gradient
                 optim_plus.step()
             
             print(net.state_dict()['fc2.bias'])
+            print('loss_optim_plus = '+ str(total_loss_op))
             
             # cannot use torch.optim.SGD because this grad updates original params
             optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
