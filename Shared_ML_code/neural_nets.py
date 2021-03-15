@@ -396,7 +396,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
                 loss.retain_grad()
                 loss.backward() #this computes the gradient
                 optimizer.step()
-                
+            print('loss testing')
+            print(loss.value)
             
             # this produces the intermediate parameters - needed inner for all three terms
             temp_w_inner = deepcopy(net.state_dict()) #used to find intermediate loss
@@ -419,6 +420,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
                 loss.retain_grad()
                 loss.backward() #this computes the gradient
                 optimizer2.step()
+            
             
             manual_w1 = deepcopy(net.state_dict()) #first of three manual add terms
             print(manual_w1['fc2.bias'])
