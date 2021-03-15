@@ -388,18 +388,18 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
                 temp_params.append(deepcopy(j))
                 
             ## inner params obtain - step size - eta_1
-            total_loss = 0
+            # total_loss = 0
             for batch_indx,(images,labels) in enumerate(self.ldr_train):
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
-                total_loss += loss.item()
+                # total_loss += loss.item()
                 loss.retain_grad()
                 loss.backward() #this computes the gradient
                 optimizer.step()
-            print('loss testing')
-            print(total_loss)
+            # print('loss testing')
+            # print(total_loss)
             
             # this produces the intermediate parameters - needed inner for all three terms
             temp_w_inner = deepcopy(net.state_dict()) #used to find intermediate loss
@@ -414,18 +414,18 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
             optimizer2 = SGD_FO_PFL(net.parameters(),deepcopy(temp_params),\
                         lr=self.lr2, momentum=0.5,weight_decay=1e-4)
             
-            total_loss = 0
+            # total_loss = 0
             for batch_indx,(images,labels) in enumerate(self.ldr_train2):
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
-                total_loss += loss.item()
+                # total_loss += loss.item()
                 loss.retain_grad()
                 loss.backward() #this computes the gradient
                 optimizer2.step()
-            print('loss testing optim2')
-            print(total_loss)
+            # print('loss testing optim2')
+            # print(total_loss)
             
             manual_w1 = deepcopy(net.state_dict()) #first of three manual add terms
             # print(manual_w1['fc2.bias'])
@@ -454,6 +454,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
                 log_probs = net(images)
+                print(log_probs)
                 loss = self.loss_func(log_probs,labels)
                 print(loss.item())
                 total_loss_op += loss.item()
