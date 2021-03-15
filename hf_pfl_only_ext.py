@@ -189,7 +189,8 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     # %% create neural networks
     cwd = os.getcwd()
     ## setup FL
-    nn_style = 'CNN'
+    # nn_style = 'CNN'
+    nn_style = 'MLP'
     if nn_style == 'MLP':
         d_in = 784 #np.prod(dataset_train[0][0].shape)
         d_h = 64
@@ -199,7 +200,7 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
         with open(cwd+'/data/default_w','rb') as f:
             default_w = pickle.load(f)  
             
-    else:    
+    else:
         nchannels = 1
         nclasses = 10
         global_net = CNN(nchannels,nclasses).to(device)
@@ -343,7 +344,7 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
         
                     HF_hn_pfl_swarm_models[ind_i].load_state_dict(w_avg_swarm)
                     HF_hn_pfl_swarm_models[ind_i].train()
-        
+            
             
             ## for clarity, splitting this outside of the other if-else statement
             ## evaluate model performance
@@ -386,7 +387,7 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
                 
                 print(HF_hn_pfl_acc[-1])
                 print(HF_hn_pfl_acc_full[-1])
-    
+        
         # saving results 
         cwd = os.getcwd()
         
