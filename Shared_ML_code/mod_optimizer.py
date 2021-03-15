@@ -333,7 +333,9 @@ class SGD_HN_PFL_del(Optimizer):
                 base_params[ind_p].data.add_(-group['del_acc'],d_p)
                 # p.data.add_(-group['lr'], d_p)
                 p.data = base_params[ind_p]
-                print(p.data)
+                
+                if ind_p == len(base_params)-1:    
+                    print(p.data)
                 
         return loss
 
