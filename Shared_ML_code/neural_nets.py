@@ -379,7 +379,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
             
             # calculate the meta-function of SGD
             temp = deepcopy(net.state_dict())
-            # print(temp['fc2.bias'])
+            print('start of LocalUpdate_HF_PFL')
+            print(temp['fc2.bias'])
             
             
             temp_params = [] #temp_params = deepcopy(net.parameters())
@@ -399,7 +400,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
             
             # this produces the intermediate parameters - needed inner for all three terms
             temp_w_inner = deepcopy(net.state_dict()) #used to find intermediate loss
-            # print(temp_w_inner['fc2.bias'])
+            print(temp_w_inner['fc2.bias'])
             
             temp_w_inner_params = []
             for i,j in enumerate(net.parameters()):
@@ -420,7 +421,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
                 optimizer2.step()
             
             manual_w1 = deepcopy(net.state_dict()) #first of three manual add terms
-            # print(manual_w1['fc2.bias'])
+            print(manual_w1['fc2.bias'])
             
             manual_params1 = []
             for i,j in enumerate(net.parameters()):
@@ -428,6 +429,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
             
             net.load_state_dict(temp_w_inner)
             print(temp_w_inner['fc2.bias'])
+            print('start of optim_plus')
             ## need to check if load_state_dict also changes net.parameters()
             ### confirmed that this works as I thought
             
@@ -472,7 +474,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
                 optim_plus2.step()
             
             optim_plus_w = deepcopy(net.state_dict())
-            # print(optim_plus_w['fc2.bias'])
+            print(optim_plus_w['fc2.bias'])
             
             optim_plus_w_params = []
             for i,j in enumerate(net.parameters()):
@@ -497,7 +499,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
                 loss.backward() #this computes the gradient
                 optim_minus.step()
             
-            # print(net.state_dict()['fc2.bias'])
+            print('start of optim_minus')
+            print(net.state_dict()['fc2.bias'])
             
             optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
                             del_acc=self.lr1/(2*self.del_acc))#,\
@@ -517,7 +520,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
                 optim_minus2.step()
                 
             optim_minus_w = deepcopy(net.state_dict())
-            # print(optim_minus_w['fc2.bias'])
+            print(optim_minus_w['fc2.bias'])
             
             optim_minus_w_params = []
             for i,j in enumerate(net.parameters()):
@@ -530,7 +533,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
                 template_w[k_i] = manual_w1[k_i] + optim_plus_w[k_i] \
                     + optim_minus_w[k_i] - 2*template_w[k_i]
             
-            # print(template_w['fc2.bias'])
+            print(template_w['fc2.bias'])
             
             net.load_state_dict(template_w)
             
