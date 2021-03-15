@@ -454,9 +454,13 @@ class LocalUpdate_HF_PFL(object):
             
             # cannot use torch.optim.SGD because this grad updates original params
             optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.lr1/(2*self.del_acc),\
-                        momentum=0.5,weight_decay=1e-4)
-                
+                            del_acc=self.lr1/(2*self.del_acc))#,\
+                        # momentum=0.5,weight_decay=1e-4)
+            
+            # optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
+            #                 del_acc=self.lr1/(2*self.del_acc),\
+            #             momentum=0.5,weight_decay=1e-4)
+            
             for batch_indx,(images,labels) in enumerate(self.ldr_train3):
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
@@ -478,7 +482,10 @@ class LocalUpdate_HF_PFL(object):
             
             # optim minus
             optim_minus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.del_acc,momentum=0.5,weight_decay=1e-4) 
+                            del_acc=self.del_acc)#,momentum=0.5,weight_decay=1e-4) 
+            
+            # optim_minus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
+            #                 del_acc=self.del_acc,momentum=0.5,weight_decay=1e-4)             
             
             # reload to calc optim minus
             net.load_state_dict(temp_w_inner)
@@ -495,9 +502,13 @@ class LocalUpdate_HF_PFL(object):
             # print(net.state_dict()['fc2.bias'])
             
             optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.lr1/(2*self.del_acc),\
-                        momentum=0.5,weight_decay=1e-4)
+                            del_acc=self.lr1/(2*self.del_acc))#,\
+                        # momentum=0.5,weight_decay=1e-4)
             
+            # optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
+            #                 del_acc=self.lr1/(2*self.del_acc),\
+            #             momentum=0.5,weight_decay=1e-4)                
+                
             for batch_indx,(images,labels) in enumerate(self.ldr_train3):
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
