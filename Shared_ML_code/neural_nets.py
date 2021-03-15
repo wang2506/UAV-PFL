@@ -489,6 +489,8 @@ class LocalUpdate_HF_PFL(object):
                 loss.backward() #this computes the gradient
                 optim_minus.step()
             
+            print(net.state_dict()['fc2.bias'])
+            
             optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
                             del_acc=self.lr1/(2*self.del_acc),\
                         momentum=0.5,weight_decay=1e-4)
