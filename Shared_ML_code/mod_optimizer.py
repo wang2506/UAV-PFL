@@ -334,8 +334,11 @@ class SGD_HN_PFL_del(Optimizer):
                 # p.data.add_(-group['lr'], d_p)
                 p.data = base_params[ind_p]
                 
-                if ind_p == len(base_params)-1:    
+                if ind_p == len(base_params)-1:
+                    print('printing p.data value')
                     print(p.data)
+                    print('its gradient')
+                    print(d_p)
                 
         return loss
 
