@@ -340,7 +340,7 @@ class SGD_HN_PFL_del(Optimizer):
                     print('its gradient')
                     print(d_p)
                 
-        return loss
+        # return loss #have return loss for MLP, remove for CNN
 
 
 
