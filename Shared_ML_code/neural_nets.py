@@ -352,8 +352,8 @@ class LocalUpdate_FO_PFL(object):
         return net,net.state_dict(),(sum(batch_loss)/len(batch_loss))
 
 
-class LocalUpdate_HF_PFL(object):
-    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-3):
+class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
+    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-4):
         self.device = device
         self.bs = bs
         self.lr1 = lr1
@@ -405,7 +405,6 @@ class LocalUpdate_HF_PFL(object):
             for i,j in enumerate(net.parameters()):
                 temp_w_inner_params.append(deepcopy(j))
             
-            
             ## calculate term 1 - the optim2 term on batch 2
             # we use the same optimizer as FO_PFL for the isolated batch 2 term
             optimizer2 = SGD_FO_PFL(net.parameters(),deepcopy(temp_params),\
@@ -428,7 +427,7 @@ class LocalUpdate_HF_PFL(object):
                 manual_params1.append(deepcopy(j))
             
             net.load_state_dict(temp_w_inner)
-            print(temp_w_inner['fc2.bias'])
+            # print(temp_w_inner['fc2.bias'])
             ## need to check if load_state_dict also changes net.parameters()
             ### confirmed that this works as I thought
             
@@ -450,7 +449,7 @@ class LocalUpdate_HF_PFL(object):
                 loss.backward() #this computes the gradient
                 optim_plus.step()
             
-            print(net.state_dict()['fc2.bias'])
+            # print(net.state_dict()['fc2.bias'])
             
             # cannot use torch.optim.SGD because this grad updates original params
             optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
@@ -523,7 +522,6 @@ class LocalUpdate_HF_PFL(object):
             optim_minus_w_params = []
             for i,j in enumerate(net.parameters()):
                 optim_minus_w_params.append(deepcopy(j))
-            
             
             # manual_w1, optim_plus_w, optim_minus_w combination
             template_w = deepcopy(temp)
