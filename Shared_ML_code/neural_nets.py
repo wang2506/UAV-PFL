@@ -353,7 +353,7 @@ class LocalUpdate_FO_PFL(object):
 
 
 class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
-    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-4):
+    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-3):
         self.device = device
         self.bs = bs
         self.lr1 = lr1
@@ -414,15 +414,18 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
             optimizer2 = SGD_FO_PFL(net.parameters(),deepcopy(temp_params),\
                         lr=self.lr2, momentum=0.5,weight_decay=1e-4)
             
+            total_loss = 0
             for batch_indx,(images,labels) in enumerate(self.ldr_train2):
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
+                total_loss += loss.item()
                 loss.retain_grad()
                 loss.backward() #this computes the gradient
                 optimizer2.step()
-            
+            print('loss testing optim2')
+            print(total_loss)
             
             manual_w1 = deepcopy(net.state_dict()) #first of three manual add terms
             # print(manual_w1['fc2.bias'])
@@ -440,7 +443,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
             ## del_acc terms both plus and minus optim
             # SGD optim will naturally subtract the lr
             optim_plus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=-self.del_acc)#,momentum=0.5,weight_decay=1e-4)         
+                            del_acc=-self.del_acc,momentum=0.5,weight_decay=1e-4)         
             
             # optim_plus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
                             # del_acc=-self.del_acc,momentum=0.5,weight_decay=1e-4)       
@@ -452,6 +455,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
                 net.zero_grad()
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
+                print(loss.item())
                 total_loss_op += loss.item()
                 loss.retain_grad()
                 loss.backward() #this computes the gradient
