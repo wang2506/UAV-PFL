@@ -354,7 +354,7 @@ class LocalUpdate_FO_PFL(object):
 
 
 class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
-    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-3):
+    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-4):
         self.device = device
         self.bs = bs
         self.lr1 = lr1
@@ -370,6 +370,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
         
     def train(self,net):
         net.train()
+        decay_factor = 1e-5
+        
         optimizer = torch.optim.SGD(net.parameters(),lr=self.lr1, momentum=0.5,weight_decay=1e-4) #l2 penalty
         
         # optimizer2 = torch.optim.SGD(net.parameters(),lr=self.lr2, momentum=0.5,weight_decay=1e-4)
@@ -514,7 +516,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
                 loss.backward() #this computes the gradient
                 optim_minus.step()
             
-            print('start of optim_minus')
+            # print('start of optim_minus')
             # print(net.state_dict()['fc2.bias'])
             
             optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
