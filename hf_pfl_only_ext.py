@@ -189,8 +189,8 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     # %% create neural networks
     cwd = os.getcwd()
     ## setup FL
-    # nn_style = 'CNN'
-    nn_style = 'MLP'
+    nn_style = 'CNN'
+    # nn_style = 'MLP'
     if nn_style == 'MLP':
         d_in = 784 #np.prod(dataset_train[0][0].shape)
         d_h = 64
