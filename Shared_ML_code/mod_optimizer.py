@@ -322,8 +322,8 @@ class SGD_HN_PFL_del(Optimizer):
                 d_p = p.grad.data
                 
                 ## nans happen here when the parameters stay the same
-                if ind_p == len(base_params)-1:
-                    print('stop here')
+                # if ind_p == len(base_params)-1:
+                #     print('stop here')
     
                 if weight_decay != 0:
                     d_p.add_(weight_decay, p.data)
@@ -339,8 +339,8 @@ class SGD_HN_PFL_del(Optimizer):
                     else:
                         d_p = buf
                 
-                if ind_p == len(base_params)-1:
-                    print('stop here')
+                # if ind_p == len(base_params)-1:
+                #     print('stop here')
                 
                 # nans carried over before the momentum + weight_decay
                 # since params don't change (i.e., grad divides by 0), convert nans to 0
