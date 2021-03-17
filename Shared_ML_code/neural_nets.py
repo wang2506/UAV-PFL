@@ -354,7 +354,7 @@ class LocalUpdate_FO_PFL(object):
 
 
 class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
-    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-4):
+    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-3):
         self.device = device
         self.bs = bs
         self.lr1 = lr1
@@ -407,7 +407,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
             
             # this produces the intermediate parameters - needed inner for all three terms
             temp_w_inner = deepcopy(net.state_dict()) #used to find intermediate loss
-            print(temp_w_inner['fc2.bias'])
+            # print(temp_w_inner['fc2.bias'])
             
             temp_w_inner_params = []
             for i,j in enumerate(net.parameters()):
@@ -470,8 +470,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
                 # print(net.state_dict()['fc2.bias'])
                 optim_plus.step()
             
-            print('optim plus printing')
-            print(net.state_dict()['fc2.bias'])
+            # print('optim plus printing')
+            # print(net.state_dict()['fc2.bias'])
             # print('loss_optim_plus = '+ str(total_loss_op))
             
             # cannot use torch.optim.SGD because this grad updates original params
