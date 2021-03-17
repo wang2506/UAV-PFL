@@ -10,7 +10,7 @@ import numpy as np
 import random
 from copy import deepcopy
 import torch.nn.functional as F
-from Shared_ML_code.mod_optimizer import SGD_FO_PFL, SGD_HF_PFL, SGD_HN_PFL_del
+from Shared_ML_code.mod_optimizer import SGD_FO_PFL, SGD_HF_PFL, SGD_HN_PFL_del, SGD_PFL
 
 class MLP(nn.Module):
     def __init__(self,dim_in,dim_hidden,dim_out):
@@ -372,7 +372,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
         net.train()
         decay_factor = 1e-5
         
-        optimizer = torch.optim.SGD(net.parameters(),lr=self.lr1, momentum=0.5,weight_decay=1e-4) #l2 penalty
+        # optimizer = torch.optim.SGD(net.parameters(),lr=self.lr1, momentum=0.5,weight_decay=1e-4) #l2 penalty
+        optimizer = SGD_PFL(net.parameters(),lr=self.lr1, momentum=0.5,weight_decay=1e-4)
         
         # optimizer2 = torch.optim.SGD(net.parameters(),lr=self.lr2, momentum=0.5,weight_decay=1e-4)
         
