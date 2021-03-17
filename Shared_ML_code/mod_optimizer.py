@@ -339,7 +339,8 @@ class SGD_HN_PFL_del(Optimizer):
                 #     print(p.data)
                 #     print('its gradient')
                 #     print(d_p)
-                
+        
+        print(loss)
         return loss
 
 
