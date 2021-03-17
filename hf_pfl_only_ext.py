@@ -43,8 +43,8 @@ dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=F
 # d_train_cifar10 = torchvision.datasets.CIFAR10('./data/cifar10/',train=True,download=False)
 # d_test_cifar10 = torchvision.datasets.CIFAR10('./data/cifar10',train=False,download=False)
 
-device = torch.device('cuda:1')
-# device = torch.device('cpu')
+# device = torch.device('cuda:1')
+device = torch.device('cpu')
 
 # %% filtering the ML data
 # label split
@@ -67,6 +67,7 @@ swarm_period = 2#5
 # cycles = 10
 total_time = 120 #swarm_period*global_period*cycles
 
+# nodes_per_cluster = [1 for i in range(swarms)] # for debugging
 nodes_per_cluster = [np.random.randint(2,6) for i in range(swarms)]
 
 #labels_per_node = [np.random.randint(1,6) for i in range(nodes)] #number of labels changes over time
@@ -234,8 +235,8 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     # lr = 1e-5 #1e-4 previously
     # lr2 = 1e-5
     
-    lr = 1e-4
-    lr2 = 1e-4
+    lr = 5e-5
+    lr2 = 5e-5
     
     # %% running for all time
     batch_size = 12

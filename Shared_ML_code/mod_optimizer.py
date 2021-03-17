@@ -8,7 +8,7 @@ modified SGD to obtain the hessian
 
 import torch
 from torch.optim.optimizer import Optimizer, required
-
+from copy import deepcopy
 
 class SGD_PFL(Optimizer):
     r"""Implements stochastic gradient descent (optionally with momentum).
@@ -159,7 +159,7 @@ class SGD_FO_PFL(Optimizer):
             dampening = group['dampening']
             nesterov = group['nesterov']
             
-            base_params = group['params_base'] #testing
+            base_params = deepcopy(group['params_base']) #testing
             
             ## updates the parameters
             for ind_p,p in enumerate(group['params']):
@@ -239,7 +239,7 @@ class SGD_HF_PFL(Optimizer):
             dampening = group['dampening']
             nesterov = group['nesterov']
             
-            base_params = group['params_base'] #testing
+            base_params = deepcopy(group['params_base']) #testing
             
             ## updates the parameters
             for ind_p,p in enumerate(group['params']):
@@ -310,12 +310,17 @@ class SGD_HN_PFL_del(Optimizer):
             dampening = group['dampening']
             nesterov = group['nesterov']
 
-            base_params = group['params_base']
+            base_params = deepcopy(group['params_base'])
 
             for ind_p,p in enumerate(group['params']):
                 if p.grad is None:
                     continue
                 d_p = p.grad.data
+                
+                # ## nans happen here when the parameters stay the same
+                # if ind_p == len(base_params)-1:
+                #     print('stop here')
+    
                 if weight_decay != 0:
                     d_p.add_(weight_decay, p.data)
                 if momentum != 0:
@@ -330,6 +335,15 @@ class SGD_HN_PFL_del(Optimizer):
                     else:
                         d_p = buf
                 
+                # if ind_p == len(base_params)-1:
+                #     print('stop here')
+                
+                # nans carried over before the momentum + weight_decay
+                # since params don't change (i.e., grad divides by 0), convert nans to 0
+                # d_p[torch.isnan(d_p)] = 0 - may mess with backprop
+                d_p = torch.where(torch.isnan(d_p), torch.zeros_like(d_p), d_p)
+                # d_p.requires_grad(True)
+                
                 base_params[ind_p].data.add_(-group['del_acc'],d_p)
                 # p.data.add_(-group['lr'], d_p)
                 p.data = base_params[ind_p]
@@ -340,7 +354,6 @@ class SGD_HN_PFL_del(Optimizer):
                 #     print('its gradient')
                 #     print(d_p)
         
-        print(loss)
         return loss
 
 

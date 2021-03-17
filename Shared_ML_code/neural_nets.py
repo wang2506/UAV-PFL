@@ -354,7 +354,7 @@ class LocalUpdate_FO_PFL(object):
 
 
 class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
-    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-4):
+    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-3):
         self.device = device
         self.bs = bs
         self.lr1 = lr1
@@ -459,21 +459,23 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
                 # print(loss.item())
-                if loss.item() >= 100: #the grad result is so small, as the params are stable
-                    break #need to force out otherwise the torch calc will produce nan's
+                # if loss.item() >= 100: #the grad result is so small, as the params are stable
+                    # break #need to force out otherwise the torch calc will produce nan's
 
                 # total_loss_op += loss.item()
                 loss.retain_grad()
                 loss.backward() #this computes the gradient
+                
+                # print(net.state_dict()['fc2.bias'])
                 optim_plus.step()
             
-            # print(net.state_dict()['fc2.bias'])
+            print(net.state_dict()['fc2.bias'])
             # print('loss_optim_plus = '+ str(total_loss_op))
             
             # cannot use torch.optim.SGD because this grad updates original params
             optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.lr1/(2*self.del_acc))#,\
-                        # momentum=0.5,weight_decay=1e-4)
+                            del_acc=self.lr1/(2*self.del_acc),\
+                        momentum=0.5,weight_decay=1e-4)
             
             # optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
             #                 del_acc=self.lr1/(2*self.del_acc),\
@@ -499,7 +501,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
             
             # optim minus
             optim_minus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.del_acc)#,momentum=0.5,weight_decay=1e-4) 
+                            del_acc=self.del_acc,momentum=0.5,weight_decay=1e-4) 
             
             # optim_minus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
             #                 del_acc=self.del_acc,momentum=0.5,weight_decay=1e-4)             
@@ -520,8 +522,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
             # print(net.state_dict()['fc2.bias'])
             
             optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.lr1/(2*self.del_acc))#,\
-                        # momentum=0.5,weight_decay=1e-4)
+                            del_acc=self.lr1/(2*self.del_acc),\
+                        momentum=0.5,weight_decay=1e-4)
             
             # optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
             #                 del_acc=self.lr1/(2*self.del_acc),\
