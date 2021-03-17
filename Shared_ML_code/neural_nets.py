@@ -416,7 +416,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
             ## calculate term 1 - the optim2 term on batch 2
             # we use the same optimizer as FO_PFL for the isolated batch 2 term
             optimizer2 = SGD_FO_PFL(net.parameters(),deepcopy(temp_params),\
-                        lr=self.lr2, momentum=0.5,weight_decay=1e-4)
+                        lr=self.lr2/self.bs, momentum=0.5,weight_decay=1e-4)
             
             # total_loss = 0
             for batch_indx,(images,labels) in enumerate(self.ldr_train2):
@@ -476,7 +476,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
             
             # cannot use torch.optim.SGD because this grad updates original params
             optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.lr1/(2*self.del_acc),\
+                            del_acc=-self.lr1*self.lr2/(2*self.del_acc*self.bs),\
                         momentum=0.5,weight_decay=1e-4)
             
             # optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
@@ -524,7 +524,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
             # print(net.state_dict()['fc2.bias'])
             
             optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.lr1/(2*self.del_acc),\
+                            del_acc=self.lr1*self.lr2/(2*self.del_acc*self.bs),\
                         momentum=0.5,weight_decay=1e-4)
             
             # optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
