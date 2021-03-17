@@ -111,7 +111,8 @@ class SGD_PFL(Optimizer):
                         d_p = d_p.add(momentum, buf)
                     else:
                         d_p = buf
-
+                
+                d_p = torch.where(torch.isnan(d_p), torch.zeros_like(d_p), d_p)
                 p.data.add_(-group['lr'], d_p)
 
         return loss
@@ -265,6 +266,7 @@ class SGD_HF_PFL(Optimizer):
                 d_p = torch.where(torch.isnan(d_p), torch.zeros_like(d_p), d_p)
                 
                 base_params[ind_p].data.add_(-group['lr'],d_p)
+                p.data = base_params[ind_p]
                 
         return loss
 
