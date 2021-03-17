@@ -181,6 +181,7 @@ class SGD_FO_PFL(Optimizer):
                         d_p = buf
 
                 # p.data.add_(-group['lr'], d_p)
+                d_p = torch.where(torch.isnan(d_p), torch.zeros_like(d_p), d_p)
                 
                 base_params[ind_p].data.add_(-group['lr'],d_p)
                 p.data = base_params[ind_p].data
@@ -261,6 +262,7 @@ class SGD_HF_PFL(Optimizer):
                         d_p = buf
 
                 # p.data.add_(-group['lr'], d_p)
+                d_p = torch.where(torch.isnan(d_p), torch.zeros_like(d_p), d_p)
                 
                 base_params[ind_p].data.add_(-group['lr'],d_p)
                 
