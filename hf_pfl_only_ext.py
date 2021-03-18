@@ -315,10 +315,10 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
                     local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr1=lr,lr2=lr2,epochs=1,\
                             dataset=dataset_train,indexes=static_nts[uav_counter])
                     
-                    # _,w,loss = local_obj.train(net=deepcopy(HF_hn_pfl_swarm_models[ind_i]).to(device))
-                    #epochs = swarm_period
                     print('yadda')
-                    _,w,loss = local_obj.train(net=HF_hn_pfl_swarm_models[ind_i].to(device))
+                    _,w,loss = local_obj.train(net=deepcopy(HF_hn_pfl_swarm_models[ind_i]).to(device))
+                    #epochs = swarm_period
+                    # _,w,loss = local_obj.train(net=HF_hn_pfl_swarm_models[ind_i].to(device))
                     
                     # print(loss)
                     # print(w['fc2.bias'])
