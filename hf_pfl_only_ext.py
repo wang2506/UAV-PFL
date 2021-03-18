@@ -77,7 +77,7 @@ nodes_per_cluster = [np.random.randint(2,4) for i in range(swarms)]
 
 for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     if save_type == 'extreme':
-        static_lpc = [2 for i in range(swarms)] #static qty of labels per node
+        static_lpc = [1 for i in range(swarms)] #static qty of labels per node
     elif save_type == 'mild':
         static_lpc = [np.random.randint(3,4) for i in range(swarms)] #static qty of labels per node
     else:
@@ -255,8 +255,9 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     # lr2 = 1e-5
     
     # CNN parameters 
-    lr = 1e-2
-    lr2 = 1e-2
+    # lr = 1e-2
+    # lr2 = 1e-2
+    lr,lr2 = 1e-3, 1e-3
     
     # %% running for all time
     batch_size = 30 #12
