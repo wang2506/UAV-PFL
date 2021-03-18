@@ -237,10 +237,10 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     # lr2 = 1e-5
     
     lr = 1e-3
-    lr2 = 1e-3
+    lr2 = 1e-2
     
     # %% running for all time
-    batch_size = 12
+    batch_size = 30 #12
     
     swarm_period = 1
     global_period = 1

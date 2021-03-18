@@ -234,11 +234,11 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
     #     i.train()
     
     ## ovr ML params setup
-    lr = 1e-3
+    lr = 1e-2
     # lr2 = 1e-3
     
     # %% running for all time
-    batch_size = 12 #evenly divisible by 3
+    batch_size = 30 #12 #evenly divisible by 3
     
     swarm_period = 1
     global_period = 1
@@ -298,8 +298,8 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
                     
                     uav_counter += 1
             
-            for i in fl_swarm_models:
-                print(i.state_dict()['fc2.bias'])            
+            # for i in fl_swarm_models:
+            #     print(i.state_dict()['fc2.bias'])            
             
             
             if (t+1) % (swarm_period*global_period) == 0:
@@ -412,7 +412,7 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
     
         # B_j = [i - swarm_w] 
         
-        # saving results 
+        # saving results
         cwd = os.getcwd()
         
         # streamline later this if-else is unneeded, but its 2 am rn

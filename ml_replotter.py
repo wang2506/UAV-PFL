@@ -24,7 +24,7 @@ save_loc = cwd+'/ml_plots/'
 data_loc = cwd+'/data/'
 
 data_source = 'mnist'
-data_source = 'fmnist'
+# data_source = 'fmnist'
 
 # %% plot 1 fl vs pfl extreme nonidd comparison
 # static ratio - 1,1 at taus1=taus2=2
@@ -95,7 +95,8 @@ total_pfl_ratios = []
 full_fl_ratios = []
 full_pfl_ratios = []
 
-for ratio in [1,2,4]:
+nn_style = 'CNN'
+for ratio in [1]:#,2,4]:
     # ratio = 1 #, taus1,taus2 = 1,2,2
     ## reload data
     total_fl_accs, total_pfl_accs = [], []
@@ -109,21 +110,21 @@ for ratio in [1,2,4]:
     for iid_style in ['extreme']:#,'mild']: #,'iid']: #crashed on frankie for some reason...; wtf ,'extreme'
         
         with open(data_loc+'fl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
-                  +'_'+str(swarm_period)+'_'+str(global_period),'rb') as f:
+                  +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style,'rb') as f:
             fl_acc = pk.load(f)
         
         with open(data_loc+'hn_pfl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
-                   +'_'+str(swarm_period)+'_'+str(global_period),'rb') as f:
+                   +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style,'rb') as f:
             pfl_acc = pk.load(f)
         
         
         with open(data_loc+'full_fl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
-                  +'_'+str(swarm_period)+'_'+str(global_period),'rb') as f:
+                  +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style,'rb') as f:
             f_fl_acc = pk.load(f)
         
         with open(data_loc+'full_hn_pfl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
-                   +'_'+str(swarm_period)+'_'+str(global_period),'rb') as f:
-            f_pfl_acc = pk.load(f)        
+                   +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style,'rb') as f:
+            f_pfl_acc = pk.load(f)
         
         total_fl_accs.append(fl_acc)
         total_pfl_accs.append(pfl_acc)
@@ -136,12 +137,12 @@ for ratio in [1,2,4]:
     
     full_fl_ratios.append(full_fl_accs)
     full_pfl_ratios.append(full_pfl_accs)
-
+    
 plt.figure(2)
-f2,ax2 = plt.subplots(1,2,figsize=(10,5),dpi=100,sharey=True)
+f2,ax2 = plt.subplots(1,2,figsize=(10,5),dpi=100)#,sharey=True)
 
 ind = 0
-for i in range(3): #3
+for i in range(1): #3
     if i == 0:
         temp_indexes = np.arange(0,120,step=1) #total_fl_ratios[i][0]
     elif i == 1:
@@ -178,7 +179,7 @@ ax2[ind].grid(True)
 ax2[ind].legend()
 
 ind = 1
-for i in range(3): 
+for i in range(1): 
     if i == 0:
         temp_indexes = np.arange(0,120,step=1) #total_fl_ratios[i][0]
     elif i == 1:
@@ -212,7 +213,6 @@ ax2[ind].set_title(data_source.upper()+' Performance Accuracy Global')
 ax2[ind].set_ylabel('Accuracy (%)')
 ax2[ind].set_xlabel('Local Iteration')
 ax2[ind].grid(True)
-
 
 
 h,l = ax2[0].get_legend_handles_labels()
