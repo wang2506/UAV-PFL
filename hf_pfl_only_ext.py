@@ -77,7 +77,7 @@ nodes_per_cluster = [np.random.randint(2,6) for i in range(swarms)]
 
 for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     if save_type == 'extreme':
-        static_lpc = [10 for i in range(swarms)] #static qty of labels per node
+        static_lpc = [1 for i in range(swarms)] #static qty of labels per node
     elif save_type == 'mild':
         static_lpc = [np.random.randint(1,3) for i in range(swarms)] #static qty of labels per node
     else:
@@ -190,8 +190,8 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     # %% create neural networks
     cwd = os.getcwd()
     ## setup FL
-    nn_style = 'CNN'
-    # nn_style = 'MLP'
+    # nn_style = 'CNN'
+    nn_style = 'MLP'
     if nn_style == 'MLP':
         d_in = 784 #np.prod(dataset_train[0][0].shape)
         d_h = 64
@@ -397,19 +397,19 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
         
         if save_type == 'extreme':
             with open(cwd+'/data/hn_pfl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
-                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
+                      +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style,'wb') as f:
                 pickle.dump(HF_hn_pfl_acc,f)
         
             with open(cwd+'/data/hn_pfl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
-                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
+                      +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style,'wb') as f:
                 pickle.dump(total_loss,f)
             
             with open(cwd+'/data/full_hn_pfl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
-                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
+                      +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style,'wb') as f:
                 pickle.dump(HF_hn_pfl_acc_full,f)
         
             with open(cwd+'/data/full_hn_pfl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
-                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
+                      +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style,'wb') as f:
                 pickle.dump(total_loss_full,f)            
             
         elif save_type == 'mild':
