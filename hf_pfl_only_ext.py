@@ -254,8 +254,8 @@ for save_type in ['mild']: #,'mild']: #['extreme','mild','iid']:
     # lr = 1e-5 #1e-4 previously
     # lr2 = 1e-5
     
-    lr = 1e-3
-    lr2 = 1e-2
+    lr = 1e-4
+    lr2 = 1e-3
     
     # %% running for all time
     batch_size = 30 #12
