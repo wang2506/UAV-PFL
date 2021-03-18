@@ -353,8 +353,8 @@ class LocalUpdate_FO_PFL(object):
         return net,net.state_dict(),(sum(batch_loss)/len(batch_loss))
 
 
-class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
-    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-2):
+class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
+    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-3):
         self.device = device
         self.bs = bs
         self.lr1 = lr1
