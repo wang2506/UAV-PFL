@@ -477,10 +477,9 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
             
             # cannot use torch.optim.SGD because this grad updates original params
             optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.lr1*self.lr2/(2*self.del_acc),\
+                            del_acc=-self.lr1/(2*self.del_acc),\
                         momentum=0.5,weight_decay=1e-4)
-            # *self.bs removed from the denominator
-            # try removal of the negative sign
+            # -self.lr1*self.lr2/(2*self.del_acc*self.bs)
                 
             # optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
             #                 del_acc=self.lr1/(2*self.del_acc),\
