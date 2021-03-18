@@ -395,8 +395,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             
             # calculate the meta-function of SGD
             temp = deepcopy(net.state_dict())
-            # print('start of LocalUpdate_HF_PFL')
-            # print(temp['fc2.bias'])
+            print('start of LocalUpdate_HF_PFL')
+            print(temp['fc2.bias'])
             
             
             temp_params = [] #temp_params = deepcopy(net.parameters())
@@ -571,7 +571,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 template_w[k_i] = manual_w1[k_i] + optim_plus_w[k_i] \
                     + optim_minus_w[k_i] - 2*template_w[k_i]
             
-            # print(template_w['fc2.bias'])
+            print(template_w['fc2.bias'])
             
             net.load_state_dict(template_w)
             
