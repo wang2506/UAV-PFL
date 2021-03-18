@@ -256,7 +256,7 @@ for save_type in ['mild']: #,'mild']: #['extreme','mild','iid']:
     
     # CNN parameters 
     lr = 1e-2
-    lr2 = 1e-3
+    lr2 = 1e-2
     
     # %% running for all time
     batch_size = 30 #12

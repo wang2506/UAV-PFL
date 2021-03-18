@@ -416,7 +416,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-4
             ## calculate term 1 - the optim2 term on batch 2
             # we use the same optimizer as FO_PFL for the isolated batch 2 term
             optimizer2 = SGD_FO_PFL(net.parameters(),deepcopy(temp_params),\
-                        lr=self.lr2/self.bs, momentum=0.5,weight_decay=1e-4)
+                        lr=self.lr2, momentum=0.5,weight_decay=1e-4)
             # lr = self.lr2/self.bs
             
             # total_loss = 0
