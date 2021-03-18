@@ -68,18 +68,18 @@ swarm_period = 2#5
 total_time = 120 #swarm_period*global_period*cycles
 
 # nodes_per_cluster = [1 for i in range(swarms)] # for debugging
-nodes_per_cluster = [np.random.randint(2,6) for i in range(swarms)]
+nodes_per_cluster = [np.random.randint(2,4) for i in range(swarms)]
 
 #labels_per_node = [np.random.randint(1,6) for i in range(nodes)] #number of labels changes over time
 #labels_set = {i: [] for i in range(nodes)} #randomly determined based on labels_per_node
 
 # labels_per_node (i.e., distribution) changes over time...
 
-for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
+for save_type in ['mild']: #,'mild']: #['extreme','mild','iid']:
     if save_type == 'extreme':
         static_lpc = [1 for i in range(swarms)] #static qty of labels per node
     elif save_type == 'mild':
-        static_lpc = [np.random.randint(1,3) for i in range(swarms)] #static qty of labels per node
+        static_lpc = [np.random.randint(3,4) for i in range(swarms)] #static qty of labels per node
     else:
         static_lpc = [10 for i in range(swarms)]
     
@@ -102,7 +102,7 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
             j = int(j)
             tts = sorted(random.sample(range(max_labels),j))
             
-            if flag == True:
+            if flag == True: #extreme flag
                 if tts[0] in starting_list:
                     temp_ls[i] = tts
                     del starting_list[starting_list.index(tts[0])]
@@ -112,13 +112,31 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
                     
                     del starting_list[starting_list.index(sl_temp)]
             else:
-                temp_ls[i] = tts
+                # first ensure that everying in the starting list is covered
+                if len(starting_list) != 0:
+                    if j >= len(starting_list):
+                        tts = deepcopy(starting_list)
+                        starting_list = []
+                        tts2 = sorted(random.sample(range(max_labels),j-len(starting_list)))
+                        
+                        for val in tts2:
+                            tts.append(val)
+                    else: 
+                        tts = sorted(random.sample(starting_list,j))
+                    
+                        for val in tts:
+                            del starting_list[starting_list.index(val)]
+                    temp_ls[i] = tts
+                else:
+                    temp_ls[i] = tts
                 
         return temp_ls
     
     # pop holders
-    static_ls = pop_labels(static_lpc,static_ls)
-    # static_ls = pop_labels(static_lpc,static_ls,flag=False)
+    if save_type == 'extreme':
+        static_ls = pop_labels(static_lpc,static_ls)
+    else:
+        static_ls = pop_labels(static_lpc,static_ls,flag=False)
     # static_ls = {0:[0,1,2,3],1:[5,6,7],2:[4,8,9]}
     
     for i in range(total_time):

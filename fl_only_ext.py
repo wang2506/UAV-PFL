@@ -66,7 +66,7 @@ swarm_period = 2
 # cycles = 20
 
 
-nodes_per_cluster = [np.random.randint(2,6) for i in range(swarms)]
+nodes_per_cluster = [np.random.randint(2,4) for i in range(swarms)]
 
 #labels_per_node = [np.random.randint(1,6) for i in range(nodes)] #number of labels changes over time
 #labels_set = {i: [] for i in range(nodes)} #randomly determined based on labels_per_node
