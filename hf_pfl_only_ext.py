@@ -127,7 +127,8 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     
     # random data qty per label
     # avg_qty = int(len(dataset_train)/(sum(nodes_per_cluster)*total_time))
-    avg_qty = 650
+    avg_qty = 1000
+    # avg_qty = 650
     
     # need to determine data per device and total data per swarm
     static_qty = np.random.normal(avg_qty,avg_qty/10,size=(sum(nodes_per_cluster))).astype(int)
@@ -368,20 +369,30 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
                     temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
                             indexes=cluster_test_sets[i],device=device)                   
                     
-                    temp_acc_full, loss_full = test_img2(ii,dataset_test,\
-                            bs=batch_size,indexes=all_test_indexes,device=device)                        
-                        
-                    HF_hn_pfl_acc_temp += temp_acc * static_data_per_swarm[i] \
-                        / sum(static_data_per_swarm)
+                    # temp_acc_full, loss_full = test_img2(ii,dataset_test,\
+                    #         bs=batch_size,indexes=all_test_indexes,device=device)                        
                     
-                    total_loss_temp += loss * static_data_per_swarm[i] \
-                        / sum(static_data_per_swarm)
+                    HF_hn_pfl_acc_temp += temp_acc/(len(HF_hn_pfl_swarm_models))
+                    total_loss_temp += loss/(len(HF_hn_pfl_swarm_models))
                     
-                    HF_hn_pfl_acc_temp_all += temp_acc_full * static_data_per_swarm[i] \
-                        / sum(static_data_per_swarm)
-                    total_loss_temp_all += loss_full * static_data_per_swarm[i] \
-                        / sum(static_data_per_swarm)
+                    # HF_hn_pfl_acc_temp += temp_acc * static_data_per_swarm[i] \
+                        # / sum(static_data_per_swarm)
                     
+                    # total_loss_temp += loss * static_data_per_swarm[i] \
+                        # / sum(static_data_per_swarm)
+                    
+                    # HF_hn_pfl_acc_temp_all += temp_acc_full * static_data_per_swarm[i] \
+                    #     / sum(static_data_per_swarm)
+                    # total_loss_temp_all += loss_full * static_data_per_swarm[i] \
+                    #     / sum(static_data_per_swarm)
+                
+                
+                temp_acc_full,loss_full = test_img2(ii,dataset_test,bs=batch_size,\
+                        indexes=all_test_indexes,device=device)
+                
+                HF_hn_pfl_acc_temp_all += temp_acc_full
+                total_loss_temp_all += loss_full
+                
                 # HF_hn_pfl_acc.append(HF_hn_pfl_acc_temp/len(HF_hn_pfl_swarm_models))
                 HF_hn_pfl_acc.append(HF_hn_pfl_acc_temp)
                 total_loss.append(total_loss_temp)

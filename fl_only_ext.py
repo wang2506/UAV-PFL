@@ -124,7 +124,9 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
     
     # random data qty per label
     # avg_qty = int(len(dataset_train)/(sum(nodes_per_cluster)*total_time))
-    avg_qty = 650
+    avg_qty = 1000 #int(len(dataset_train)/sum(nodes_per_cluster))
+    # avg_qty = 650
+    
     
     # need to determine data per device and total data per swarm
     static_qty = np.random.normal(avg_qty,avg_qty/10,size=(sum(nodes_per_cluster))).astype(int)
@@ -189,6 +191,8 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
     cwd = os.getcwd()
     ## setup FL
     nn_style = 'CNN'
+    # nn_style = 'MLP'
+    
     if nn_style == 'MLP':
         d_in = 784 #np.prod(dataset_train[0][0].shape)
         d_h = 64
@@ -197,7 +201,7 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
         
         with open(cwd+'/data/default_w','rb') as f:
             default_w = pickle.load(f)  
-            
+        
     else:    
         nchannels = 1
         nclasses = 10
@@ -359,11 +363,13 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
                     # temp_acc_full, loss_full = test_img2(ii,dataset_test,\
                     #         bs=batch_size,indexes=all_test_indexes,device=device)
                     
-                    fl_acc_temp += temp_acc * static_data_per_swarm[i] \
-                        / sum(static_data_per_swarm)
-                    total_loss_temp += loss * static_data_per_swarm[i] \
-                        / sum(static_data_per_swarm)
-                        
+                    fl_acc_temp += temp_acc/len(fl_swarm_models)
+                    total_loss_temp += loss/len(fl_swarm_models) #swarms
+                    # fl_acc_temp += temp_acc * static_data_per_swarm[i] \
+                        # / sum(static_data_per_swarm)
+                    # total_loss_temp += loss * static_data_per_swarm[i] \
+                        # / sum(static_data_per_swarm)
+                    
                     # fl_acc_temp_all += temp_acc_full * static_data_per_swarm[i] \
                     #     / sum(static_data_per_swarm)
                     # total_loss_temp_all += loss_full * static_data_per_swarm[i] \
@@ -412,20 +418,20 @@ for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
         # streamline later this if-else is unneeded, but its 2 am rn
         if save_type == 'extreme':
             with open(cwd+'/data/fl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
-                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
+                      +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style,'wb') as f:
                 pickle.dump(fl_acc,f)
         
             with open(cwd+'/data/fl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
-                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
+                      +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style,'wb') as f:
                 pickle.dump(total_loss,f)
             
             with open(cwd+'/data/full_fl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
-                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
+                      +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style,'wb') as f:
                 pickle.dump(fl_acc_full,f)
         
             with open(cwd+'/data/full_fl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
-                      +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
-                pickle.dump(total_loss_full,f)            
+                      +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style,'wb') as f:
+                pickle.dump(total_loss_full,f)
             
         elif save_type == 'mild':
             with open(cwd+'/data/fl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
