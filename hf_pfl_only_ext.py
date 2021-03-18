@@ -317,7 +317,7 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
                     
                     # _,w,loss = local_obj.train(net=deepcopy(HF_hn_pfl_swarm_models[ind_i]).to(device))
                     #epochs = swarm_period
-                    
+                    print('yadda')
                     _,w,loss = local_obj.train(net=HF_hn_pfl_swarm_models[ind_i].to(device))
                     
                     # print(loss)
