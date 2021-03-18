@@ -44,7 +44,7 @@ dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=F
 # d_test_cifar10 = torchvision.datasets.CIFAR10('./data/cifar10',train=False,download=False)
 
 device = torch.device('cuda:1')
-# device = torch.device('cpu')
+device = torch.device('cpu')
 
 # %% filtering the ML data
 # label split
@@ -255,9 +255,9 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     # lr2 = 1e-5
     
     # CNN parameters 
-    # lr = 1e-2
-    # lr2 = 1e-2
-    lr,lr2 = 1e-3, 1e-3
+    lr = 1e-2
+    lr2 = 1e-2
+    # lr,lr2 = 1e-3, 1e-3
     
     # %% running for all time
     batch_size = 30 #12
@@ -312,9 +312,12 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
             uav_counter = 0
             for ind_i,val_i in enumerate(nodes_per_cluster):
                 for j in range(val_i): # each uav in i
-                    local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr1=lr,lr2=lr2,epochs=swarm_period,\
+                    local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr1=lr,lr2=lr2,epochs=1,\
                             dataset=dataset_train,indexes=static_nts[uav_counter])
+                    
                     # _,w,loss = local_obj.train(net=deepcopy(HF_hn_pfl_swarm_models[ind_i]).to(device))
+                    #epochs = swarm_period
+                    
                     _,w,loss = local_obj.train(net=HF_hn_pfl_swarm_models[ind_i].to(device))
                     
                     # print(loss)

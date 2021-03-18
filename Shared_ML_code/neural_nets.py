@@ -363,13 +363,25 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
         self.dataset = dataset
         self.indexes = indexes
         self.epochs = epochs
-        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
-        self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
-        self.ldr_train3 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        # self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        # self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        # self.ldr_train3 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        
+        self.ind1 = random.sample(self.indexes,len(indexes)/3)
+        self.ind2 = random.sample(self.indexes,len(indexes)/3)
+        self.ind3 = random.sample(self.indexes,len(indexes)/3)
+        
+        self.ldr_train = DataLoader(segmentdataset(dataset,self.ind1),batch_size=bs,shuffle=True)
+        self.ldr_train2 = DataLoader(segmentdataset(dataset,self.ind2),batch_size=bs,shuffle=True)
+        self.ldr_train3 = DataLoader(segmentdataset(dataset,self.ind3),batch_size=bs,shuffle=True)
         self.loss_func = nn.CrossEntropyLoss()
         
     def train(self,net):
         net.train()
+        # print(len(self.ldr_train))
+        # print(len(self.ldr_train2))
+        # print(len(self.ldr_train3))
+        
         decay_factor = 1e-5
         
         # optimizer = torch.optim.SGD(net.parameters(),lr=self.lr1, momentum=0.5,weight_decay=1e-4) #l2 penalty
@@ -383,8 +395,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             
             # calculate the meta-function of SGD
             temp = deepcopy(net.state_dict())
-            # print('start of LocalUpdate_HF_PFL')
-            # print(temp['fc2.bias'])
+            print('start of LocalUpdate_HF_PFL')
+            print(temp['fc2.bias'])
             
             
             temp_params = [] #temp_params = deepcopy(net.parameters())
@@ -478,7 +490,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             
             # cannot use torch.optim.SGD because this grad updates original params
             optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.lr1*self.lr2/(self.del_acc/5),\
+                            del_acc=-self.lr1*self.lr2/(2*self.del_acc),\
                         momentum=0.5,weight_decay=1e-4)
             # -self.lr1*self.lr2/(2*self.del_acc*self.bs)
             
@@ -505,14 +517,13 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 optim_plus_w_params.append(deepcopy(j))
             
             # optim minus
+            # reload to calc optim minus
+            net.load_state_dict(temp_w_inner)            
             optim_minus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
                             del_acc=self.del_acc,momentum=0.5,weight_decay=1e-4) 
             
             # optim_minus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-            #                 del_acc=self.del_acc,momentum=0.5,weight_decay=1e-4)             
-            
-            # reload to calc optim minus
-            net.load_state_dict(temp_w_inner)
+            #                 del_acc=self.del_acc,momentum=0.5,weight_decay=1e-4)
             
             for batch_indx,(images,labels) in enumerate(self.ldr_train2):
                 images,labels = images.to(self.device),labels.to(self.device)
@@ -527,7 +538,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             # print(net.state_dict()['fc2.bias'])
             
             optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.lr1*self.lr2/(self.del_acc/5),\
+                            del_acc=self.lr1*self.lr2/(2*self.del_acc),\
                         momentum=0.5,weight_decay=1e-4)
             # *self.bs # on the denominator
             # self.lr1*self.lr2/(2*self.del_acc*self.bs)
@@ -552,6 +563,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             for i,j in enumerate(net.parameters()):
                 optim_minus_w_params.append(deepcopy(j))
             
+            
             # manual_w1, optim_plus_w, optim_minus_w combination
             template_w = deepcopy(temp)
             
@@ -559,7 +571,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 template_w[k_i] = manual_w1[k_i] + optim_plus_w[k_i] \
                     + optim_minus_w[k_i] - 2*template_w[k_i]
             
-            # print(template_w['fc2.bias'])
+            print(template_w['fc2.bias'])
             
             net.load_state_dict(template_w)
             

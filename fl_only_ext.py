@@ -252,7 +252,7 @@ for save_type in ['extreme']:#,'extreme']: #['extreme','mild','iid']:
     #     i.train()
     
     ## ovr ML params setup
-    lr = 1e-3 #1e-2
+    lr = 1e-2 #1e-2
     # lr2 = 1e-3
     
     # %% running for all time
@@ -307,9 +307,11 @@ for save_type in ['extreme']:#,'extreme']: #['extreme','mild','iid']:
             uav_counter = 0
             for ind_i,val_i in enumerate(nodes_per_cluster):
                 for j in range(val_i): # each uav in i
-                    local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=swarm_period,\
+                    local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=1,\
                             dataset=dataset_train,indexes=static_nts[uav_counter])
                     # _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
+                    #epochs = swarm_period
+                    
                     _,w,loss = local_obj.train(net=fl_swarm_models[ind_i].to(device))
                     
                     swarm_w[ind_i].append(w)
