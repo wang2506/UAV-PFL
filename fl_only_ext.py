@@ -40,8 +40,8 @@ dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=F
 # dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
 #                                 transform=transforms.ToTensor())
 
-# device = torch.device('cuda:2')
-device = torch.device('cpu')
+device = torch.device('cuda:2')
+# device = torch.device('cpu')
 
 # %% filtering the ML data
 # label split
@@ -72,11 +72,11 @@ nodes_per_cluster = [np.random.randint(2,6) for i in range(swarms)]
 #labels_set = {i: [] for i in range(nodes)} #randomly determined based on labels_per_node
 
 # labels_per_node (i.e., distribution) changes over time...
-for save_type in ['extreme']:#,'mild']: #['extreme','mild','iid']:
+for save_type in ['mild']:#,'extreme']: #['extreme','mild','iid']:
     if save_type == 'extreme':
         static_lpc = [1 for i in range(swarms)] #static qty of labels per node
     elif save_type == 'mild':
-        static_lpc = [np.random.randint(1,3) for i in range(swarms)] #static qty of labels per node
+        static_lpc = [np.random.randint(3,4) for i in range(swarms)] #static qty of labels per node
     else:
         static_lpc = [10 for i in range(swarms)]
     
