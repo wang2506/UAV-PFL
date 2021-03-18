@@ -354,7 +354,7 @@ class LocalUpdate_FO_PFL(object):
 
 
 class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
-    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-3):
+    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-2):
         self.device = device
         self.bs = bs
         self.lr1 = lr1
