@@ -99,7 +99,7 @@ for save_type in ['mild']:#,'extreme']: #['extreme','mild','iid']:
             j = int(j)
             tts = sorted(random.sample(range(max_labels),j))
             
-            if flag == True:
+            if flag == True: #extreme flag
                 if tts[0] in starting_list:
                     temp_ls[i] = tts
                     del starting_list[starting_list.index(tts[0])]
@@ -109,13 +109,31 @@ for save_type in ['mild']:#,'extreme']: #['extreme','mild','iid']:
                     
                     del starting_list[starting_list.index(sl_temp)]
             else:
-                temp_ls[i] = tts
+                # first ensure that everying in the starting list is covered
+                if len(starting_list) != 0:
+                    if j >= len(starting_list):
+                        tts = deepcopy(starting_list)
+                        starting_list = []
+                        tts2 = sorted(random.sample(range(max_labels),j-len(starting_list)))
+                        
+                        for val in tts2:
+                            tts.append(val)
+                    else: 
+                        tts = sorted(random.sample(starting_list,j))
+                    
+                        for val in tts:
+                            del starting_list[starting_list.index(val)]
+                    temp_ls[i] = tts
+                else:
+                    temp_ls[i] = tts
                 
         return temp_ls
     
     # pop holders
-    static_ls = pop_labels(static_lpc,static_ls)
-    # static_ls = pop_labels(static_lpc,static_ls,flag=False)
+    if save_type == 'extreme':
+        static_ls = pop_labels(static_lpc,static_ls)
+    else:
+        static_ls = pop_labels(static_lpc,static_ls,flag=False)
     # static_ls = {0:[0,1,2,3],1:[5,6,7],2:[4,8,9]}
     
     for i in range(total_time):
