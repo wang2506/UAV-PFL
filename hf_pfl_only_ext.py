@@ -190,8 +190,8 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     # %% create neural networks
     cwd = os.getcwd()
     ## setup FL
-    # nn_style = 'CNN'
-    nn_style = 'MLP'
+    nn_style = 'CNN'
+    # nn_style = 'MLP'
     if nn_style == 'MLP':
         d_in = 784 #np.prod(dataset_train[0][0].shape)
         d_h = 64
@@ -235,8 +235,8 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     # lr = 1e-5 #1e-4 previously
     # lr2 = 1e-5
     
-    lr = 1e-4
-    lr2 = 1e-4
+    lr = 1e-3
+    lr2 = 1e-3
     
     # %% running for all time
     batch_size = 12
