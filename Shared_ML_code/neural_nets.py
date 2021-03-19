@@ -511,6 +511,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             print('optim plus printing')
             print(net.state_dict()['fc2.bias'])
             # print('loss_optim_plus = '+ str(total_loss_op))
+            optim_plus_w = deepcopy(net.state_dict())
             
             # cannot use torch.optim.SGD because this grad updates original params
             optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
@@ -572,6 +573,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 # scaler.step(optim_minus)
                 
             print('start of optim_minus')
+            net.load_state_dict(optim_plus_w)
             print(net.state_dict()['fc2.bias'])
             
             optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
@@ -583,7 +585,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             # optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
             #                 del_acc=self.lr1/(2*self.del_acc),\
             #             momentum=0.5,weight_decay=1e-4)                
-                
+            
             for batch_indx,(images,labels) in enumerate(self.ldr_train3):
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
@@ -592,7 +594,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
                 loss.retain_grad()
-                    
+                
                 loss.backward() #this computes the gradient
                 optim_minus2.step()
                 
