@@ -43,8 +43,8 @@ dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=F
 # d_train_cifar10 = torchvision.datasets.CIFAR10('./data/cifar10/',train=True,download=False)
 # d_test_cifar10 = torchvision.datasets.CIFAR10('./data/cifar10',train=False,download=False)
 
-# device = torch.device('cuda:1')
-device = torch.device('cpu')
+device = torch.device('cuda:1')
+# device = torch.device('cpu')
 
 # %% filtering the ML data
 # label split
