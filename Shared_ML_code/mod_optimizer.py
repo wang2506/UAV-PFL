@@ -189,7 +189,7 @@ class SGD_FO_PFL(Optimizer):
                 # d_p = torch.where(torch.isnan(d_p), torch.zeros_like(d_p), d_p)
                 
                 base_params[ind_p].data.add_(-group['lr'],d_p)
-                p.data = base_params[ind_p].data
+                p.data = deepcopy(base_params[ind_p].data)
                 
         return loss
 
@@ -272,7 +272,7 @@ class SGD_HF_PFL(Optimizer):
                 # d_p = torch.where(torch.isnan(d_p), torch.zeros_like(d_p), d_p)
                 
                 base_params[ind_p].data.add_(-group['lr'],d_p)
-                p.data = base_params[ind_p]
+                p.data = deepcopy(base_params[ind_p])
                 
         return loss
 
@@ -358,7 +358,7 @@ class SGD_HN_PFL_del(Optimizer):
                 
                 base_params[ind_p].data.add_(-group['del_acc'],d_p)
                 # p.data.add_(-group['lr'], d_p)
-                p.data = base_params[ind_p]
+                p.data = deepcopy(base_params[ind_p])
                 
                 # if ind_p == len(base_params)-1:
                 #     print('printing p.data value')
