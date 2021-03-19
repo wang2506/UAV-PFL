@@ -499,6 +499,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                     # break #need to force out otherwise the torch calc will produce nan's
 
                 total_loss_op += loss.item()
+                print(total_loss_op)
                 # loss.retain_grad()
             
                 loss.backward() #this computes the gradient
