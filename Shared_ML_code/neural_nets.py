@@ -723,8 +723,8 @@ class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
                 temp_params_pos = deepcopy(temp_params_dict)
                 temp_params_neg = deepcopy(temp_params_dict)
                 for p_key in temp_params_dict.keys():
-                    temp_params_pos[p_key] = deepcopy(del_pos_grad[p_count])
-                    temp_params_neg[p_key] = deepcopy(del_neg_grad[p_count])
+                    temp_params_pos[p_key] = del_pos_grad[p_count]
+                    temp_params_neg[p_key] = del_neg_grad[p_count]
                     p_count += 1
                 
                 net_pos.load_state_dict(temp_params_pos)
