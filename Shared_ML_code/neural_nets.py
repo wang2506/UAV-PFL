@@ -720,8 +720,8 @@ class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
                 
                 # grad 2: load in new params for net_pos and net_neg
                 p_count = 0
-                temp_params_pos = deepcopy(temp_params_dict)
-                temp_params_neg = deepcopy(temp_params_dict)
+                temp_params_pos = deepcopy(net.state_dict()) #deepcopy protocol vs pytorch, no choice
+                temp_params_neg = deepcopy(net.state_dict())
                 for p_key in temp_params_dict.keys():
                     temp_params_pos[p_key] = del_pos_grad[p_count]
                     temp_params_neg[p_key] = del_neg_grad[p_count]
