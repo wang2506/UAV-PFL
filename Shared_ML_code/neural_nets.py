@@ -709,7 +709,7 @@ class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
                 loss.backward()
                 
                 # manual grad calc here
-                temp_inner_params = deepcopy(net.parameters())
+                temp_inner_params = [tval for tval in net.parameters()] #deepcopy(net.parameters())
                 for p1,p2 in enumerate(temp_inner_params): #the initial starting params
                     # this is w_i(t) = w_i(t-1) - lr2 * grad
                     lr2_result.append(temp_params[p1]-self.lr2 * p2.grad) 
