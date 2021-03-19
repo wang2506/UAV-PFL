@@ -515,7 +515,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             
             # cannot use torch.optim.SGD because this grad updates original params
             optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.lr1*self.lr2/(2*self.del_acc))#,\
+                            del_acc=-self.lr1*self.lr2/(2*self.del_acc))#,\
                         #momentum=0.5,weight_decay=1e-4)
             # -self.lr1*self.lr2/(2*self.del_acc*self.bs)
             
@@ -600,7 +600,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 
                 # scaler.scale(loss).backward()
                 # scaler.step(optim_minus2)
-                
+            
             optim_minus_w = deepcopy(net.state_dict())
             print('optim minus2 params')
             print(optim_minus_w['fc2.bias'])
