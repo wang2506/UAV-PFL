@@ -356,7 +356,7 @@ class LocalUpdate_FO_PFL(object):
 
 
 class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
-    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-6):
+    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-8):
         self.device = device
         self.bs = bs
         self.lr1 = lr1
@@ -420,10 +420,10 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 # total_loss += loss.item()
                 loss.retain_grad()
                 
-                # loss.backward()
-                # optimizer.step()
-                scaler.scale(loss).backward() #this computes the gradient
-                scaler.step(optimizer)
+                loss.backward()
+                optimizer.step()
+                # scaler.scale(loss).backward() #this computes the gradient
+                # scaler.step(optimizer)
             # print('loss testing')
             # print(total_loss)
             
@@ -453,11 +453,11 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 # total_loss += loss.item()
                 loss.retain_grad()
                 
-                # loss.backward() #this computes the gradient
-                # optimizer2.step()
+                loss.backward() #this computes the gradient
+                optimizer2.step()
                 
-                scaler.scale(loss).backward()
-                scaler.step(optimizer2)
+                # scaler.scale(loss).backward()
+                # scaler.step(optimizer2)
                 
             # print('loss testing optim2')
             # print(total_loss)
@@ -501,12 +501,12 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 # total_loss_op += loss.item()
                 loss.retain_grad()
             
-                # loss.backward() #this computes the gradient
+                loss.backward() #this computes the gradient
                 # # print(net.state_dict()['fc2.bias'])
-                # optim_plus.step()
+                optim_plus.step()
                 
-                scaler.scale(loss).backward()
-                scaler.step(optim_plus)
+                # scaler.scale(loss).backward()
+                # scaler.step(optim_plus)
                 
             print('optim plus printing')
             print(net.state_dict()['fc2.bias'])
@@ -531,13 +531,13 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 loss = self.loss_func(log_probs,labels)
                 loss.retain_grad()
             
-                # loss.backward() #this computes the gradient
+                loss.backward() #this computes the gradient
                 batch_loss.append(loss.item()) #### this is superfluous
                 
-                # optim_plus2.step()
+                optim_plus2.step()
                 
-                scaler.scale(loss).backward()
-                scaler.step(optim_plus2)
+                # scaler.scale(loss).backward()
+                # scaler.step(optim_plus2)
                 
             optim_plus_w = deepcopy(net.state_dict())
             print('optim plus 2 params')
@@ -565,11 +565,11 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 loss = self.loss_func(log_probs,labels)
                 loss.retain_grad()
                 
-                # loss.backward() #this computes the gradient
-                # optim_minus.step()
+                loss.backward() #this computes the gradient
+                optim_minus.step()
                 
-                scaler.scale(loss).backward()
-                scaler.step(optim_minus)
+                # scaler.scale(loss).backward()
+                # scaler.step(optim_minus)
                 
             print('start of optim_minus')
             print(net.state_dict()['fc2.bias'])
@@ -593,11 +593,11 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 loss = self.loss_func(log_probs,labels)
                 loss.retain_grad()
                     
-                # loss.backward() #this computes the gradient
-                # optim_minus2.step()
+                loss.backward() #this computes the gradient
+                optim_minus2.step()
                 
-                scaler.scale(loss).backward()
-                scaler.step(optim_minus2)
+                # scaler.scale(loss).backward()
+                # scaler.step(optim_minus2)
                 
             optim_minus_w = deepcopy(net.state_dict())
             print('optim minus2 params')
