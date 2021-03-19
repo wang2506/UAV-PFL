@@ -255,8 +255,8 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     # lr2 = 1e-5
     
     # CNN parameters 
-    lr = 1e-2
-    lr2 = 1e-5
+    lr = 1e-5
+    lr2 = 1e-2
     # lr,lr2 = 1e-3, 1e-3
     
     # %% running for all time
