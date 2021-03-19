@@ -182,7 +182,7 @@ class LocalUpdate(object):
         
     def train(self,net):
         net.train()
-        optimizer = torch.optim.SGD(net.parameters(),lr=self.lr, momentum=0.5,weight_decay=1e-4) #l2 penalty
+        optimizer = torch.optim.SGD(net.parameters(),lr=self.lr)#, momentum=0.5,weight_decay=1e-4) #l2 penalty
         epoch_loss = []
         for epoch in range(self.epochs):
             batch_loss = []
