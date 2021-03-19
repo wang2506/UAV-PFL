@@ -414,12 +414,12 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             for batch_indx,(images,labels) in enumerate(self.ldr_train):
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
-                with amp.autocast():    
-                    log_probs = net(images)
-                    loss = self.loss_func(log_probs,labels)
-                    # total_loss += loss.item()
-                    loss.retain_grad()
-                    
+                # with amp.autocast(): # not in pytorch 1.5??
+                log_probs = net(images)
+                loss = self.loss_func(log_probs,labels)
+                # total_loss += loss.item()
+                loss.retain_grad()
+                
                 # loss.backward()
                 # optimizer.step()
                 scaler.scale(loss).backward() #this computes the gradient
@@ -446,11 +446,11 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
                 
-                with amp.autocast():
-                    log_probs = net(images)
-                    loss = self.loss_func(log_probs,labels)
-                    # total_loss += loss.item()
-                    loss.retain_grad()
+                # with amp.autocast():
+                log_probs = net(images)
+                loss = self.loss_func(log_probs,labels)
+                # total_loss += loss.item()
+                loss.retain_grad()
                 
                 # loss.backward() #this computes the gradient
                 # optimizer2.step()
@@ -489,16 +489,16 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
                 
-                with amp.autocast():
-                    log_probs = net(images)
-                    loss = self.loss_func(log_probs,labels)
-                    # print(loss.item())
-                    # if loss.item() >= 100: #the grad result is so small, as the params are stable
-                        # break #need to force out otherwise the torch calc will produce nan's
+                # with amp.autocast():
+                log_probs = net(images)
+                loss = self.loss_func(log_probs,labels)
+                # print(loss.item())
+                # if loss.item() >= 100: #the grad result is so small, as the params are stable
+                    # break #need to force out otherwise the torch calc will produce nan's
 
-                    # total_loss_op += loss.item()
-                    loss.retain_grad()
-                
+                # total_loss_op += loss.item()
+                loss.retain_grad()
+            
                 # loss.backward() #this computes the gradient
                 # # print(net.state_dict()['fc2.bias'])
                 # optim_plus.step()
@@ -524,11 +524,11 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
                 
-                with amp.autocast():
-                    log_probs = net(images)
-                    loss = self.loss_func(log_probs,labels)
-                    loss.retain_grad()
-                
+                # with amp.autocast():
+                log_probs = net(images)
+                loss = self.loss_func(log_probs,labels)
+                loss.retain_grad()
+            
                 # loss.backward() #this computes the gradient
                 ## batch_loss.append(loss.item()) #### this is superfluous
                 
@@ -557,10 +557,10 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
                 
-                with amp.autocast():
-                    log_probs = net(images)
-                    loss = self.loss_func(log_probs,labels)
-                    loss.retain_grad()
+                # with amp.autocast():
+                log_probs = net(images)
+                loss = self.loss_func(log_probs,labels)
+                loss.retain_grad()
                     
                 # loss.backward() #this computes the gradient
                 # optim_minus.step()
@@ -585,10 +585,10 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
                 
-                with amp.autocast():
-                    log_probs = net(images)
-                    loss = self.loss_func(log_probs,labels)
-                    loss.retain_grad()
+                # with amp.autocast():
+                log_probs = net(images)
+                loss = self.loss_func(log_probs,labels)
+                loss.retain_grad()
                     
                 # loss.backward() #this computes the gradient
                 # optim_minus2.step()
