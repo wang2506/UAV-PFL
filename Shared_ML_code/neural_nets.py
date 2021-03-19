@@ -356,7 +356,7 @@ class LocalUpdate_FO_PFL(object):
 
 
 class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
-    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-3):
+    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-2):
         self.device = device
         self.bs = bs
         self.lr1 = lr1
@@ -373,9 +373,9 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
         self.ind2 = random.sample(self.indexes,int(len(indexes)/3))
         self.ind3 = random.sample(self.indexes,int(len(indexes)/3))
         
-        self.ldr_train = DataLoader(segmentdataset(dataset,self.ind1),batch_size=bs,shuffle=True)
-        self.ldr_train2 = DataLoader(segmentdataset(dataset,self.ind2),batch_size=bs,shuffle=True)
-        self.ldr_train3 = DataLoader(segmentdataset(dataset,self.ind3),batch_size=bs,shuffle=True)
+        self.ldr_train = DataLoader(segmentdataset(dataset,self.ind1),batch_size=int(bs/3),shuffle=True)
+        self.ldr_train2 = DataLoader(segmentdataset(dataset,self.ind2),batch_size=int(bs/3),shuffle=True)
+        self.ldr_train3 = DataLoader(segmentdataset(dataset,self.ind3),batch_size=int(bs/3),shuffle=True)
         self.loss_func = nn.CrossEntropyLoss()
         
     def train(self,net):
