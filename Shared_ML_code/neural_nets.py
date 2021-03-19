@@ -356,7 +356,7 @@ class LocalUpdate_FO_PFL(object):
 
 
 class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
-    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-4):
+    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-3):
         self.device = device
         self.bs = bs
         self.lr1 = lr1
@@ -424,13 +424,13 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 optimizer.step()
                 # scaler.scale(loss).backward() #this computes the gradient
                 # scaler.step(optimizer)
-            print('loss testing')
-            print(total_loss)
+            # print('loss testing')
+            # print(total_loss)
             
             # this produces the intermediate parameters - needed inner for all three terms
             temp_w_inner = deepcopy(net.state_dict()) #used to find intermediate loss
-            print('w inner result')
-            print(temp_w_inner['fc2.bias'])
+            # print('w inner result')
+            # print(temp_w_inner['fc2.bias'])
             
             temp_w_inner_params = []
             for i,j in enumerate(net.parameters()):
@@ -459,12 +459,12 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 # scaler.scale(loss).backward()
                 # scaler.step(optimizer2)
                 
-            print('loss testing optim2')
-            print(total_loss)
+            # print('loss testing optim2')
+            # print(total_loss)
             
             manual_w1 = deepcopy(net.state_dict()) #first of three manual add terms
-            print('optim2 params check')
-            print(manual_w1['fc2.bias'])
+            # print('optim2 params check')
+            # print(manual_w1['fc2.bias'])
             
             manual_params1 = []
             for i,j in enumerate(net.parameters()):
@@ -509,9 +509,9 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 # scaler.scale(loss).backward()
                 # scaler.step(optim_plus)
                 
-            print('optim plus printing')
-            print(net.state_dict()['fc2.bias'])
-            print('loss_optim_plus = '+ str(total_loss_op))
+            # print('optim plus printing')
+            # print(net.state_dict()['fc2.bias'])
+            # print('loss_optim_plus = '+ str(total_loss_op))
             # optim_plus_w_org = deepcopy(net.state_dict())
             
             # cannot use torch.optim.SGD because this grad updates original params
@@ -544,10 +544,10 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 # scaler.step(optim_plus2)
                 
             optim_plus_w = deepcopy(net.state_dict())
-            print('optim plus 2 params')
-            print(optim_plus_w['fc2.bias'])
-            print('optim plus 2 losses')
-            print(total_loss_op2)
+            # print('optim plus 2 params')
+            # print(optim_plus_w['fc2.bias'])
+            # print('optim plus 2 losses')
+            # print(total_loss_op2)
             
             optim_plus_w_params = []
             for i,j in enumerate(net.parameters()):
@@ -577,9 +577,9 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 # scaler.scale(loss).backward()
                 # scaler.step(optim_minus)
                 
-            print('start of optim_minus')
-            # net.load_state_dict(optim_plus_w_org)
-            print(net.state_dict()['fc2.bias'])
+            # print('start of optim_minus')
+            # # net.load_state_dict(optim_plus_w_org)
+            # print(net.state_dict()['fc2.bias'])
             
             optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
                             del_acc=self.lr1*self.lr2/(2*self.del_acc))#,\
@@ -607,8 +607,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 # scaler.step(optim_minus2)
             
             optim_minus_w = deepcopy(net.state_dict())
-            print('optim minus2 params')
-            print(optim_minus_w['fc2.bias'])
+            # print('optim minus2 params')
+            # print(optim_minus_w['fc2.bias'])
             
             optim_minus_w_params = []
             for i,j in enumerate(net.parameters()):
