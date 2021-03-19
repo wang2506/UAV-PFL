@@ -757,7 +757,7 @@ class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
                 # update temp_params (which are the original parameters)
                 p_count = 0
                 for p_key in temp_params_dict.keys():
-                    temp_params_dict[p_key] = deepcopy(del_sum_grad[p_count])
+                    temp_params_dict[p_key] = del_sum_grad[p_count]
                     p_count += 1
                 net.load_state_dict(temp_params_dict)
                 temp_params = [val for val in net.parameters()]
