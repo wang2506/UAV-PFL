@@ -387,7 +387,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
         decay_factor = 1e-5
         
         # optimizer = torch.optim.SGD(net.parameters(),lr=self.lr1, momentum=0.5,weight_decay=1e-4) #l2 penalty
-        optimizer = SGD_PFL(net.parameters(),lr=self.lr1, momentum=0.5,weight_decay=1e-4)
+        optimizer = SGD_PFL(net.parameters(),lr=self.lr1)#, momentum=0.5,weight_decay=1e-4)
         
         # optimizer2 = torch.optim.SGD(net.parameters(),lr=self.lr2, momentum=0.5,weight_decay=1e-4)
         
@@ -439,7 +439,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             ## calculate term 1 - the optim2 term on batch 2
             # we use the same optimizer as FO_PFL for the isolated batch 2 term
             optimizer2 = SGD_FO_PFL(net.parameters(),deepcopy(temp_params),\
-                        lr=self.lr2, momentum=0.5,weight_decay=1e-4)
+                        lr=self.lr2)#, momentum=0.5,weight_decay=1e-4)
             # lr = self.lr2/self.bs
             
             # total_loss = 0
@@ -479,7 +479,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             ## del_acc terms both plus and minus optim
             # SGD optim will naturally subtract the lr
             optim_plus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=-self.del_acc,momentum=0.5,weight_decay=1e-4)         
+                            del_acc=-self.del_acc)#,momentum=0.5,weight_decay=1e-4)         
             #del_acc = -self.del_acc
                 
             # optim_plus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
@@ -514,8 +514,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             
             # cannot use torch.optim.SGD because this grad updates original params
             optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=-self.lr1*self.lr2/(2*self.del_acc),\
-                        momentum=0.5,weight_decay=1e-4)
+                            del_acc=-self.lr1*self.lr2/(2*self.del_acc))#,\
+                        #momentum=0.5,weight_decay=1e-4)
             # -self.lr1*self.lr2/(2*self.del_acc*self.bs)
             
             # optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
@@ -551,7 +551,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             # reload to calc optim minus
             net.load_state_dict(temp_w_inner)            
             optim_minus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.del_acc,momentum=0.5,weight_decay=1e-4) 
+                            del_acc=self.del_acc)#,momentum=0.5,weight_decay=1e-4) 
             
             # optim_minus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
             #                 del_acc=self.del_acc,momentum=0.5,weight_decay=1e-4)
@@ -575,8 +575,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             print(net.state_dict()['fc2.bias'])
             
             optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.lr1*self.lr2/(2*self.del_acc),\
-                        momentum=0.5,weight_decay=1e-4)
+                            del_acc=self.lr1*self.lr2/(2*self.del_acc))#,\
+                        #momentum=0.5,weight_decay=1e-4)
             # *self.bs # on the denominator
             # self.lr1*self.lr2/(2*self.del_acc*self.bs)
             
@@ -607,7 +607,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             for i,j in enumerate(net.parameters()):
                 optim_minus_w_params.append(deepcopy(j))
             
-            scaler.update() #update scale for next iteration
+            # scaler.update() #update scale for next iteration
             
             # manual_w1, optim_plus_w, optim_minus_w combination
             template_w = deepcopy(temp)
