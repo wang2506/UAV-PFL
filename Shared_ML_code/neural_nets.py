@@ -356,7 +356,7 @@ class LocalUpdate_FO_PFL(object):
 
 
 class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
-    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-4):
+    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-3):
         self.device = device
         self.bs = bs
         self.lr1 = lr1
@@ -463,7 +463,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             # print(total_loss)
             
             manual_w1 = deepcopy(net.state_dict()) #first of three manual add terms
-            print('original params check')
+            print('optim2 params check')
             print(manual_w1['fc2.bias'])
             
             manual_params1 = []
