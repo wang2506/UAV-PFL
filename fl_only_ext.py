@@ -40,8 +40,8 @@ dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=F
 # dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
 #                                 transform=transforms.ToTensor())
 
-device = torch.device('cuda:2')
-# device = torch.device('cpu')
+# device = torch.device('cuda:2')
+device = torch.device('cpu')
 
 # %% filtering the ML data
 # label split

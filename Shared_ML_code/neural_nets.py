@@ -12,7 +12,7 @@ from copy import deepcopy
 import torch.nn.functional as F
 from Shared_ML_code.mod_optimizer import SGD_FO_PFL, SGD_HF_PFL, SGD_HN_PFL_del, SGD_PFL
 
-import torch.cuda.amp as amp
+# import torch.cuda.amp as amp
 
 class MLP(nn.Module):
     def __init__(self,dim_in,dim_hidden,dim_out):
@@ -392,7 +392,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
         # optimizer2 = torch.optim.SGD(net.parameters(),lr=self.lr2, momentum=0.5,weight_decay=1e-4)
         
         # use amp.autocast + amp.GradScaler
-        scaler = amp.GradScaler()
+        # scaler = amp.GradScaler()
         
         
         epoch_loss = []
@@ -516,7 +516,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             
             # cannot use torch.optim.SGD because this grad updates original params
             optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=1e-3)#-self.lr1*self.lr2/(self.del_acc))#,\
+                            del_acc=-self.lr1*self.lr2/(self.del_acc))#,\
                         #momentum=0.5,weight_decay=1e-4)
             # -self.lr1*self.lr2/(2*self.del_acc*self.bs)
             
@@ -582,7 +582,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             # print(net.state_dict()['fc2.bias'])
             
             optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=1e-3)#self.lr1*self.lr2/(self.del_acc))#,\
+                            del_acc=self.lr1*self.lr2/(self.del_acc))#,\
                         #momentum=0.5,weight_decay=1e-4)
             # *self.bs # on the denominator
             # self.lr1*self.lr2/(2*self.del_acc*self.bs)
@@ -631,6 +631,146 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
             
         return net,net.state_dict(),(sum(batch_loss)/len(batch_loss))
+
+
+class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
+    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-2):
+        self.device = device
+        self.bs = bs
+        self.lr1 = lr1
+        self.lr2 = lr2
+        self.del_acc = del_acc
+        self.dataset = dataset
+        self.indexes = indexes
+        self.epochs = epochs
+        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        self.ldr_train3 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        
+        # self.ind1 = random.sample(self.indexes,int(len(indexes)/3))
+        # self.ind2 = random.sample(self.indexes,int(len(indexes)/3))
+        # self.ind3 = random.sample(self.indexes,int(len(indexes)/3))
+        
+        # self.ldr_train = DataLoader(segmentdataset(dataset,self.ind1),batch_size=bs,shuffle=True)
+        # self.ldr_train2 = DataLoader(segmentdataset(dataset,self.ind2),batch_size=bs,shuffle=True)
+        # self.ldr_train3 = DataLoader(segmentdataset(dataset,self.ind3),batch_size=bs,shuffle=True)
+        self.loss_func = nn.CrossEntropyLoss()
+        
+    def train(self,net):
+        net.train()
+        optimizer = SGD_PFL(net.parameters(),lr=self.lr1)#, momentum=0.5,weight_decay=1e-4)
+        # optimizer2 = torch.optim.SGD(net.parameters(),lr=self.lr2, momentum=0.5,weight_decay=1e-4)
+        
+        epoch_loss = []
+        for epoch in range(self.epochs):
+            batch_loss = []
+            
+            # calculate the meta-function of SGD
+            temp = deepcopy(net.state_dict())
+            print('start of LocalUpdate_HF_PFL')
+            print(temp['fc2.bias'])
+            
+            temp_params = [] #temp_params = deepcopy(net.parameters())
+            for i,j in enumerate(net.parameters()):
+                temp_params.append(deepcopy(j))
+            temp_params_dict = deepcopy(net.state_dict())
+            
+            ## inner params obtain - step size - eta_1
+            for batch_indx,(images,labels) in enumerate(self.ldr_train):
+                images,labels = images.to(self.device),labels.to(self.device)
+                net.zero_grad()
+                log_probs = net(images)
+                loss = self.loss_func(log_probs,labels)
+                batch_loss.append(loss.item())
+                loss.backward()
+                optimizer.step()
+
+            # this produces the intermediate parameters - needed inner for all three terms
+            temp_w_inner = deepcopy(net.state_dict()) #used to find intermediate loss            
+            temp_w_inner_params = []
+            for i,j in enumerate(net.parameters()):
+                temp_w_inner_params.append(deepcopy(j))
+            # print('w inner result')
+            # print(temp_w_inner['fc2.bias'])
+            
+            ## need three gradients
+            # grad 1: D_outer
+            for batch_indx,(images,labels) in enumerate(self.ldr_train2):
+                lr2_result = []
+                del_pos_grad, del_neg_grad = [], []
+                del_sum_grad = []
+                net_pos = deepcopy(net)
+                net_neg = deepcopy(net)
+                
+                images,labels = images.to(self.device),labels.to(self.device)
+                net.zero_grad()#, net_pos.zero_grad(), net_neg.zero_grad()
+                log_probs = net(images)
+                loss = self.loss_func(log_probs,labels)           
+                loss.backward()
+                
+                # manual grad calc here
+                temp_inner_params = deepcopy(net.parameters())
+                for p1,p2 in enumerate(temp_inner_params): #the initial starting params
+                    # this is w_i(t) = w_i(t-1) - lr2 * grad
+                    lr2_result.append(temp_params[p1]-self.lr2 * p2.grad) 
+                    
+                    # grad 2: delta positive and delta negative internal
+                    del_pos_grad.append(temp_params[p1]+self.del_acc * p2.grad)
+                    del_neg_grad.append(temp_params[p1]-self.del_acc * p2.grad)
+                
+                # grad 2: load in new params for net_pos and net_neg
+                p_count = 0
+                temp_params_pos = deepcopy(temp_params_dict)
+                temp_params_neg = deepcopy(temp_params_dict)
+                for p_key in temp_params_dict.keys():
+                    temp_params_pos[p_key] = deepcopy(del_pos_grad[p_count])
+                    temp_params_neg[p_key] = deepcopy(del_neg_grad[p_count])
+                    p_count += 1
+                
+                net_pos.load_state_dict(temp_params_pos)
+                net_neg.load_state_dict(temp_params_neg)
+                
+                # grad 2: \frac{1}{2\del_acc} (grad_pos - grad_neg)
+                # just take the final one as the batch
+                for batch_indx2, (images2,labels2) in enumerate(self.ldr_train3):
+                    # del_sum_grad = [] # may need to change to avg
+                    images2,labels2 = images2.to(self.device),labels2.to(self.device)
+                    net_pos.zero_grad(), net_neg.zero_grad()
+                    log_probs_pos = net_pos(images2)
+                    log_probs_neg = net_neg(images2)
+                    
+                    loss_pos = self.loss_func(log_probs_pos, labels2)
+                    loss_neg = self.loss_func(log_probs_neg, labels2)
+                    
+                    loss_pos.backward(), loss_neg.backward()
+                    
+                    # grad 2: gradients now available
+                    temp_inner_pos = [tval for tval in net_pos.parameters()]
+                    temp_inner_neg = [tval for tval in net_neg.parameters()]
+                    for p1, p2 in enumerate(lr2_result):
+                        # completed sum of all params
+                        del_sum_grad.append(p2+self.lr2*self.lr1/(2*self.del_acc)\
+                            *(temp_inner_pos[p1]- temp_inner_neg[p1]) )
+                    break
+            
+                # load in new params, and continue mini batch process
+                # update temp_params (which are the original parameters)
+                p_count = 0
+                for p_key in temp_params_dict.keys():
+                    temp_params_dict[p_key] = deepcopy(del_sum_grad[p_count])
+                    p_count += 1
+                net.load_state_dict(temp_params_dict)
+                temp_params = [val for val in net.parameters()]
+                
+            print('everything put together params')
+            print(net.state_dict()['fc2.bias'])
+            
+            epoch_loss.append(sum(batch_loss)/len(batch_loss))
+            
+        return net,net.state_dict(),(sum(batch_loss)/len(batch_loss))
+
+
+
 
 
 def FedAvg(w,node_train_sets):

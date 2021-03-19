@@ -16,7 +16,7 @@ import random
 import pickle
 
 from Shared_ML_code.neural_nets import MLP, CNN, FedAvg, FPAvg, LocalUpdate, \
-    LocalUpdate_PFL, FedAvg2, LocalUpdate_FO_PFL, LocalUpdate_HF_PFL
+    LocalUpdate_PFL, FedAvg2, LocalUpdate_FO_PFL, LocalUpdate_HF_PFL, LocalUpdate_trad_HF
 from Shared_ML_code.testing import test_img, test_img2
 
 
@@ -43,8 +43,8 @@ dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=F
 # d_train_cifar10 = torchvision.datasets.CIFAR10('./data/cifar10/',train=True,download=False)
 # d_test_cifar10 = torchvision.datasets.CIFAR10('./data/cifar10',train=False,download=False)
 
-device = torch.device('cuda:1')
-# device = torch.device('cpu')
+# device = torch.device('cuda:1')
+device = torch.device('cpu')
 
 # %% filtering the ML data
 # label split
@@ -312,9 +312,11 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
             uav_counter = 0
             for ind_i,val_i in enumerate(nodes_per_cluster):
                 for j in range(val_i): # each uav in i
-                    local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr1=lr,lr2=lr2,epochs=1,\
+                    local_obj = LocalUpdate_trad_HF(device,bs=batch_size,lr1=lr,lr2=lr2,epochs=1,\
                             dataset=dataset_train,indexes=static_nts[uav_counter])
                     
+                    #LocalUpdate_HF_PFL
+                        
                     # print('yadda')
                     _,w,loss = local_obj.train(net=deepcopy(HF_hn_pfl_swarm_models[ind_i]).to(device))
                     #epochs = swarm_period
