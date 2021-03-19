@@ -530,7 +530,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 loss.retain_grad()
             
                 # loss.backward() #this computes the gradient
-                ## batch_loss.append(loss.item()) #### this is superfluous
+                batch_loss.append(loss.item()) #### this is superfluous
                 
                 # optim_plus2.step()
                 
