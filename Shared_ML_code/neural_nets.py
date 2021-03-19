@@ -511,7 +511,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             print('optim plus printing')
             print(net.state_dict()['fc2.bias'])
             # print('loss_optim_plus = '+ str(total_loss_op))
-            optim_plus_w_org = deepcopy(net.state_dict())
+            # optim_plus_w_org = deepcopy(net.state_dict())
             
             # cannot use torch.optim.SGD because this grad updates original params
             optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
@@ -573,7 +573,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 # scaler.step(optim_minus)
                 
             print('start of optim_minus')
-            net.load_state_dict(optim_plus_w_org)
+            # net.load_state_dict(optim_plus_w_org)
             print(net.state_dict()['fc2.bias'])
             
             optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
