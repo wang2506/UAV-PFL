@@ -112,7 +112,9 @@ class SGD_PFL(Optimizer):
                     else:
                         d_p = buf
                 
-                d_p = torch.where(torch.isnan(d_p), torch.zeros_like(d_p), d_p)
+                
+                # this one sort of works
+                # d_p = torch.where(torch.isnan(d_p), torch.zeros_like(d_p), d_p)
                 p.data.add_(-group['lr'], d_p)
 
         return loss
@@ -182,7 +184,9 @@ class SGD_FO_PFL(Optimizer):
                         d_p = buf
 
                 # p.data.add_(-group['lr'], d_p)
-                d_p = torch.where(torch.isnan(d_p), torch.zeros_like(d_p), d_p)
+                
+                # this one sort of works
+                # d_p = torch.where(torch.isnan(d_p), torch.zeros_like(d_p), d_p)
                 
                 base_params[ind_p].data.add_(-group['lr'],d_p)
                 p.data = base_params[ind_p].data
@@ -263,7 +267,9 @@ class SGD_HF_PFL(Optimizer):
                         d_p = buf
 
                 # p.data.add_(-group['lr'], d_p)
-                d_p = torch.where(torch.isnan(d_p), torch.zeros_like(d_p), d_p)
+                
+                # this one sort of works
+                # d_p = torch.where(torch.isnan(d_p), torch.zeros_like(d_p), d_p)
                 
                 base_params[ind_p].data.add_(-group['lr'],d_p)
                 p.data = base_params[ind_p]
@@ -345,7 +351,9 @@ class SGD_HN_PFL_del(Optimizer):
                 # nans carried over before the momentum + weight_decay
                 # since params don't change (i.e., grad divides by 0), convert nans to 0
                 # d_p[torch.isnan(d_p)] = 0 - may mess with backprop
-                d_p = torch.where(torch.isnan(d_p), torch.zeros_like(d_p), d_p)
+                
+                # this one sort of works
+                # d_p = torch.where(torch.isnan(d_p), torch.zeros_like(d_p), d_p)
                 # d_p.requires_grad(True)
                 
                 base_params[ind_p].data.add_(-group['del_acc'],d_p)

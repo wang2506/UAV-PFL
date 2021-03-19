@@ -12,6 +12,8 @@ from copy import deepcopy
 import torch.nn.functional as F
 from Shared_ML_code.mod_optimizer import SGD_FO_PFL, SGD_HF_PFL, SGD_HN_PFL_del, SGD_PFL
 
+import torch.cuda.amp as amp
+
 class MLP(nn.Module):
     def __init__(self,dim_in,dim_hidden,dim_out):
         super(MLP,self).__init__()
@@ -389,6 +391,10 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
         
         # optimizer2 = torch.optim.SGD(net.parameters(),lr=self.lr2, momentum=0.5,weight_decay=1e-4)
         
+        # use amp.autocast + amp.GradScaler
+        scaler = amp.GradScaler()
+        
+        
         epoch_loss = []
         for epoch in range(self.epochs):
             batch_loss = []
@@ -408,12 +414,16 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             for batch_indx,(images,labels) in enumerate(self.ldr_train):
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
-                log_probs = net(images)
-                loss = self.loss_func(log_probs,labels)
-                # total_loss += loss.item()
-                loss.retain_grad()
-                loss.backward() #this computes the gradient
-                optimizer.step()
+                with amp.autocast():    
+                    log_probs = net(images)
+                    loss = self.loss_func(log_probs,labels)
+                    # total_loss += loss.item()
+                    loss.retain_grad()
+                    
+                # loss.backward()
+                # optimizer.step()
+                scaler.scale(loss).backward() #this computes the gradient
+                scaler.step(optimizer)
             # print('loss testing')
             # print(total_loss)
             
@@ -435,12 +445,19 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             for batch_indx,(images,labels) in enumerate(self.ldr_train2):
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
-                log_probs = net(images)
-                loss = self.loss_func(log_probs,labels)
-                # total_loss += loss.item()
-                loss.retain_grad()
-                loss.backward() #this computes the gradient
-                optimizer2.step()
+                
+                with amp.autocast():
+                    log_probs = net(images)
+                    loss = self.loss_func(log_probs,labels)
+                    # total_loss += loss.item()
+                    loss.retain_grad()
+                
+                # loss.backward() #this computes the gradient
+                # optimizer2.step()
+                
+                scaler.scale(loss).backward()
+                scaler.step(optimizer2)
+                
             # print('loss testing optim2')
             # print(total_loss)
             
@@ -471,19 +488,24 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             for batch_indx,(images,labels) in enumerate(self.ldr_train2):
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
-                log_probs = net(images)
-                loss = self.loss_func(log_probs,labels)
-                # print(loss.item())
-                # if loss.item() >= 100: #the grad result is so small, as the params are stable
-                    # break #need to force out otherwise the torch calc will produce nan's
-
-                # total_loss_op += loss.item()
-                loss.retain_grad()
-                loss.backward() #this computes the gradient
                 
-                # print(net.state_dict()['fc2.bias'])
-                optim_plus.step()
-            
+                with amp.autocast():
+                    log_probs = net(images)
+                    loss = self.loss_func(log_probs,labels)
+                    # print(loss.item())
+                    # if loss.item() >= 100: #the grad result is so small, as the params are stable
+                        # break #need to force out otherwise the torch calc will produce nan's
+
+                    # total_loss_op += loss.item()
+                    loss.retain_grad()
+                
+                # loss.backward() #this computes the gradient
+                # # print(net.state_dict()['fc2.bias'])
+                # optim_plus.step()
+                
+                scaler.scale(loss).backward()
+                scaler.step(optim_plus)
+                
             # print('optim plus printing')
             # print(net.state_dict()['fc2.bias'])
             # print('loss_optim_plus = '+ str(total_loss_op))
@@ -501,14 +523,20 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             for batch_indx,(images,labels) in enumerate(self.ldr_train3):
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
-                log_probs = net(images)
-                loss = self.loss_func(log_probs,labels)
-                loss.retain_grad()
-                loss.backward() #this computes the gradient
-                batch_loss.append(loss.item()) #### this is superfluous
                 
-                optim_plus2.step()
-            
+                with amp.autocast():
+                    log_probs = net(images)
+                    loss = self.loss_func(log_probs,labels)
+                    loss.retain_grad()
+                
+                # loss.backward() #this computes the gradient
+                ## batch_loss.append(loss.item()) #### this is superfluous
+                
+                # optim_plus2.step()
+                
+                scaler.scale(loss).backward()
+                scaler.step(optim_plus2)
+                
             optim_plus_w = deepcopy(net.state_dict())
             # print(optim_plus_w['fc2.bias'])
             
@@ -528,12 +556,18 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             for batch_indx,(images,labels) in enumerate(self.ldr_train2):
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
-                log_probs = net(images)
-                loss = self.loss_func(log_probs,labels)
-                loss.retain_grad()
-                loss.backward() #this computes the gradient
-                optim_minus.step()
-            
+                
+                with amp.autocast():
+                    log_probs = net(images)
+                    loss = self.loss_func(log_probs,labels)
+                    loss.retain_grad()
+                    
+                # loss.backward() #this computes the gradient
+                # optim_minus.step()
+                
+                scaler.scale(loss).backward()
+                scaler.step(optim_minus)
+                
             # print('start of optim_minus')
             # print(net.state_dict()['fc2.bias'])
             
@@ -550,11 +584,17 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             for batch_indx,(images,labels) in enumerate(self.ldr_train3):
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
-                log_probs = net(images)
-                loss = self.loss_func(log_probs,labels)
-                loss.retain_grad()
-                loss.backward() #this computes the gradient
-                optim_minus2.step()
+                
+                with amp.autocast():
+                    log_probs = net(images)
+                    loss = self.loss_func(log_probs,labels)
+                    loss.retain_grad()
+                    
+                # loss.backward() #this computes the gradient
+                # optim_minus2.step()
+                
+                scaler.scale(loss).backward()
+                scaler.step(optim_minus2)
                 
             optim_minus_w = deepcopy(net.state_dict())
             # print(optim_minus_w['fc2.bias'])
@@ -563,6 +603,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             for i,j in enumerate(net.parameters()):
                 optim_minus_w_params.append(deepcopy(j))
             
+            scaler.update() #update scale for next iteration
             
             # manual_w1, optim_plus_w, optim_minus_w combination
             template_w = deepcopy(temp)
