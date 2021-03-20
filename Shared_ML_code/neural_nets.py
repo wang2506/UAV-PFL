@@ -195,7 +195,6 @@ class LocalUpdate(object):
                 loss.backward() #this computes the gradient
                 optimizer.step()
                 batch_loss.append(loss.item())
-                break
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
         return net,net.state_dict(),(sum(batch_loss)/len(batch_loss))
 
@@ -685,7 +684,6 @@ class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
                 batch_loss.append(loss.item()) # init batch loss
                 loss.backward()
                 optimizer.step()
-                break
             
             # this produces the intermediate parameters - needed inner for all three terms
             temp_w_inner = deepcopy(net.state_dict()) #used to find intermediate loss            
