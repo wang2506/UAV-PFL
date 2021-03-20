@@ -667,8 +667,8 @@ class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
             
             # calculate the meta-function of SGD
             temp = deepcopy(net.state_dict())
-            print('start of LocalUpdate_HF_PFL')
-            print(temp['fc2.bias'])
+            # print('start of LocalUpdate_HF_PFL')
+            # print(temp['fc2.bias'])
             
             temp_params = [] #temp_params = deepcopy(net.parameters())
             for i,j in enumerate(net.parameters()):
@@ -762,8 +762,8 @@ class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
                 net.load_state_dict(temp_params_dict)
                 temp_params = [val for val in net.parameters()]
                 
-            print('everything put together params')
-            print(net.state_dict()['fc2.bias'])
+            # print('everything put together params')
+            # print(net.state_dict()['fc2.bias'])
             
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
             
