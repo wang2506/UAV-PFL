@@ -793,10 +793,13 @@ class LocalUpdate_trad_FO(object): #MLP 1e-3; CNN 1e-2
         ###
         # prev ldr_train with bs/3, rather than all data
         ###
-        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),\
-                    batch_size=int(len(indexes)/2),shuffle=True)
-        self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),\
-                    batch_size=int(len(indexes)/2),shuffle=True)
+        self.ind_split = int(len(indexes)/3)
+        self.ind1 = random.sample(indexes,self.ind_split)
+        self.ind2 = random.sample(indexes,self.ind_split)
+        self.ldr_train = DataLoader(segmentdataset(dataset,self.ind1),\
+                    batch_size=self.ind_split,shuffle=True)
+        self.ldr_train2 = DataLoader(segmentdataset(dataset,self.ind2),\
+                    batch_size=self.ind_split,shuffle=True)
         self.loss_func = nn.CrossEntropyLoss()
         
     def train(self,net):
