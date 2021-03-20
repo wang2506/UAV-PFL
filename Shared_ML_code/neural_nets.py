@@ -634,7 +634,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
 
 
 class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
-    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=2e-2):
+    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-2):
         self.device = device
         self.bs = bs
         self.lr1 = lr1
@@ -750,6 +750,8 @@ class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
                     print('loss values')
                     print(loss_pos)
                     print(loss_neg)
+                    if loss_pos >= 10:
+                        break_outer = True
                     
                     print('grad check for pos and neg finale')
                     print(temp_inner_pos[-1].grad)
@@ -770,6 +772,9 @@ class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
                     p_count += 1
                 net.load_state_dict(temp_params_dict)
                 temp_params = [val for val in net.parameters()]
+                
+                if break_outer == True:
+                    break
                 
             print('everything put together params')
             print(net.state_dict()['fc2.bias'])
