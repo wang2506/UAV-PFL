@@ -258,8 +258,8 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     def lr_spacing(tt):
         holder = np.zeros(tt)
         # do a power function; 2^{-x}
-        spacing = (np.log2(5e-3) - np.log2(1e-5))/tt
-        return np.power(2,np.arange(np.log2(1e-5),np.log2(5e-3),spacing))
+        spacing = (np.log2(1e-3) - np.log2(1e-5))/tt
+        return np.power(2,np.arange(np.log2(1e-5),np.log2(1e-3),spacing))
         # np.power(2,np.arange(np.log2(1e-5),np.log2(5e-3),(np.log2(5e-3)-np.log2(1e-5))/total_time ))
         
     lr = 1e-3
