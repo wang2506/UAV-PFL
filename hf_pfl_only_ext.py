@@ -255,9 +255,18 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     # lr2 = 1e-5
     
     # CNN parameters
+    def lr_spacing(tt):
+        holder = np.zeros(tt)
+        # do a power function; 2^{-x}
+        spacing = (np.log2(5e-3) - np.log2(1e-5))/tt
+        return np.power(2,np.arange(np.log2(1e-5),np.log2(5e-3),spacing))
+        # np.power(2,np.arange(np.log2(1e-5),np.log2(5e-3),(np.log2(5e-3)-np.log2(1e-5))/total_time ))
+        
     lr = 1e-3
-    lr2 = 5e-3
+    # lr2 = 5e-3
+    lr2_vec = np.flip(lr_spacing(tt=total_time)) #lr2 populated within the loop
     # lr,lr2 = 1e-3, 1e-3
+
     
     # %% running for all time
     batch_size = 30 #12
@@ -296,6 +305,8 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
             
         
         for t in range(total_time):
+            lr2 = lr2_vec[t]
+            
             swarm_w = {i:[] for i in range(swarms)}
             # data_processed = {i:0 for i in range(swarms)}
             
