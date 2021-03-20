@@ -177,7 +177,8 @@ class LocalUpdate(object):
         self.dataset = dataset
         self.indexes = indexes
         self.epochs = epochs
-        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=bs,shuffle=True)
+        # self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=bs,shuffle=True)
+        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=len(indexes),shuffle=True)
         self.loss_func = nn.CrossEntropyLoss()
         
     def train(self,net):
@@ -789,8 +790,11 @@ class LocalUpdate_trad_FO(object): #MLP 1e-3; CNN 1e-2
         self.dataset = dataset
         self.indexes = indexes
         self.epochs = epochs
-        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
-        self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        ###
+        # prev ldr_train with bs/3, rather than all data
+        ###
+        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=int(indexes/2),shuffle=True)
+        self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(indexes/2),shuffle=True)
         self.loss_func = nn.CrossEntropyLoss()
         
     def train(self,net):
