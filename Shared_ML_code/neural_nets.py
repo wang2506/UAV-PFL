@@ -757,9 +757,9 @@ class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
                     # input('debug shit enter something')
                     for p1, p2 in enumerate(lr2_result):
                         # completed sum of all params
-                        # del_sum_grad.append(p2+self.lr2*self.lr1/(2*self.del_acc)\
-                            # *(temp_inner_pos[p1].grad - temp_inner_neg[p1].grad) )
-                        del_sum_grad.append(p2+1e-2*(temp_inner_pos[p1].grad - temp_inner_neg[p1].grad))
+                        del_sum_grad.append(p2+self.lr2*self.lr1/(2*self.del_acc)\
+                            *(temp_inner_pos[p1].grad - temp_inner_neg[p1].grad) )
+                        # del_sum_grad.append(p2+1e-2*(temp_inner_pos[p1].grad - temp_inner_neg[p1].grad))
                     break
             
                 # load in new params, and continue mini batch process
