@@ -16,7 +16,7 @@ import random
 import pickle
 
 from Shared_ML_code.neural_nets import MLP, CNN, FedAvg, FPAvg, LocalUpdate, \
-    LocalUpdate_PFL, FedAvg2, LocalUpdate_FO_PFL, LocalUpdate_HF_PFL, LocalUpdate_trad_HF
+    LocalUpdate_PFL, FedAvg2, LocalUpdate_trad_FO, LocalUpdate_HF_PFL, LocalUpdate_trad_HF
 from Shared_ML_code.testing import test_img, test_img2
 
 
@@ -323,7 +323,7 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
             uav_counter = 0
             for ind_i,val_i in enumerate(nodes_per_cluster):
                 for j in range(val_i): # each uav in i
-                    local_obj = LocalUpdate_trad_HF(device,bs=batch_size,lr1=lr,lr2=lr2,epochs=1,\
+                    local_obj = LocalUpdate_trad_FO(device,bs=batch_size,lr1=lr,lr2=lr2,epochs=1,\
                             dataset=dataset_train,indexes=static_nts[uav_counter])
                     
                     #LocalUpdate_HF_PFL

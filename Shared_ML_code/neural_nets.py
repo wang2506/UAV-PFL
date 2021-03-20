@@ -780,7 +780,90 @@ class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
         return net,net.state_dict(),(sum(batch_loss)/len(batch_loss))
 
 
+class LocalUpdate_trad_FO(object): #MLP 1e-3; CNN 1e-2
+    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None):
+        self.device = device
+        self.bs = bs
+        self.lr1 = lr1
+        self.lr2 = lr2
+        self.dataset = dataset
+        self.indexes = indexes
+        self.epochs = epochs
+        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        self.loss_func = nn.CrossEntropyLoss()
+        
+    def train(self,net):
+        net.train()
+        optimizer = SGD_PFL(net.parameters(),lr=self.lr1)#, momentum=0.5,weight_decay=1e-4)
+        # optimizer2 = torch.optim.SGD(net.parameters(),lr=self.lr2, momentum=0.5,weight_decay=1e-4)
+        
+        epoch_loss = []
+        for epoch in range(self.epochs):
+            batch_loss = []
+            
+            # calculate the meta-function of SGD
+            temp = deepcopy(net.state_dict())
+            # print('start of LocalUpdate_HF_PFL')
+            # print(temp['fc2.bias'])
+            
+            temp_params = [] #temp_params = deepcopy(net.parameters())
+            for i,j in enumerate(net.parameters()):
+                temp_params.append(deepcopy(j))
+            temp_params_dict = deepcopy(net.state_dict())
+            
+            ## inner params obtain - step size - eta_1
+            for batch_indx,(images,labels) in enumerate(self.ldr_train):
+                images,labels = images.to(self.device),labels.to(self.device)
+                net.zero_grad()
+                log_probs = net(images)
+                loss = self.loss_func(log_probs,labels)
+                batch_loss.append(loss.item()) # init batch loss
+                loss.backward()
+                optimizer.step()
+            
+            # this produces the intermediate parameters - needed inner for all three terms
+            temp_w_inner = deepcopy(net.state_dict()) #used to find intermediate loss            
+            temp_w_inner_params = []
+            for i,j in enumerate(net.parameters()):
+                temp_w_inner_params.append(deepcopy(j))
+            # print('w inner result')
+            # print(temp_w_inner['fc2.bias'])
+            
+            ## need three gradients
+            # grad 1: D_outer
+            for batch_indx,(images,labels) in enumerate(self.ldr_train2):
+                lr2_result = []
+                
+                images,labels = images.to(self.device),labels.to(self.device)
+                net.zero_grad()#, net_pos.zero_grad(), net_neg.zero_grad()
+                log_probs = net(images)
+                loss = self.loss_func(log_probs,labels)           
+                loss.backward()
+                
+                # manual grad calc here
+                temp_inner_params = [tval for tval in net.parameters()] #deepcopy(net.parameters())
+                for p1,p2 in enumerate(temp_inner_params): #the initial starting params
+                    # this is w_i(t) = w_i(t-1) - lr2 * grad
+                    lr2_result.append(temp_params[p1]-self.lr2 * p2.grad)  
+                    # this becomes new temp_params
+                    
+                # load in new params, and continue mini batch process
+                # update temp_params (which are the original parameters)
+                p_count = 0
+                for p_key in temp_params_dict.keys():
+                    temp_params_dict[p_key] = lr2_result[p_count]
+                    p_count += 1
+                net.load_state_dict(temp_params_dict)
+                temp_params = [val for val in net.parameters()]
+                
 
+            # print('everything put together params')
+            # print(net.state_dict()['fc2.bias'])
+            
+            epoch_loss.append(sum(batch_loss)/len(batch_loss))
+            
+        return net,net.state_dict(),(sum(batch_loss)/len(batch_loss))
 
 
 def FedAvg(w,node_train_sets):
