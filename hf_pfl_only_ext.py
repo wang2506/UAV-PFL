@@ -262,9 +262,9 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
         return np.power(2,np.arange(np.log2(1e-5),np.log2(1e-3),spacing))
         # np.power(2,np.arange(np.log2(1e-5),np.log2(5e-3),(np.log2(5e-3)-np.log2(1e-5))/total_time ))
         
-    lr = 1e-3
-    # lr2 = 5e-3
-    lr2_vec = np.flip(lr_spacing(tt=int(total_time/10))) #lr2 populated within the loop
+    lr = 1e-2
+    lr2 = 1e-2
+    # lr2_vec = np.flip(lr_spacing(tt=int(total_time/10))) #lr2 populated within the loop
     # lr,lr2 = 1e-3, 1e-3
 
     
@@ -305,7 +305,7 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
             
         
         for t in range(total_time):
-            lr2 = lr2_vec[int(t/10)]
+            # lr2 = lr2_vec[int(t/10)]
             
             swarm_w = {i:[] for i in range(swarms)}
             # data_processed = {i:0 for i in range(swarms)}
