@@ -662,6 +662,7 @@ class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
         # optimizer2 = torch.optim.SGD(net.parameters(),lr=self.lr2, momentum=0.5,weight_decay=1e-4)
         
         epoch_loss = []
+        break_outer = False
         for epoch in range(self.epochs):
             batch_loss = []
             
