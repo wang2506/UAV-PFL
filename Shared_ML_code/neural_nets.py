@@ -747,6 +747,10 @@ class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
                     # grad 2: gradients now available
                     temp_inner_pos = [tval for tval in net_pos.parameters()]
                     temp_inner_neg = [tval for tval in net_neg.parameters()]
+                    print('loss values')
+                    print(loss_pos)
+                    print(loss_neg)
+                    
                     print('grad check for pos and neg finale')
                     print(temp_inner_pos[-1].grad)
                     print(temp_inner_neg[-1].grad)
