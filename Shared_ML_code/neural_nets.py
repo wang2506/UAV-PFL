@@ -771,8 +771,7 @@ class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
                 net.load_state_dict(temp_params_dict)
                 temp_params = [val for val in net.parameters()]
                 
-                break
-            
+
             # print('everything put together params')
             # print(net.state_dict()['fc2.bias'])
             
