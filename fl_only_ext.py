@@ -252,7 +252,7 @@ for save_type in ['extreme']:#,'extreme']: #['extreme','mild','iid']:
     #     i.train()
     
     ## ovr ML params setup
-    lr = 1e-2 #1e-2
+    lr = 1e-3 #1e-2
     # lr2 = 1e-3
     
     # %% running for all time
