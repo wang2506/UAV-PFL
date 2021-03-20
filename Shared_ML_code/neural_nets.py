@@ -662,7 +662,6 @@ class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
         # optimizer2 = torch.optim.SGD(net.parameters(),lr=self.lr2, momentum=0.5,weight_decay=1e-4)
         
         epoch_loss = []
-        break_outer = False
         for epoch in range(self.epochs):
             batch_loss = []
             
@@ -748,22 +747,19 @@ class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
                     # grad 2: gradients now available
                     temp_inner_pos = [tval for tval in net_pos.parameters()]
                     temp_inner_neg = [tval for tval in net_neg.parameters()]
-                    print('loss values')
-                    print(loss_pos)
-                    print(loss_neg)
-                    # if loss_pos >= 10:
-                        # break_outer = True
-                    
-                    print('grad check for pos and neg finale')
-                    print(temp_inner_pos[-1].grad)
-                    print(temp_inner_neg[-1].grad)
+                    # print('loss values')
+                    # print(loss_pos)
+                    # print(loss_neg)
+                    # print('grad check for pos and neg finale')
+                    # print(temp_inner_pos[-1].grad)
+                    # print(temp_inner_neg[-1].grad)
                     
                     # input('debug shit enter something')
                     for p1, p2 in enumerate(lr2_result):
                         # completed sum of all params
                         # del_sum_grad.append(p2+self.lr2*self.lr1/(2*self.del_acc)\
                             # *(temp_inner_pos[p1].grad - temp_inner_neg[p1].grad) )
-                        del_sum_grad.append(p2+1e-3*(temp_inner_pos[p1].grad - temp_inner_neg[p1].grad))
+                        del_sum_grad.append(p2+1e-2*(temp_inner_pos[p1].grad - temp_inner_neg[p1].grad))
                     break
             
                 # load in new params, and continue mini batch process
@@ -775,8 +771,6 @@ class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
                 net.load_state_dict(temp_params_dict)
                 temp_params = [val for val in net.parameters()]
                 
-                if break_outer == True:
-                    break
                 
             print('everything put together params')
             print(net.state_dict()['fc2.bias'])
