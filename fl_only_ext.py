@@ -74,7 +74,7 @@ nodes_per_cluster = [np.random.randint(2,4) for i in range(swarms)]
 # labels_per_node (i.e., distribution) changes over time...
 for save_type in ['extreme']:#,'extreme']: #['extreme','mild','iid']:
     if save_type == 'extreme':
-        static_lpc = [3 for i in range(swarms)] #static qty of labels per node
+        static_lpc = [1 for i in range(swarms)] #static qty of labels per node
     elif save_type == 'mild':
         static_lpc = [np.random.randint(3,4) for i in range(swarms)] #static qty of labels per node
     else:
