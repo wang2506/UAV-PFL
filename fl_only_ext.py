@@ -225,11 +225,11 @@ for save_type in ['extreme']:#,'extreme']: #['extreme','mild','iid']:
         nclasses = 10
         global_net = CNN(nchannels,nclasses).to(device)
         
-        # with open(cwd+'/data/CNN_default_w','rb') as f:
-        #     default_w = pickle.load(f)        
+        with open(cwd+'/data/CNN_default_w','rb') as f:
+            default_w = pickle.load(f)        
     
-        with open(cwd+'/data/CNN_new_w','rb') as f:
-            default_w = pickle.load(f)             
+        # with open(cwd+'/data/CNN_new_w','rb') as f:
+        #     default_w = pickle.load(f)             
             
     print(global_net)
     
