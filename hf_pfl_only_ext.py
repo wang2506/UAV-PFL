@@ -329,7 +329,7 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
             uav_counter = 0
             for ind_i,val_i in enumerate(nodes_per_cluster):
                 for j in range(val_i): # each uav in i
-                    local_obj = LocalUpdate_trad_FO(device,bs=batch_size,lr1=lr,lr2=lr2,epochs=1,\
+                    local_obj = LocalUpdate_trad_HF(device,bs=batch_size,lr1=lr,lr2=lr2,epochs=1,\
                             dataset=dataset_train,indexes=static_nts[uav_counter])
                     
                     #LocalUpdate_HF_PFL
