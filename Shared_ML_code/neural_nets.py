@@ -831,7 +831,8 @@ class LocalUpdate_trad_FO(object): #MLP 1e-3; CNN 1e-2
                     batch_size=self.ind_split,shuffle=True)
         self.ldr_train2 = DataLoader(segmentdataset(dataset,self.ind2),\
                     batch_size=self.ind_split,shuffle=True)
-        self.loss_func = nn.CrossEntropyLoss()
+        # self.loss_func = nn.CrossEntropyLoss() #works for MLP
+        self.loss_func = nn.NLLLoss()
         
     def train(self,net):
         net.train()
