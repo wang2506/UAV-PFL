@@ -77,7 +77,7 @@ class CNN(nn.Module):
         self.softmax = nn.Softmax(dim=1)
         self.relu = nn.ReLU()
         self.dropout = nn.Dropout()
-        self.max_pool2d = nn.max_pool2d()
+        self.max_pool2d = nn.MaxPool2d()
         
     def forward(self, x):
         x = self.relu(self.max_pool2d(self.conv1(x), 2))
