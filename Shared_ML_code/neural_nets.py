@@ -90,14 +90,14 @@ class MLP3(nn.Module):
 #         # return F.log_softmax(x,dim=1)
 
 class CNN(nn.Module):
-    def __init__(self):
+    def __init__(self,nchannels,nclasses):
         super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(1, 16, 2, 1)
+        self.conv1 = nn.Conv2d(nchannels, 16, 2, 1)
         self.conv2 = nn.Conv2d(16, 32, 2, 1)
         self.dropout1 = nn.Dropout(0.25)
         self.dropout2 = nn.Dropout(0.5)
         self.fc1 = nn.Linear(18432, 128)
-        self.fc2 = nn.Linear(128, 10)
+        self.fc2 = nn.Linear(128, nclasses)
 
     def forward(self, x):
         x = self.conv1(x)
