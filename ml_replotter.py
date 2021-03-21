@@ -96,7 +96,7 @@ full_fl_ratios = []
 full_pfl_ratios = []
 
 nn_style = 'CNN'
-for ratio in [1]:#,2,4]:
+for ratio in [1,2,4]:
     # ratio = 1 #, taus1,taus2 = 1,2,2
     ## reload data
     total_fl_accs, total_pfl_accs = [], []
@@ -142,7 +142,7 @@ plt.figure(2)
 f2,ax2 = plt.subplots(1,2,figsize=(10,5),dpi=100)#,sharey=True)
 
 ind = 0
-for i in range(1): #3
+for i in range(3): #3
     if i == 0:
         temp_indexes = np.arange(0,120,step=1) #total_fl_ratios[i][0]
     elif i == 1:
@@ -179,7 +179,7 @@ ax2[ind].grid(True)
 ax2[ind].legend()
 
 ind = 1
-for i in range(1): 
+for i in range(3): 
     if i == 0:
         temp_indexes = np.arange(0,120,step=1) #total_fl_ratios[i][0]
     elif i == 1:
