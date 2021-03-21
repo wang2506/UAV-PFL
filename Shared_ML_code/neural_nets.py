@@ -80,8 +80,8 @@ class CNN(nn.Module):
         self.max_pool2d = nn.MaxPool2d(kernel_size=5)
         
     def forward(self, x):
-        x = self.relu(self.max_pool2d(self.conv1(x), 2))
-        x = self.relu(self.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
+        x = self.relu(self.max_pool2d(self.conv1(x)))# , 2))
+        x = self.relu(self.max_pool2d(self.conv2_drop(self.conv2(x))))#, 2))
         x = x.view(-1, x.shape[1]*x.shape[2]*x.shape[3])
         x = self.relu(self.fc1(x))
         x = self.dropout(x)#, training=self.training)
