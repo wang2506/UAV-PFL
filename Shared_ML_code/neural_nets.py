@@ -74,7 +74,8 @@ class CNN(nn.Module):
         self.conv2_drop = nn.Dropout2d()
         self.fc1 = nn.Linear(320, 50)
         self.fc2 = nn.Linear(50, nclasses)
-
+        self.softmax = nn.Softmax(dim=1)
+        
     def forward(self, x):
         x = F.relu(F.max_pool2d(self.conv1(x), 2))
         x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
@@ -82,7 +83,7 @@ class CNN(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
-        return x #F.log_softmax(x, dim=1)
+        return self.softmax(x)
         # return F.log_softmax(x,dim=1)
     
 class CNNCIFAR10(nn.Module):
