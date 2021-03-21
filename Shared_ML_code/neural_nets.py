@@ -112,7 +112,7 @@ class CNN(nn.Module):
         x = self.fc1(x)
         x = nn.ReLU()(x)
         x = self.fc2(x)
-        output = F.log_softmax(x, dim=1)
+        output = F.softmax(x, dim=1)
         return output
 
 
@@ -832,7 +832,7 @@ class LocalUpdate_trad_FO(object): #MLP 1e-3; CNN 1e-2
         self.ldr_train2 = DataLoader(segmentdataset(dataset,self.ind2),\
                     batch_size=self.ind_split,shuffle=True)
         # self.loss_func = nn.CrossEntropyLoss() #works for MLP
-        self.loss_func = nn.NLLLoss()
+        self.loss_func = nn.NLLLoss() #still fails for CNN
         
     def train(self,net):
         net.train()
