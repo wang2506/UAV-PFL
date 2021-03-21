@@ -66,29 +66,56 @@ class MLP3(nn.Module):
         return x#self.sigmoid(x)
 
 
-class CNN(nn.Module):
-    def __init__(self, nchannels,nclasses):
-        super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(nchannels, 10, kernel_size=5)
-        self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
-        self.conv2_drop = nn.Dropout2d()
-        self.fc1 = nn.Linear(320, 50)
-        self.fc2 = nn.Linear(50, nclasses)
-        self.softmax = nn.Softmax(dim=1)
-        self.relu = nn.ReLU()
-        self.dropout = nn.Dropout()
-        self.max_pool2d = nn.MaxPool2d(kernel_size=5)
+# class CNN(nn.Module):
+#     def __init__(self, nchannels,nclasses):
+#         super(CNN, self).__init__()
+#         self.conv1 = nn.Conv2d(nchannels, 10, kernel_size=5)
+#         self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
+#         self.conv2_drop = nn.Dropout2d()
+#         self.fc1 = nn.Linear(320, 50)
+#         self.fc2 = nn.Linear(50, nclasses)
+#         self.softmax = nn.Softmax(dim=1)
+#         self.relu = nn.ReLU()
+#         self.dropout = nn.Dropout()
+#         self.max_pool2d = nn.MaxPool2d(kernel_size=5)
         
+#     def forward(self, x):
+#         x = self.relu(self.max_pool2d(self.conv1(x))) # , 2))
+#         x = self.relu(self.max_pool2d(self.conv2_drop(self.conv2(x)))) #, 2))
+#         x = x.view(-1, x.shape[1]*x.shape[2]*x.shape[3])
+#         x = self.relu(self.fc1(x))
+#         x = self.dropout(x)#, training=self.training)
+#         x = self.fc2(x)
+#         return self.softmax(x)
+#         # return F.log_softmax(x,dim=1)
+
+class CNN(nn.Module):
+    def __init__(self):
+        super(CNN, self).__init__()
+        self.conv1 = nn.Conv2d(1, 16, 2, 1)
+        self.conv2 = nn.Conv2d(16, 32, 2, 1)
+        self.dropout1 = nn.Dropout(0.25)
+        self.dropout2 = nn.Dropout(0.5)
+        self.fc1 = nn.Linear(18432, 128)
+        self.fc2 = nn.Linear(128, 10)
+
     def forward(self, x):
-        x = self.relu(self.max_pool2d(self.conv1(x)))# , 2))
-        x = self.relu(self.max_pool2d(self.conv2_drop(self.conv2(x))))#, 2))
-        x = x.view(-1, x.shape[1]*x.shape[2]*x.shape[3])
-        x = self.relu(self.fc1(x))
-        x = self.dropout(x)#, training=self.training)
+        x = self.conv1(x)
+        x = nn.ReLU()(x)
+        x = nn.MaxPool2d(2, 1)(x)
+        x = self.dropout1(x)
+        x = self.conv2(x)
+        x = nn.ReLU()(x)
+        x = nn.MaxPool2d(2, 1)(x)
+        x = self.dropout2(x)
+        x = torch.flatten(x, 1)
+        x = self.fc1(x)
+        x = nn.ReLU()(x)
         x = self.fc2(x)
-        return self.softmax(x)
-        # return F.log_softmax(x,dim=1)
-    
+        output = F.log_softmax(x, dim=1)
+        return output
+
+
 class CNNCIFAR10(nn.Module):
     def __init__(self, nchannels,nclasses):
         super(CNNCIFAR10, self).__init__()
