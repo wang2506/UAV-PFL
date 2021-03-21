@@ -228,12 +228,13 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
 
         # with open(cwd+'/data/CNN_default_w','rb') as f:
             # default_w = pickle.load(f)        
-        # with open(cwd+'/data/CNN_new_w','rb') as f:
-            # default_w = pickle.load(f)             
-        default_w = global_net.state_dict()
-        with open(cwd+'/data/CNN_new_w','wb') as f:
-            pickle.dump(default_w,f)
-        input('stop here')
+        with open(cwd+'/data/CNN_new_w','rb') as f:
+            default_w = pickle.load(f)             
+        
+        # default_w = global_net.state_dict()
+        # with open(cwd+'/data/CNN_new_w','wb') as f:
+            # pickle.dump(default_w,f)
+        # input('stop here')
     print(global_net)
     
     global_net.train()
