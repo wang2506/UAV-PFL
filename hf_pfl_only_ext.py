@@ -210,7 +210,7 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     cwd = os.getcwd()
     ## setup FL
     nn_style = 'CNN'
-    # nn_style = 'MLP'
+    nn_style = 'MLP'
     if nn_style == 'MLP':
         d_in = 784 #np.prod(dataset_train[0][0].shape)
         d_h = 64
@@ -329,11 +329,11 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
             uav_counter = 0
             for ind_i,val_i in enumerate(nodes_per_cluster):
                 for j in range(val_i): # each uav in i
-                    local_obj = LocalUpdate_trad_HF(device,bs=batch_size,lr1=lr,lr2=lr2,epochs=1,\
+                    local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr1=lr,lr2=lr2,epochs=1,\
                             dataset=dataset_train,indexes=static_nts[uav_counter])
                     
                     #LocalUpdate_HF_PFL
-                        
+                    #LocalUpdate_trad_HF
                     # print('yadda')
                     _,w,loss = local_obj.train(net=deepcopy(HF_hn_pfl_swarm_models[ind_i]).to(device))
                     #epochs = swarm_period

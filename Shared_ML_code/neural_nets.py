@@ -383,7 +383,7 @@ class LocalUpdate_FO_PFL(object):
 
 
 class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
-    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-2):
+    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-3):
         self.device = device
         self.bs = bs
         self.lr1 = lr1
@@ -414,7 +414,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
         decay_factor = 1e-5
         
         # optimizer = torch.optim.SGD(net.parameters(),lr=self.lr1, momentum=0.5,weight_decay=1e-4) #l2 penalty
-        optimizer = SGD_PFL(net.parameters(),lr=self.lr1)#, momentum=0.5,weight_decay=1e-4)
+        optimizer = SGD_PFL(net.parameters(),lr=self.lr1, momentum=0.5,weight_decay=1e-4)
         
         # optimizer2 = torch.optim.SGD(net.parameters(),lr=self.lr2, momentum=0.5,weight_decay=1e-4)
         
@@ -428,9 +428,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             
             # calculate the meta-function of SGD
             temp = deepcopy(net.state_dict())
-            print('start of LocalUpdate_HF_PFL')
-            print(temp['fc2.bias'])
-            
+            # print('start of LocalUpdate_HF_PFL')
+            # print(temp['fc2.bias'])
             
             temp_params = [] #temp_params = deepcopy(net.parameters())
             for i,j in enumerate(net.parameters()):
@@ -445,7 +444,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
                 total_loss += loss.item()
-                # loss.retain_grad()
+                loss.retain_grad()
                 
                 loss.backward()
                 optimizer.step()
@@ -466,7 +465,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             ## calculate term 1 - the optim2 term on batch 2
             # we use the same optimizer as FO_PFL for the isolated batch 2 term
             optimizer2 = SGD_FO_PFL(net.parameters(),deepcopy(temp_params),\
-                        lr=self.lr2)#, momentum=0.5,weight_decay=1e-4)
+                        lr=self.lr2, momentum=0.5,weight_decay=1e-4)
             # lr = self.lr2/self.bs
             
             total_loss = 0
@@ -478,7 +477,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
                 total_loss += loss.item()
-                # loss.retain_grad()
+                loss.retain_grad()
                 
                 loss.backward() #this computes the gradient
                 optimizer2.step()
@@ -506,7 +505,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             ## del_acc terms both plus and minus optim
             # SGD optim will naturally subtract the lr
             optim_plus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=-self.del_acc)#,momentum=0.5,weight_decay=1e-4)         
+                            del_acc=-self.del_acc,momentum=0.5,weight_decay=1e-4)         
             #del_acc = -self.del_acc
                 
             # optim_plus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
@@ -527,7 +526,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
 
                 total_loss_op += loss.item()
                 # print(total_loss_op)
-                # loss.retain_grad()
+                loss.retain_grad()
             
                 loss.backward() #this computes the gradient
                 # # print(net.state_dict()['fc2.bias'])
@@ -543,15 +542,15 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             
             # cannot use torch.optim.SGD because this grad updates original params
             optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=-self.lr1*self.lr2/(self.del_acc))#,\
-                        #momentum=0.5,weight_decay=1e-4)
+                            del_acc=-self.lr1*self.lr2/(self.del_acc),\
+                        momentum=0.5,weight_decay=1e-4)
             # -self.lr1*self.lr2/(2*self.del_acc*self.bs)
             
             # optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
             #                 del_acc=self.lr1/(2*self.del_acc),\
             #             momentum=0.5,weight_decay=1e-4)
             
-            total_loss_op2 = 0
+            # total_loss_op2 = 0
             for batch_indx,(images,labels) in enumerate(self.ldr_train3):
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
@@ -559,8 +558,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 # with amp.autocast():
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
-                # loss.retain_grad()
-                total_loss_op2 += loss.item()
+                loss.retain_grad()
+                # total_loss_op2 += loss.item()
                 
                 
                 batch_loss.append(loss.item()) #### this is superfluous
@@ -584,7 +583,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             # reload to calc optim minus
             net.load_state_dict(temp_w_inner)            
             optim_minus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.del_acc)#,momentum=0.5,weight_decay=1e-4) 
+                            del_acc=self.del_acc,momentum=0.5,weight_decay=1e-4) 
             
             # optim_minus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
             #                 del_acc=self.del_acc,momentum=0.5,weight_decay=1e-4)
@@ -609,8 +608,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
             # print(net.state_dict()['fc2.bias'])
             
             optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.lr1*self.lr2/(self.del_acc))#,\
-                        #momentum=0.5,weight_decay=1e-4)
+                            del_acc=self.lr1*self.lr2/(self.del_acc),\
+                        momentum=0.5,weight_decay=1e-4)
             # *self.bs # on the denominator
             # self.lr1*self.lr2/(2*self.del_acc*self.bs)
             
@@ -625,7 +624,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 # with amp.autocast():
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
-                # loss.retain_grad()
+                loss.retain_grad()
                 
                 loss.backward() #this computes the gradient
                 optim_minus2.step()
@@ -650,8 +649,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
                 template_w[k_i] = manual_w1[k_i] + optim_plus_w[k_i] \
                     + optim_minus_w[k_i] - 2*template_w[k_i]
             
-            print('everything put together params')
-            print(template_w['fc2.bias'])
+            # print('everything put together params')
+            # print(template_w['fc2.bias'])
             
             net.load_state_dict(template_w)
             
