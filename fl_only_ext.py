@@ -260,7 +260,8 @@ for save_type in ['extreme']:#,'extreme']: #['extreme','mild','iid']:
     # lr2 = 1e-3
     
     # %% running for all time
-    batch_size = 30 #12 #evenly divisible by 3
+    # batch_size = 30 #12 #evenly divisible by 3
+    batch_size = 12
     
     swarm_period = 1
     global_period = 1
