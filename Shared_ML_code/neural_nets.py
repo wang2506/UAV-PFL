@@ -383,7 +383,7 @@ class LocalUpdate_FO_PFL(object):
 
 
 class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3
-    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-3):
+    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-4):
         self.device = device
         self.bs = bs
         self.lr1 = lr1
@@ -542,14 +542,16 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3
             # optim_plus_w_org = deepcopy(net.state_dict())
             
             # cannot use torch.optim.SGD because this grad updates original params
-            # optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-            #                 del_acc=self.lr1*self.lr2/(2*self.del_acc),\
-            #             momentum=0.5,weight_decay=1e-4)
+            optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
+                            del_acc=self.lr1*self.lr2/(2*self.del_acc),\
+                        momentum=0.5,weight_decay=1e-4)
             # -self.lr1*self.lr2/(2*self.del_acc*self.bs)
             
-            optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.lr2/(2*self.del_acc),\
-                        momentum=0.5,weight_decay=1e-4)            
+            # 1e-4/(2*1e-3) = ~1e-1 vs 1e-3 * 1e-2/(2*1e-3) = 1e-2
+            # looks like this self.lr2/2*self.del_acc works well for MNIST
+            # optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
+            #                 del_acc=self.lr2/(2*self.del_acc),\
+            #             momentum=0.5,weight_decay=1e-4)            
             
             # optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
             #                 del_acc=self.lr1/(2*self.del_acc),\
@@ -612,15 +614,15 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3
             # # net.load_state_dict(optim_plus_w_org)
             # print(net.state_dict()['fc2.bias'])
             
-            # optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-            #                 del_acc=self.lr1*self.lr2/(2*self.del_acc),\
-            #             momentum=0.5,weight_decay=1e-4)
+            optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
+                            del_acc=self.lr1*self.lr2/(2*self.del_acc),\
+                        momentum=0.5,weight_decay=1e-4)
             # *self.bs # on the denominator
             # self.lr1*self.lr2/(2*self.del_acc*self.bs)
             
-            optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.lr2/(2*self.del_acc),\
-                        momentum=0.5,weight_decay=1e-4)                
+            # optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
+            #                 del_acc=self.lr2/(2*self.del_acc),\
+            #             momentum=0.5,weight_decay=1e-4)                
             
             # optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
             #                 del_acc=self.lr1/(2*self.del_acc),\
