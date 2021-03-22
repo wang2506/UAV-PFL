@@ -548,8 +548,12 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3
             # -self.lr1*self.lr2/(2*self.del_acc*self.bs)
             
             optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.lr1/(2*self.del_acc),\
-                        momentum=0.5,weight_decay=1e-4)
+                            del_acc=self.lr2/(2*self.del_acc),\
+                        momentum=0.5,weight_decay=1e-4)            
+            
+            # optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
+            #                 del_acc=self.lr1/(2*self.del_acc),\
+            #             momentum=0.5,weight_decay=1e-4)
             
             # total_loss_op2 = 0
             for batch_indx,(images,labels) in enumerate(self.ldr_train3):
@@ -615,8 +619,12 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3
             # self.lr1*self.lr2/(2*self.del_acc*self.bs)
             
             optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.lr1/(2*self.del_acc),\
+                            del_acc=self.lr2/(2*self.del_acc),\
                         momentum=0.5,weight_decay=1e-4)                
+            
+            # optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
+            #                 del_acc=self.lr1/(2*self.del_acc),\
+            #             momentum=0.5,weight_decay=1e-4)                         
             
             for batch_indx,(images,labels) in enumerate(self.ldr_train3):
                 images,labels = images.to(self.device),labels.to(self.device)
