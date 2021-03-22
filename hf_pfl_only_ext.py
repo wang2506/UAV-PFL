@@ -257,8 +257,8 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     
     
     ## ovr ML params setup
-    # lr = 1e-5 #1e-4 previously
-    # lr2 = 1e-5
+    lr = 1e-5 #1e-4 previously
+    lr2 = 1e-5
     
     # CNN parameters
     def lr_spacing(tt):
@@ -271,7 +271,7 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     # lr = 1e-3 #CNN
     # lr2 = 1e-2
     # lr2_vec = np.flip(lr_spacing(tt=int(total_time/10))) #lr2 populated within the loop
-    lr,lr2 = 1e-3, 1e-2 #MLP
+    # lr,lr2 = 1e-3, 1e-2 #MLP
 
 
     # %% running for all time
