@@ -209,7 +209,7 @@ for save_type in ['extreme']:#,'extreme']: #['extreme','mild','iid']:
     cwd = os.getcwd()
     ## setup FL
     nn_style = 'CNN'
-    # nn_style = 'MLP'
+    nn_style = 'MLP'
     
     if nn_style == 'MLP':
         d_in = 784 #np.prod(dataset_train[0][0].shape)
@@ -220,7 +220,7 @@ for save_type in ['extreme']:#,'extreme']: #['extreme','mild','iid']:
         with open(cwd+'/data/default_w','rb') as f:
             default_w = pickle.load(f)  
         
-    else:    
+    else:
         nchannels = 1
         nclasses = 10
         global_net = CNN(nchannels,nclasses).to(device)
