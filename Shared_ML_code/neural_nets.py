@@ -392,17 +392,17 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-2
         self.dataset = dataset
         self.indexes = indexes
         self.epochs = epochs
-        # self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
-        # self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
-        # self.ldr_train3 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        self.ldr_train3 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
         
-        self.ind1 = random.sample(self.indexes,int(len(indexes)/3))
-        self.ind2 = random.sample(self.indexes,int(len(indexes)/3))
-        self.ind3 = random.sample(self.indexes,int(len(indexes)/3))
+        # self.ind1 = random.sample(self.indexes,int(len(indexes)/3))
+        # self.ind2 = random.sample(self.indexes,int(len(indexes)/3))
+        # self.ind3 = random.sample(self.indexes,int(len(indexes)/3))
         
-        self.ldr_train = DataLoader(segmentdataset(dataset,self.ind1),batch_size=bs,shuffle=True)
-        self.ldr_train2 = DataLoader(segmentdataset(dataset,self.ind2),batch_size=bs,shuffle=True)
-        self.ldr_train3 = DataLoader(segmentdataset(dataset,self.ind3),batch_size=bs,shuffle=True)
+        # self.ldr_train = DataLoader(segmentdataset(dataset,self.ind1),batch_size=bs,shuffle=True)
+        # self.ldr_train2 = DataLoader(segmentdataset(dataset,self.ind2),batch_size=bs,shuffle=True)
+        # self.ldr_train3 = DataLoader(segmentdataset(dataset,self.ind3),batch_size=bs,shuffle=True)
         self.loss_func = nn.CrossEntropyLoss()
         
     def train(self,net):
