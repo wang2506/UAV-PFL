@@ -210,7 +210,7 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     cwd = os.getcwd()
     ## setup FL
     nn_style = 'CNN'
-    nn_style = 'MLP'
+    # nn_style = 'MLP'
     if nn_style == 'MLP':
         d_in = 784 #np.prod(dataset_train[0][0].shape)
         d_h = 64
@@ -267,12 +267,12 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
         spacing = (np.log2(1e-3) - np.log2(1e-5))/tt
         return np.power(2,np.arange(np.log2(1e-5),np.log2(1e-3),spacing))
         # np.power(2,np.arange(np.log2(1e-5),np.log2(5e-3),(np.log2(5e-3)-np.log2(1e-5))/total_time ))
-        
+
     # lr = 1e-3 #CNN
     # lr2 = 1e-2
     # lr2_vec = np.flip(lr_spacing(tt=int(total_time/10))) #lr2 populated within the loop
-    lr,lr2 = 1e-3, 1e-4 #MLP
-    lr,lr2 = 1e-3, 1e-2
+    lr,lr2 = 1e-3, 1e-2 #CNN
+    # lr,lr2 = 1e-3, 1e-2 #MLP
 
     # %% running for all time
     # batch_size = 30 #12
