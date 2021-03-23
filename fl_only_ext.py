@@ -256,7 +256,7 @@ for save_type in ['extreme']:#,'extreme']: #['extreme','mild','iid']:
     
     ## ovr ML params setup
     # lr = 1e-3 #1e-2 #CNN
-    lr = 1e-3 #MLP
+    lr = 1e-2 #MLP
     # lr2 = 1e-3
     
     # %% running for all time
