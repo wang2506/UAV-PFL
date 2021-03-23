@@ -272,7 +272,7 @@ for save_type in ['extreme']: #,'mild']: #['extreme','mild','iid']:
     # lr2 = 1e-2
     # lr2_vec = np.flip(lr_spacing(tt=int(total_time/10))) #lr2 populated within the loop
     lr,lr2 = 1e-3, 1e-2 #CNN
-    # lr,lr2 = 1e-3, 1e-2 #MLP
+    # lr,lr2 = 1e-2, 1e-3 #MLP
 
     # %% running for all time
     batch_size = 30 #12

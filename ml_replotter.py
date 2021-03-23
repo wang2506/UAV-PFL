@@ -95,7 +95,7 @@ total_pfl_ratios = []
 full_fl_ratios = []
 full_pfl_ratios = []
 
-nn_style = 'CNN'
+# nn_style = 'CNN'
 nn_style = 'MLP'
 for ratio in [1,2,4]:
     # ratio = 1 #, taus1,taus2 = 1,2,2
