@@ -18,6 +18,9 @@ import pickle
 from Shared_ML_code.neural_nets import MLP, CNN, FedAvg, FPAvg, LocalUpdate, \
     LocalUpdate_PFL, FedAvg2, LocalUpdate_FO_PFL, LocalUpdate_HF_PFL
 from Shared_ML_code.testing import test_img, test_img2
+# from 
+
+# %% parser
 
 
 # %% import neural network data
@@ -265,7 +268,7 @@ for save_type in ['extreme']:#,'extreme']: #['extreme','mild','iid']:
     
     swarm_period = 1
     global_period = 1
-    for ratio in [1,2,4]: #[0.5,1,1.5,2,2.5]:
+    for ratio in [1,2,4,6,8,10]: #[1,2,4]:
         if ratio == 0:
             global_period = 1
             # swarm_period = 1
@@ -400,19 +403,64 @@ for save_type in ['extreme']:#,'extreme']: #['extreme','mild','iid']:
                     # total_loss_temp_all += loss_full * static_data_per_swarm[i] \
                     #     / sum(static_data_per_swarm)
                 
-                fl_acc_temp_all, total_loss_temp_all = test_img2(ii,dataset_test,\
-                        bs=batch_size,indexes=all_test_indexes,device=device)
+                # fl_acc_temp_all, total_loss_temp_all = test_img2(ii,dataset_test,\
+                #         bs=batch_size,indexes=all_test_indexes,device=device)
                 
                 # fl_acc.append(fl_acc_temp/len(fl_swarm_models))
                 fl_acc.append(fl_acc_temp)
                 total_loss.append(total_loss_temp)
                 
-                fl_acc_full.append(fl_acc_temp_all)
-                total_loss_full.append(total_loss_temp_all)
+                # fl_acc_full.append(fl_acc_temp_all)
+                # total_loss_full.append(total_loss_temp_all)
                 
                 print(fl_acc[-1])
-                print(fl_acc_full[-1])
+                # print(fl_acc_full[-1])
                 # print(total_loss)
+        
+        ## final instance for localized gradient descents
+        print('final iteration - localized only')        
+        swarm_w = {i:[] for i in range(swarms)}
+        
+        uav_counter = 0
+        for ind_i,val_i in enumerate(nodes_per_cluster):
+            for j in range(val_i): # each uav in i
+                local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=1,\
+                        dataset=dataset_train,indexes=static_nts[uav_counter])
+                
+                _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
+                
+                swarm_w[ind_i].append(w)
+                
+                uav_counter += 1
+        
+        ## run FL swarm-wide aggregation only
+        t_static_qty = deepcopy(static_qty).tolist()
+        
+        for ind_i,val_i in enumerate(nodes_per_cluster):
+            t2_static_qty = t_static_qty[:val_i]
+            del t_static_qty[:val_i]
+            
+            t3_static_qty = [i*swarm_period for i in t2_static_qty]
+            
+            w_avg_swarm = FedAvg2(swarm_w[ind_i],t3_static_qty)
+
+            fl_swarm_models[ind_i].load_state_dict(w_avg_swarm)
+            fl_swarm_models[ind_i].train()
+        
+        fl_acc_temp = 0
+        total_loss_temp = 0
+        
+        for i,ii in enumerate(fl_swarm_models):
+            ii.eval()
+            temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
+                    indexes=cluster_test_sets[i],device=device)
+            
+            fl_acc_temp += temp_acc/len(fl_swarm_models)
+            total_loss_temp += loss/len(fl_swarm_models) #swarms
+
+        fl_acc.append(fl_acc_temp)
+        total_loss.append(total_loss_temp)
+        
         
         # ### calculate optim variables    
         # swarm_w_prev = default_w # used to calc optim variables
@@ -450,13 +498,13 @@ for save_type in ['extreme']:#,'extreme']: #['extreme','mild','iid']:
                       +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style,'wb') as f:
                 pickle.dump(total_loss,f)
             
-            with open(cwd+'/data/full_fl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
-                      +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style,'wb') as f:
-                pickle.dump(fl_acc_full,f)
+            # with open(cwd+'/data/full_fl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+            #           +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style,'wb') as f:
+            #     pickle.dump(fl_acc_full,f)
         
-            with open(cwd+'/data/full_fl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
-                      +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style,'wb') as f:
-                pickle.dump(total_loss_full,f)
+            # with open(cwd+'/data/full_fl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
+            #           +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style,'wb') as f:
+            #     pickle.dump(total_loss_full,f)
             
         elif save_type == 'mild':
             with open(cwd+'/data/fl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
