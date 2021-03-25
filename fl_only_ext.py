@@ -14,6 +14,7 @@ import torchvision.transforms as transforms
 from copy import deepcopy
 import random
 import pickle
+import gc
 
 from Shared_ML_code.neural_nets import MLP, CNN, FedAvg, FPAvg, LocalUpdate, \
     LocalUpdate_PFL, FedAvg2, LocalUpdate_FO_PFL, LocalUpdate_HF_PFL
