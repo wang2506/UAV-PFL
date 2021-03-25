@@ -22,7 +22,8 @@ from Shared_ML_code.testing import test_img, test_img2
 # from 
 
 # %% parser
-
+gc.collect()
+torch.cuda.empty_cache()
 
 # %% import neural network data
 # seed declarations
@@ -44,7 +45,7 @@ dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=F
 # dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
 #                                 transform=transforms.ToTensor())
 
-device = torch.device('cuda:0')
+device = torch.device('cuda:2')
 # device = torch.device('cpu')
 
 # %% filtering the ML data
@@ -270,6 +271,8 @@ for save_type in ['extreme']:#,'extreme']: #['extreme','mild','iid']:
     swarm_period = 1
     global_period = 1
     for ratio in [1,2,4,6,8,10]: #[1,2,4]:
+        gc.collect()
+        torch.cuda.empty_cache()
         if ratio == 0:
             global_period = 1
             # swarm_period = 1
