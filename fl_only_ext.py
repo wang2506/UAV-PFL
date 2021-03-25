@@ -261,8 +261,8 @@ for save_type in ['extreme']:#,'extreme']: #['extreme','mild','iid']:
     
     ## ovr ML params setup
     # lr = 1e-3 #1e-2 #CNN
-    lr = 1e-2 #MLP
-    # lr2 = 1e-3 #CNN
+    # lr = 1e-2 #MLP
+    lr2 = 1e-3 #CNN
     
     # %% running for all time
     batch_size = 30 #12 #evenly divisible by 3
