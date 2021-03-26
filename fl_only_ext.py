@@ -319,13 +319,13 @@ for save_type in [settings.iid_style]:
                     temp_qty = 0*data_qty[t]
                     for t_prime in range(swarm_period*global_period):
                         temp_qty += data_qty[t-t_prime]
-
+                    temp_qty = temp_qty.tolist()
+                    
                 t_swarm_total_qty = []
                 w_swarms = []
                 
                 for ind_i,val_i in enumerate(nodes_per_swarm):
                     t2_static_qty = temp_qty[:val_i]
-                    print(temp_qty)
                     del temp_qty[:val_i]
                     
                     t3_static_qty = [i*swarm_period for i in t2_static_qty]
@@ -350,7 +350,8 @@ for save_type in [settings.iid_style]:
                     temp_qty = 0*data_qty[t]
                     for t_prime in range(swarm_period*global_period):
                         temp_qty += data_qty[t-t_prime]
-                
+                    temp_qty = temp_qty.tolist()
+                    
                 for ind_i,val_i in enumerate(nodes_per_swarm):
                     t2_static_qty = temp_qty[:val_i]
                     del temp_qty[:val_i]
@@ -424,7 +425,8 @@ for save_type in [settings.iid_style]:
             temp_qty = 0*data_qty[t]
             for t_prime in range(swarm_period*global_period):
                 temp_qty += data_qty[t-t_prime]
-        
+            temp_qty = temp_qty.tolist()
+            
         for ind_i,val_i in enumerate(nodes_per_swarm):
             t2_static_qty = temp_qty[:val_i]
             del temp_qty[:val_i]
