@@ -300,7 +300,7 @@ for save_type in [settings.iid_style]:
                                 dataset=dataset_train,indexes=node_train_sets[uav_counter])
                     else:
                         local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=1,\
-                                dataset=dataset_train,indexes=node_train_sets[t,uav_counter])
+                                dataset=dataset_train,indexes=node_train_sets[t][uav_counter])
                             
                     _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
                     
@@ -408,7 +408,7 @@ for save_type in [settings.iid_style]:
                             dataset=dataset_train,indexes=node_train_sets[uav_counter])
                 else:
                     local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=1,\
-                            dataset=dataset_train,indexes=node_train_sets[t,uav_counter])
+                            dataset=dataset_train,indexes=node_train_sets[t][uav_counter])
                 
                 _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
                 
