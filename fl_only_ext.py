@@ -111,7 +111,7 @@ for save_type in [settings.iid_style]:
     if save_type == 'extreme': #lpc = labels_per_cluster
         lpc = [1 for i in range(settings.swarms)] #static qty of labels per node
     elif save_type == 'mild':
-        lpc = [np.random.randint(3,4) for i in range(settings.swarms)] #static qty of labels per node
+        lpc = [np.random.randint(1,3) for i in range(settings.swarms)] #static qty of labels per node
     else:
         lpc = [10 for i in range(settings.swarms)]
     
