@@ -4,36 +4,38 @@ Created on Wed Mar 24 16:42:22 2021
 
 @author: henry
 """
-import os
 import argparse
 
-cwd = os.getcwd()
-
 # %% parser function
-parser = argparse.ArgumentParser()
-
-## RL probs (epsilon and gamma)
-parser.add_argument('--ep_greed',type=float,default=0.7,\
-                    help='epsilon greedy val') #0.6,0.7,0.8
-parser.add_argument('--ep_min',type=float,default=0.005,\
-                    help='epsilon minimum')
-parser.add_argument('--g_discount',type=float,default=0.7,\
-                    help='gamma discount factor') #0.6,0.7,0.8
-parser.add_argument('--replay_bs',type=int,default=20,\
-                    help='experience replay batch size')
-parser.add_argument('--linear',type=bool,default=True,\
-                    help='MLP or CNN') ## argpase cannot evaluate booleans OOB - fix later
-parser.add_argument('--cnn_range',type=int, default=2,\
-                    help='conv1d range')
-
-# ovr parameters
-parser.add_argument('--G_timesteps',type=int,default=10000,\
-                    help='number of swarm movements') #10,000
-parser.add_argument('--training',type=int,default=1,\
-                    help='training or testing the DRL')
-parser.add_argument('--centralized',type=bool,default=True,\
-                    help='centralized or decentralized')
-parser.add_argument('--DQN_update_period',type=int,default=20,\
-                    help='DQN update period') #50
-
-args = parser.parse_args()
+def ml_parser():
+    parser = argparse.ArgumentParser()
+    
+    parser.add_argument('--data_style',type=str,default='mnist',\
+                        choices=['mnist','fmnist'],\
+                        help='data style: mnist or fashion-mnist')
+    parser.add_argument('--nn_style',type=str,default='CNN',\
+                        choices=['CNN','MLP'],\
+                        help='neural network style: cnn or mlp')
+    parser.add_argument('--ratio',type=str,default='global',\
+                        choices=['global','swarm'],\
+                        help='global or swarm-wide ratio varying')
+    
+    parser.add_argument('--iid_style',type=str,default='extreme',\
+                        choices=['extreme','mild','iid'],\
+                        help='noniid/iid styles')
+    
+    parser.add_argument('--online',action='store_true',\
+                        help='varying data distributions flag')
+    parser.add_argument('-rd','--ratio_dyanmic',action='store_true',\
+                        help='non-unitary initial ratio flag')
+    parser.add_argument('--rd_val',type=int,default=2,\
+                        help='non-unitary ratio value')
+    
+    parser.add_argument('--comp',type=str,default='cpu',\
+                        choices=['gpu','cpu'],\
+                        help='gpu or cpu')
+    
+    parser.add_argument('--swarms',type=int,default=10,\
+                        help='swarms')
+    args = parser.parse_args()
+    return args
