@@ -325,6 +325,7 @@ for save_type in [settings.iid_style]:
                 
                 for ind_i,val_i in enumerate(nodes_per_swarm):
                     t2_static_qty = temp_qty[:val_i]
+                    print(temp_qty)
                     del temp_qty[:val_i]
                     
                     t3_static_qty = [i*swarm_period for i in t2_static_qty]
