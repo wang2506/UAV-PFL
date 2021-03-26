@@ -227,7 +227,7 @@ for save_type in [settings.iid_style]:
         with open(cwd+'/data/default_w','rb') as f:
             default_w = pickle.load(f)  
         
-        lr = 1e-2 #MLP
+        lr,lr2 = 1e-2,1e-2 #MLP
     else:
         nchannels = 1
         nclasses = 10
@@ -239,7 +239,7 @@ for save_type in [settings.iid_style]:
         with open(cwd+'/data/CNN_new_w','rb') as f:
             default_w = pickle.load(f)             
         
-        lr = 1e-3 #1e-2 #CNN
+        lr,lr2 = 1e-3,1e-2 #CNN
         
     print(global_net)
     global_net.train()
@@ -295,10 +295,10 @@ for save_type in [settings.iid_style]:
             for ind_i,val_i in enumerate(nodes_per_swarm):
                 for j in range(val_i): # each uav in i
                     if settings.online == False:
-                        local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr=lr,epochs=1,\
+                        local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr=lr,lr2=lr2,epochs=1,\
                                 dataset=dataset_train,indexes=node_train_sets[uav_counter])
                     else:
-                        local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr=lr,epochs=1,\
+                        local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr=lr,lr2=lr2,epochs=1,\
                                 dataset=dataset_train,indexes=node_train_sets[t][uav_counter])
                             
                     _,w,loss = local_obj.train(net=deepcopy(HF_hn_pfl_swarm_models[ind_i]).to(device))
@@ -405,10 +405,10 @@ for save_type in [settings.iid_style]:
         for ind_i,val_i in enumerate(nodes_per_swarm):
             for j in range(val_i): # each uav in i
                 if settings.online == False:
-                    local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=1,\
+                    local_obj = LocalUpdate(device,bs=batch_size,lr=lr,lr2=lr2,epochs=1,\
                             dataset=dataset_train,indexes=node_train_sets[uav_counter])
                 else:
-                    local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=1,\
+                    local_obj = LocalUpdate(device,bs=batch_size,lr=lr,lr2=lr2,epochs=1,\
                             dataset=dataset_train,indexes=node_train_sets[t][uav_counter])
                 
                 _,w,loss = local_obj.train(net=deepcopy(HF_hn_pfl_swarm_models[ind_i]).to(device))
