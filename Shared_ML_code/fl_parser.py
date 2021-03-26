@@ -24,9 +24,9 @@ def ml_parser():
                         choices=['extreme','mild','iid'],\
                         help='noniid/iid styles')
     
-    parser.add_argument('--online',type=bool, default=False,\
+    parser.add_argument('--online',action='store_true',\
                         help='varying data distributions flag')
-    parser.add_argument('-rd','--ratio_dyanmic',type=bool, default=False,\
+    parser.add_argument('-rd','--ratio_dynamic',action='store_true',\
                         help='non-unitary initial ratio flag')
     parser.add_argument('--rd_val',type=int,default=2,\
                         help='non-unitary ratio value')
