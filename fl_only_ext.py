@@ -268,7 +268,7 @@ for save_type in [settings.iid_style]:
         # total_time = swarm_period*global_period*cycles
     
         fl_acc, total_loss = [], []
-        fl_acc_full, total_loss,full = [], []
+        fl_acc_full, total_loss_full = [], []
         
         if settings.nn_style =='MLP':
             fl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(settings.swarms)]
