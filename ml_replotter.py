@@ -97,8 +97,8 @@ full_pfl_ratios = []
 
 nn_style = 'CNN'
 # nn_style = 'MLP'
-ratio_vec = [1,2,4,6,8,10]
-for ratio in [1,2,4,6,8,10]:
+ratio_vec = [1,2,4]
+for ratio in [1,2,4]:
     # ratio = 1 #, taus1,taus2 = 1,2,2
     ## reload data
     total_fl_accs, total_pfl_accs = [], []
@@ -112,11 +112,11 @@ for ratio in [1,2,4,6,8,10]:
     for iid_style in ['extreme']:#,'mild']: #,'iid']: #crashed on frankie for some reason...; wtf ,'extreme'
         
         with open(data_loc+'fl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
-                  +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style,'rb') as f:
+                  +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style+'_debug','rb') as f:
             fl_acc = pk.load(f)
         
         with open(data_loc+'hn_pfl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
-                   +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style,'rb') as f:
+                   +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style+'_debug','rb') as f:
             pfl_acc = pk.load(f)
         
         
@@ -146,15 +146,15 @@ f2,ax2 = plt.subplots(1,2,figsize=(10,5),dpi=100)#,sharey=True)
 ind = 0
 for i in range(len(ratio_vec)): #3
     if i == 0:
-        temp_indexes = np.arange(0,120,step=1) #total_fl_ratios[i][0]
+        temp_indexes = np.arange(0,40,step=1) #total_fl_ratios[i][0]
     elif i == 1:
-        temp_indexes = np.arange(0,120,step=2)
+        temp_indexes = np.arange(0,40,step=2)
     else:
-        temp_indexes = np.arange(0,120,step=4)
-    temp_indexes = np.arange(0,120,step=ratio_vec[i])
+        temp_indexes = np.arange(0,40,step=4)
+    temp_indexes = np.arange(0,40,step=ratio_vec[i])
         
     temp_indexes2 = list(temp_indexes)
-    temp_indexes2.append(120)
+    temp_indexes2.append(40)
     temp_indexes = temp_indexes2
     
     if i == 0:
