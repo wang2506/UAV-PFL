@@ -216,10 +216,10 @@ ax2[ind].legend()
     #         label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 4$',\
     #         color='darkblue',linestyle='dotted')
 
-ax2[ind].set_title(data_source.upper()+' Performance Accuracy Global')
-ax2[ind].set_ylabel('Accuracy (%)')
-ax2[ind].set_xlabel('Local Iteration')
-ax2[ind].grid(True)
+# ax2[ind].set_title(data_source.upper()+' Performance Accuracy Global')
+# ax2[ind].set_ylabel('Accuracy (%)')
+# ax2[ind].set_xlabel('Local Iteration')
+# ax2[ind].grid(True)
 
 
 h,l = ax2[0].get_legend_handles_labels()

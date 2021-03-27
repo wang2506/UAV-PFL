@@ -240,7 +240,8 @@ for save_type in [settings.iid_style]:
         with open(cwd+'/data/CNN_new_w','rb') as f:
             default_w = pickle.load(f)             
         
-        lr = 1e-3 #1e-2 #CNN
+        # lr = 1e-3 #1e-2 #CNN
+        lr = 2*1e-4
         
     print(global_net)
     global_net.train()
@@ -385,8 +386,12 @@ for save_type in [settings.iid_style]:
                     # total_loss_temp_all += loss_full * static_data_per_swarm[i] \
                     #     / sum(static_data_per_swarm)
                 
-                # fl_acc_temp_all, total_loss_temp_all = test_img2(ii,dataset_test,\
-                #         bs=batch_size,indexes=all_test_indexes,device=device)
+                # ali idea
+                # never assign label 3 to any node - to verify global vs local accuracies
+                # 2*1e-4 inner lr; outer lr = 1e-2; del_acc = 1e-2
+                
+                fl_acc_temp_all, total_loss_temp_all = test_img2(ii,dataset_test,\
+                        bs=batch_size,indexes=all_test_indexes,device=device)
                 
                 fl_acc.append(fl_acc_temp)
                 total_loss.append(total_loss_temp)
