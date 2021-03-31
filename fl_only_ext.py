@@ -357,8 +357,8 @@ for save_type in [settings.iid_style]:
             
             swarm_w = run_one_iter(fl_swarm_models) #one local training iter
             
-            # for i in fl_swarm_models:
-            #     print(i.state_dict()['fc2.bias'])
+            for i in fl_swarm_models:
+                print(i.state_dict()['fc2.bias'])
             
             # aggregation cycles
             if (t+1) % (swarm_period*global_period) == 0: # global agg
