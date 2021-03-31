@@ -308,7 +308,7 @@ for save_type in [settings.iid_style]:
                                 dataset=dataset_train,indexes=nts[t][uav_counter])
                             
                     # _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
-                    _,w,loss = local_obj.train(net=loc_models[ind_i].to(device))
+                    _,w,loss = local_obj.train(net=deepcopy(loc_models[ind_i]).to(device))
                     
                     swarm_w[ind_i].append(w)
                     uav_counter += 1
@@ -363,6 +363,9 @@ for save_type in [settings.iid_style]:
             # aggregation cycles
             if (t+1) % (swarm_period*global_period) == 0: # global agg
                 fl_swarm_models,agg_w_swarms,agg_t_swarms = sw_agg(fl_swarm_models,swarm_w)
+                
+                for i in fl_swarm_models:
+                    print(i.state_dict()['fc2.bias'])                   
                 
                 # global agg
                 w_global = FedAvg2(agg_w_swarms,agg_t_swarms)
@@ -424,7 +427,7 @@ for save_type in [settings.iid_style]:
                     
                     fl_acc_temp += temp_acc/len(fl_swarm_models)
                     total_loss_temp += loss/len(fl_swarm_models) #swarms
-        
+                    
                 fl_acc.append(fl_acc_temp)
                 total_loss.append(total_loss_temp)
                 print('personalized meta metric')
