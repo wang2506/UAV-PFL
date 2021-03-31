@@ -353,6 +353,7 @@ for save_type in [settings.iid_style]:
             # data_processed = {i:0 for i in range(swarms)}
 
             print('iteration:{}'.format(t))
+            print(nodes_per_swarm)
             print('hierarchical FL begins here')
             
             swarm_w = run_one_iter(fl_swarm_models) #one local training iter
