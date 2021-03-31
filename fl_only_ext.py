@@ -315,6 +315,7 @@ for save_type in [settings.iid_style]:
             
             return swarm_w
         
+        
         def sw_agg(loc_models,temp_swarm_w,swarm_period=swarm_period,\
             global_period=global_period,data_qty=data_qty,\
             online=settings.online,nps=nodes_per_swarm):                    
