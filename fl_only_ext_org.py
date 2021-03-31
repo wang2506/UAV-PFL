@@ -172,16 +172,21 @@ for save_type in [settings.iid_style]:
         data_per_swarm = pop_data_qty(data_per_swarm,data_qty)
         
     # %% populating data indexes for swarms/nodes [training sets]
-    def pop_nts(temp_ls,temp_qty,temp_nts,npc,train=train): #nts - node training set
+    def pop_nts(temp_ls,temp_qty,temp_nts,npc,train=train,debug=False): #nts - node training set
         counter = 0
         
         for ind_t_cluster, t_cluster in enumerate(npc): #npc = [3,5,2], nodes per cluster
             temp_ls_inner = temp_ls[ind_t_cluster]    
-            for i in range(t_cluster): 
-                for curr_label in temp_ls_inner:
-                    temp_nts[counter] += random.sample(train[curr_label],\
-                                    int(temp_qty[counter]/len(temp_ls_inner)))
-                
+            for i in range(t_cluster):
+                if debug == True:
+                    for curr_label in temp_ls_inner:
+                        temp_nts[counter] += random.sample(train[curr_label],\
+                                        int(temp_qty[counter]/len(temp_ls_inner)))
+                else:
+                    for curr_label in temp_ls_inner:
+                        temp_nts[counter] += random.sample(train[curr_label],\
+                                        len(train[curr_label]))
+                        
                 counter += 1
     
         return temp_nts
@@ -192,18 +197,13 @@ for save_type in [settings.iid_style]:
                 for j in range(total_time)}
         for j in range(total_time):
             node_train_sets[j] = pop_nts(ls[j],data_qty[j],\
-                            node_train_sets[j],nodes_per_swarm)
+                            node_train_sets[j],nodes_per_swarm,debug=True)
             
     else:
         node_train_sets = {i: [] for i in range(sum(nodes_per_swarm))}
         node_train_sets = pop_nts(ls,data_qty,\
-                        node_train_sets,nodes_per_swarm)
-    
-    # # saving the data
-    # cwd = os.getcwd()
-    # with open(cwd+'/data/'+str(init_seed)+data_source+str(nodes)+'_lpn','wb') as f:
-    #     pickle.dump()
-    
+                        node_train_sets,nodes_per_swarm,debug=True)
+            
     # %% same as above for [testing dataset]
     ## basically just sort the testing dataset into indexes for each swarm
     swarm_test_sets = {i:[] for i in range(settings.swarms)} #indexed by swarm
