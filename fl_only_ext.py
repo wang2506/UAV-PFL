@@ -308,7 +308,7 @@ for save_type in [settings.iid_style]:
                                 dataset=dataset_train,indexes=nts[t][uav_counter])
                             
                     # _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
-                    _,w,loss = local_obj.train(net=deepcopy(loc_models[ind_i]).to(device))
+                    _,w,loss = local_obj.train(net=loc_models[ind_i].to(device))
                     
                     swarm_w[ind_i].append(w)
                     uav_counter += 1
@@ -353,7 +353,6 @@ for save_type in [settings.iid_style]:
             # data_processed = {i:0 for i in range(swarms)}
 
             print('iteration:{}'.format(t))
-            print(nodes_per_swarm)
             print('hierarchical FL begins here')
             
             swarm_w = run_one_iter(fl_swarm_models) #one local training iter
