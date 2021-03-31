@@ -35,7 +35,7 @@ np.random.seed(init_seed)
 torch.manual_seed(init_seed)
 
 if settings.comp == 'gpu':
-    device = torch.device('cuda:2')
+    device = torch.device('cuda:1')
 else:
     device = torch.device('cpu')
 

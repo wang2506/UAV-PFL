@@ -282,52 +282,91 @@ for save_type in [settings.iid_style]:
             i.load_state_dict(default_w)
             i.train()   
         
+        
+        def run_one_iter(loc_models,online=settings.online,nps=nodes_per_swarm,\
+            nts=node_train_sets,device=device,meta=False):
+            swarm_w = {i:[] for i in range(settings.swarms)}
+
+            uav_counter = 0
+            for ind_i,val_i in enumerate(nps):
+                for j in range(val_i): # each uav in i
+                    if meta == True:
+                        if settings.online == False:
+                            local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=1,\
+                                    dataset=dataset_train,indexes=nts[uav_counter])
+                        else:
+                            local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=1,\
+                                    dataset=dataset_train,indexes=nts[t][uav_counter])
+                                
+                        # _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
+                        _,w,loss = local_obj.train(net=loc_models[ind_i].to(device))
+                        
+                        swarm_w[ind_i].append(w)
+                        uav_counter += 1
+                    else:
+                        if settings.online == False:
+                            local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr=lr,epochs=1,\
+                                    dataset=dataset_train,indexes=nts[uav_counter])
+                        else:
+                            local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr=lr,epochs=1,\
+                                    dataset=dataset_train,indexes=nts[t][uav_counter])
+                                
+                        # _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
+                        _,w,loss = local_obj.train(net=loc_models[ind_i].to(device))
+                        
+                        swarm_w[ind_i].append(w)
+                        uav_counter += 1
+                        
+            return swarm_w
+        
+        def sw_agg(loc_models,temp_swarm_w,swarm_period=swarm_period,\
+            global_period=global_period,data_qty=data_qty,\
+            online=settings.online,nps=nodes_per_swarm):                    
+            
+            ## run FL swarm-wide aggregation only
+            if settings.online == False:
+                temp_qty = deepcopy(data_qty).tolist() # TODO: see other TODO
+            else:
+                temp_qty = 0*data_qty[t]
+                for t_prime in range(swarm_period*global_period):
+                    temp_qty += data_qty[t-t_prime]
+                temp_qty = temp_qty.tolist()
+            
+            t_swarm_total_qty = []
+            w_swarms = []
+                
+            for ind_i,val_i in enumerate(nps):
+                t2_static_qty = temp_qty[:val_i]
+                del temp_qty[:val_i]
+                
+                t3_static_qty = [i*swarm_period for i in t2_static_qty]
+                
+                w_avg_swarm = FedAvg2(temp_swarm_w[ind_i],t3_static_qty)
+    
+                loc_models[ind_i].load_state_dict(w_avg_swarm)
+                loc_models[ind_i].train()
+            
+            t_swarm_total_qty.append(sum(t3_static_qty))
+            w_swarms.append(w_avg_swarm)
+            
+            return loc_models, w_swarms, t_swarm_total_qty
+        
         ## main loop for hierarchical FL ##
         ### Hierarchical-FL procedure 
         ### 1. create object for each node/device
         ### 2. after \tau1 = swarm_period iterations, aggregate cluster-wise (weighed)
         ### 3. after \tau2 = global_period swarm-wide aggregations, aggregate globally (weighted again)        
         for t in range(total_time):
-            swarm_w = {i:[] for i in range(settings.swarms)}
+            # swarm_w = {i:[] for i in range(settings.swarms)}
             # data_processed = {i:0 for i in range(swarms)}
 
             print('iteration:{}'.format(t))
             print('HN-HF-PFL begins here')
-            
-            uav_counter = 0
-            for ind_i,val_i in enumerate(nodes_per_swarm):
-                for j in range(val_i): # each uav in i
-                    if settings.online == False:
-                        local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr1=lr,lr2=lr2,epochs=1,\
-                                dataset=dataset_train,indexes=node_train_sets[uav_counter])
-                    else:
-                        local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr1=lr,lr2=lr2,epochs=1,\
-                                dataset=dataset_train,indexes=node_train_sets[t][uav_counter])
-                            
-                    _,w,loss = local_obj.train(net=deepcopy(HF_hn_pfl_swarm_models[ind_i]).to(device))
                     
-                    swarm_w[ind_i].append(w)
-                    uav_counter += 1
+            swarm_w = run_one_iter(HF_hn_pfl_swarm_models) #one local training iter
             
             # for i in HF_hn_pfl_swarm_models:
-            #     print(i.state_dict()['fc2.bias'])
-
-            ## calculate localized accuracy prior to aggregations            
-            HF_hn_pfl_acc_temp = 0
-            total_loss_temp = 0
-            
-            for i,ii in enumerate(HF_hn_pfl_swarm_models):
-                ii.eval()
-                temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
-                        indexes=swarm_test_sets[i],device=device)
-                
-                HF_hn_pfl_acc_temp += temp_acc/len(HF_hn_pfl_swarm_models)
-                total_loss_temp += loss/len(HF_hn_pfl_swarm_models) #swarms
-    
-            HF_hn_pfl_acc.append(HF_hn_pfl_acc_temp)
-            total_loss.append(total_loss_temp)
-            print(HF_hn_pfl_acc[-1])
-            
+            #     print(i.state_dict()['fc2.bias'])            
 
             ## aggregation cycles
             if (t+1) % (swarm_period*global_period) == 0: # global agg
@@ -419,6 +458,32 @@ for save_type in [settings.iid_style]:
                 print('global metric')
                 print(HF_hn_pfl_acc_full[-1])
                 # print(total_loss)
+        
+        
+                ## calculate localized accuracy prior to aggregations
+                ## personalized model performance 
+                HF_hn_pfl_acc_temp = 0
+                total_loss_temp = 0
+                
+                temp_pfl_swarm_models = deepcopy(HF_hn_pfl_swarm_models)
+                temp_swarm_w = run_one_iter(temp_pfl_swarm_models) 
+                
+                # perform a sw_agg
+                temp_pfl_swarm_models,agg_w_swarms,agg_t_swarms = \
+                    sw_agg(temp_pfl_swarm_models,temp_swarm_w)
+                
+                for i,ii in enumerate(temp_pfl_swarm_models):
+                    ii.eval()
+                    temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
+                            indexes=swarm_test_sets[i],device=device)
+                    
+                    HF_hn_pfl_acc_temp += temp_acc/len(HF_hn_pfl_swarm_models)
+                    total_loss_temp += loss/len(HF_hn_pfl_swarm_models) #swarms
+        
+                HF_hn_pfl_acc.append(HF_hn_pfl_acc_temp)
+                total_loss.append(total_loss_temp)
+                print('personalized meta metric')
+                print(HF_hn_pfl_acc[-1])
         
         # saving results
         cwd = os.getcwd()
