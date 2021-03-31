@@ -330,8 +330,8 @@ for save_type in [settings.iid_style]:
                 loc_models[ind_i].load_state_dict(w_avg_swarm)
                 loc_models[ind_i].train()
             
-            t_swarm_total_qty.append(sum(t3_static_qty))
-            w_swarms.append(w_avg_swarm)
+                t_swarm_total_qty.append(sum(t3_static_qty))
+                w_swarms.append(w_avg_swarm)
             
             return loc_models, w_swarms, t_swarm_total_qty
         
@@ -371,6 +371,29 @@ for save_type in [settings.iid_style]:
             
             # aggregation cycles
             if (t+1) % (swarm_period*global_period) == 0: # global agg
+                # # swarm-wide agg
+                # if settings.online == False:
+                #     temp_qty = deepcopy(data_qty).tolist()
+                # else:
+                #     temp_qty = 0*data_qty[t]
+                #     for t_prime in range(swarm_period*global_period):
+                #         temp_qty += data_qty[t-t_prime]
+                #     temp_qty = temp_qty.tolist()
+                    
+                # t_swarm_total_qty = []
+                # w_swarms = []
+                
+                # for ind_i,val_i in enumerate(nodes_per_swarm):
+                #     t2_static_qty = temp_qty[:val_i]
+                #     del temp_qty[:val_i]
+                    
+                #     t3_static_qty = [i*swarm_period for i in t2_static_qty]
+
+                #     w_avg_swarm = FedAvg2(swarm_w[ind_i],t3_static_qty)
+                    
+                #     t_swarm_total_qty.append(sum(t3_static_qty))
+                #     w_swarms.append(w_avg_swarm)
+                
                 fl_swarm_models,agg_w_swarms,agg_t_swarms = sw_agg(fl_swarm_models,swarm_w)
                 
                 # global agg

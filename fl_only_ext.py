@@ -343,8 +343,8 @@ for save_type in [settings.iid_style]:
                 loc_models[ind_i].load_state_dict(w_avg_swarm)
                 loc_models[ind_i].train()
             
-            t_swarm_total_qty.append(sum(t3_static_qty))
-            w_swarms.append(w_avg_swarm)
+                t_swarm_total_qty.append(sum(t3_static_qty))
+                w_swarms.append(w_avg_swarm)
             
             return loc_models, w_swarms, t_swarm_total_qty
         
