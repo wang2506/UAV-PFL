@@ -312,7 +312,7 @@ for save_type in [settings.iid_style]:
                                     dataset=dataset_train,indexes=nts[t][uav_counter])
                                 
                         # _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
-                        _,w,loss = local_obj.train(net=loc_models[ind_i].to(device))
+                        _,w,loss = local_obj.train(net=deepcopy(loc_models[ind_i]).to(device))
                         
                         swarm_w[ind_i].append(w)
                         uav_counter += 1
@@ -345,9 +345,9 @@ for save_type in [settings.iid_style]:
     
                 loc_models[ind_i].load_state_dict(w_avg_swarm)
                 loc_models[ind_i].train()
-            
-            t_swarm_total_qty.append(sum(t3_static_qty))
-            w_swarms.append(w_avg_swarm)
+                
+                t_swarm_total_qty.append(sum(t3_static_qty))
+                w_swarms.append(w_avg_swarm)
             
             return loc_models, w_swarms, t_swarm_total_qty
         
@@ -362,39 +362,20 @@ for save_type in [settings.iid_style]:
 
             print('iteration:{}'.format(t))
             print('HN-HF-PFL begins here')
-                    
+            
             swarm_w = run_one_iter(HF_hn_pfl_swarm_models) #one local training iter
             
             # for i in HF_hn_pfl_swarm_models:
-            #     print(i.state_dict()['fc2.bias'])            
+            #     print(i.state_dict()['fc2.bias'])
 
             ## aggregation cycles
             if (t+1) % (swarm_period*global_period) == 0: # global agg
                 # swarm-wide agg
-                if settings.online == False:
-                    temp_qty = deepcopy(data_qty).tolist()
-                else:
-                    temp_qty = 0*data_qty[t]
-                    for t_prime in range(swarm_period*global_period):
-                        temp_qty += data_qty[t-t_prime]
-                    temp_qty = temp_qty.tolist()
-                    
-                t_swarm_total_qty = []
-                w_swarms = []
-                
-                for ind_i,val_i in enumerate(nodes_per_swarm):
-                    t2_static_qty = temp_qty[:val_i]
-                    del temp_qty[:val_i]
-                    
-                    t3_static_qty = [i*swarm_period for i in t2_static_qty]
-
-                    w_avg_swarm = FedAvg2(swarm_w[ind_i],t3_static_qty)
-                    
-                    t_swarm_total_qty.append(sum(t3_static_qty))
-                    w_swarms.append(w_avg_swarm)
+                HF_hn_pfl_swarm_models,agg_w_swarms,agg_t_swarms = \
+                    sw_agg(HF_hn_pfl_swarm_models,swarm_w)
                 
                 # global agg
-                w_global = FedAvg2(w_swarms,t_swarm_total_qty)
+                w_global = FedAvg2(agg_w_swarms,agg_t_swarms)
                 
                 for i in HF_hn_pfl_swarm_models:
                     i.load_state_dict(w_global)
@@ -402,24 +383,8 @@ for save_type in [settings.iid_style]:
                     
             elif (t+1)% swarm_period == 0:
                 ## run FL swarm-wide aggregation only
-                if settings.online == False:
-                    temp_qty = deepcopy(data_qty).tolist()
-                else:
-                    temp_qty = 0*data_qty[t]
-                    for t_prime in range(swarm_period*global_period):
-                        temp_qty += data_qty[t-t_prime]
-                    temp_qty = temp_qty.tolist()
-                    
-                for ind_i,val_i in enumerate(nodes_per_swarm):
-                    t2_static_qty = temp_qty[:val_i]
-                    del temp_qty[:val_i]
-                    
-                    t3_static_qty = [i*swarm_period for i in t2_static_qty]
-                    
-                    w_avg_swarm = FedAvg2(swarm_w[ind_i],t3_static_qty)
-        
-                    HF_hn_pfl_swarm_models[ind_i].load_state_dict(w_avg_swarm)
-                    HF_hn_pfl_swarm_models[ind_i].train()
+                HF_hn_pfl_swarm_models,agg_w_swarms,agg_t_swarms = \
+                    sw_agg(HF_hn_pfl_swarm_models,swarm_w)
         
             ## evaluate model performance
             if ((t+1) % (swarm_period*global_period) == 0):
@@ -494,7 +459,7 @@ for save_type in [settings.iid_style]:
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
             '_'+settings.nn_style+'_debug','wb') as f:
             pickle.dump(HF_hn_pfl_acc,f)
-    
+            
         with open(cwd+'/data/hn_pfl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
             '_'+settings.nn_style+'_debug','wb') as f:
@@ -612,4 +577,51 @@ for save_type in [settings.iid_style]:
     
             #     HF_hn_pfl_swarm_models[ind_i].load_state_dict(w_avg_swarm)
             #     HF_hn_pfl_swarm_models[ind_i].train()
+
+
+                # # swarm-wide agg
+                # if settings.online == False:
+                #     temp_qty = deepcopy(data_qty).tolist()
+                # else:
+                #     temp_qty = 0*data_qty[t]
+                #     for t_prime in range(swarm_period*global_period):
+                #         temp_qty += data_qty[t-t_prime]
+                #     temp_qty = temp_qty.tolist()
+                    
+                # t_swarm_total_qty = []
+                # w_swarms = []
+                
+                # for ind_i,val_i in enumerate(nodes_per_swarm):
+                #     t2_static_qty = temp_qty[:val_i]
+                #     del temp_qty[:val_i]
+                    
+                #     t3_static_qty = [i*swarm_period for i in t2_static_qty]
+
+                #     w_avg_swarm = FedAvg2(swarm_w[ind_i],t3_static_qty)
+                    
+                #     t_swarm_total_qty.append(sum(t3_static_qty))
+                #     w_swarms.append(w_avg_swarm)
+
+
+
+                # if settings.online == False:
+                #     temp_qty = deepcopy(data_qty).tolist()
+                # else:
+                #     temp_qty = 0*data_qty[t]
+                #     for t_prime in range(swarm_period*global_period):
+                #         temp_qty += data_qty[t-t_prime]
+                #     temp_qty = temp_qty.tolist()
+                    
+                # for ind_i,val_i in enumerate(nodes_per_swarm):
+                #     t2_static_qty = temp_qty[:val_i]
+                #     del temp_qty[:val_i]
+                    
+                #     t3_static_qty = [i*swarm_period for i in t2_static_qty]
+                    
+                #     w_avg_swarm = FedAvg2(swarm_w[ind_i],t3_static_qty)
+        
+                #     HF_hn_pfl_swarm_models[ind_i].load_state_dict(w_avg_swarm)
+                #     HF_hn_pfl_swarm_models[ind_i].train()
+
+
 

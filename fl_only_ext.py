@@ -286,12 +286,6 @@ for save_type in [settings.iid_style]:
         for i in fl_swarm_models:
             i.load_state_dict(default_w)
             i.train()   
-        
-        ## main loop for hierarchical FL ##
-        ### Hierarchical-FL procedure 
-        ### 1. create object for each node/device
-        ### 2. after \tau1 = swarm_period iterations, aggregate cluster-wise (weighed)
-        ### 3. after \tau2 = global_period swarm-wide aggregations, aggregate globally (weighted again)
 
         def run_one_iter(loc_models,online=settings.online,nps=nodes_per_swarm,\
             nts=node_train_sets,device=device):
@@ -348,7 +342,11 @@ for save_type in [settings.iid_style]:
             
             return loc_models, w_swarms, t_swarm_total_qty
         
-        
+        ## main loop for hierarchical FL ##
+        ### Hierarchical-FL procedure 
+        ### 1. create object for each node/device
+        ### 2. after \tau1 = swarm_period iterations, aggregate cluster-wise (weighed)
+        ### 3. after \tau2 = global_period swarm-wide aggregations, aggregate globally (weighted again)
         for t in range(total_time):
             # swarm_w = {i:[] for i in range(settings.swarms)}
             # data_processed = {i:0 for i in range(swarms)}
@@ -365,19 +363,12 @@ for save_type in [settings.iid_style]:
             if (t+1) % (swarm_period*global_period) == 0: # global agg
                 fl_swarm_models,agg_w_swarms,agg_t_swarms = sw_agg(fl_swarm_models,swarm_w)
                 
-                print('check agg function')
-                for i in fl_swarm_models:
-                    print(i.state_dict()['fc2.bias'])                   
-                
                 # global agg
                 w_global = FedAvg2(agg_w_swarms,agg_t_swarms)
                 
                 for i in fl_swarm_models:
                     i.load_state_dict(w_global)
                     i.train()
-                
-                print('check global')
-                print(w_global['fc2.bias'])
                 
             elif (t+1)% swarm_period == 0:                
                 fl_swarm_models,agg_w_swarms,agg_t_swarms = sw_agg(fl_swarm_models,swarm_w)
@@ -411,8 +402,7 @@ for save_type in [settings.iid_style]:
                 print(fl_acc_full[-1])
                 # print(total_loss)
                 
-                
-                
+
                 ## calculate localized accuracy prior to aggregations
                 ## personalized model performance 
                 fl_acc_temp = 0
