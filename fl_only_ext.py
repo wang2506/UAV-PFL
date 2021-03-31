@@ -288,17 +288,17 @@ for save_type in [settings.iid_style]:
             i.train()   
 
         def run_one_iter(loc_models,online=settings.online,nps=nodes_per_swarm,\
-            nts=node_train_sets,device=device):
+            nts=node_train_sets,device=device,ep_len=1):
             swarm_w = {i:[] for i in range(settings.swarms)}
 
             uav_counter = 0
             for ind_i,val_i in enumerate(nps):
                 for j in range(val_i): # each uav in i
                     if settings.online == False:
-                        local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=1,\
+                        local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=ep_len,\
                                 dataset=dataset_train,indexes=nts[uav_counter])
                     else:
-                        local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=1,\
+                        local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=ep_len,\
                                 dataset=dataset_train,indexes=nts[t][uav_counter])
                             
                     # _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
@@ -347,21 +347,23 @@ for save_type in [settings.iid_style]:
         ### 1. create object for each node/device
         ### 2. after \tau1 = swarm_period iterations, aggregate cluster-wise (weighed)
         ### 3. after \tau2 = global_period swarm-wide aggregations, aggregate globally (weighted again)
-        for t in range(total_time):
+        for t in range(int(total_time/swarm_period)):
             # swarm_w = {i:[] for i in range(settings.swarms)}
             # data_processed = {i:0 for i in range(swarms)}
 
             print('iteration:{}'.format(t))
             print('hierarchical FL begins here')
             
-            swarm_w = run_one_iter(fl_swarm_models) #one local training iter
+            swarm_w = run_one_iter(fl_swarm_models,ep_len=swarm_period) #one local training iter
             
             # for i in fl_swarm_models:
             #     print(i.state_dict()['fc2.bias'])
             
-            # aggregation cycles
-            if (t+1) % (swarm_period*global_period) == 0: # global agg
-                fl_swarm_models,agg_w_swarms,agg_t_swarms = sw_agg(fl_swarm_models,swarm_w)
+            # aggregation cycles         
+            fl_swarm_models,agg_w_swarms,agg_t_swarms = sw_agg(fl_swarm_models,swarm_w)
+
+            if (t+1) % (global_period) == 0: # global agg
+                # fl_swarm_models,agg_w_swarms,agg_t_swarms = sw_agg(fl_swarm_models,swarm_w)
                 
                 # global agg
                 w_global = FedAvg2(agg_w_swarms,agg_t_swarms)
@@ -369,12 +371,10 @@ for save_type in [settings.iid_style]:
                 for i in fl_swarm_models:
                     i.load_state_dict(w_global)
                     i.train()
-                
-            elif (t+1)% swarm_period == 0:                
-                fl_swarm_models,agg_w_swarms,agg_t_swarms = sw_agg(fl_swarm_models,swarm_w)
+            
             
             ## evaluate model performance - post aggregations (i.e., globalized acc)
-            if ((t+1) % (swarm_period*global_period) == 0):
+            if ((t+1) % (global_period) == 0):
                 # fl_acc_temp, total_loss_temp = 0, 0
                 
                 fl_acc_temp_all, total_loss_temp_all = 0, 0
