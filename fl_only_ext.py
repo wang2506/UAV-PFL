@@ -246,8 +246,8 @@ for save_type in [settings.iid_style]:
         with open(cwd+'/data/CNN_new_w','rb') as f:
             default_w = pickle.load(f)             
         
-        lr = 1e-3 #1e-2 #CNN
-        # lr = 2*1e-4
+        # lr = 1e-3 #1e-2 #CNN
+        lr = 2*1e-4
         
     print(global_net)
     global_net.train()
