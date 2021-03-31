@@ -308,7 +308,7 @@ for save_type in [settings.iid_style]:
                                 dataset=dataset_train,indexes=nts[t][uav_counter])
                             
                     # _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
-                    _,w,loss = local_obj.train(net=loc_models[ind_i].to(device))
+                    _,w,loss = local_obj.train(net=deepcopy(loc_models[ind_i]).to(device))
                     
                     swarm_w[ind_i].append(w)
                     uav_counter += 1
@@ -357,8 +357,8 @@ for save_type in [settings.iid_style]:
             
             swarm_w = run_one_iter(fl_swarm_models) #one local training iter
             
-            for i in fl_swarm_models:
-                print(i.state_dict()['fc2.bias'])
+            # for i in fl_swarm_models:
+            #     print(i.state_dict()['fc2.bias'])
             
             # aggregation cycles
             if (t+1) % (swarm_period*global_period) == 0: # global agg
@@ -374,7 +374,10 @@ for save_type in [settings.iid_style]:
                 for i in fl_swarm_models:
                     i.load_state_dict(w_global)
                     i.train()
-                    
+                
+                print('check global')
+                print(w_global['fc1.bias'])
+                
             elif (t+1)% swarm_period == 0:                
                 fl_swarm_models,agg_w_swarms,agg_t_swarms = sw_agg(fl_swarm_models,swarm_w)
             
