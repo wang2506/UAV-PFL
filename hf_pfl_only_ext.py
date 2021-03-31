@@ -435,7 +435,7 @@ for save_type in [settings.iid_style]:
                 total_loss_temp = 0
                 
                 temp_pfl_swarm_models = deepcopy(HF_hn_pfl_swarm_models)
-                temp_swarm_w = run_one_iter(temp_pfl_swarm_models) 
+                temp_swarm_w = run_one_iter(temp_pfl_swarm_models,meta=True)
                 
                 # perform a sw_agg
                 temp_pfl_swarm_models,agg_w_swarms,agg_t_swarms = \
