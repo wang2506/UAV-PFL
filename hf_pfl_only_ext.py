@@ -292,11 +292,11 @@ for save_type in [settings.iid_style]:
                 for j in range(val_i): # each uav in i
                     if meta == True:
                         if settings.online == False:
-                            local_obj = LocalUpdate(device,bs=batch_size,lr1=lr,\
+                            local_obj = LocalUpdate(device,bs=batch_size,lr=lr,\
                                 lr2=lr2,epochs=ep_len,dataset=dataset_train,\
                                 indexes=node_train_sets[uav_counter])
                         else:
-                            local_obj = LocalUpdate(device,bs=batch_size,lr1=lr,\
+                            local_obj = LocalUpdate(device,bs=batch_size,lr=lr,\
                                 lr2=lr2,epochs=ep_len,dataset=dataset_train,\
                                 indexes=node_train_sets[uav_counter])
                                 
