@@ -364,6 +364,7 @@ for save_type in [settings.iid_style]:
             if (t+1) % (swarm_period*global_period) == 0: # global agg
                 fl_swarm_models,agg_w_swarms,agg_t_swarms = sw_agg(fl_swarm_models,swarm_w)
                 
+                print('check agg function')
                 for i in fl_swarm_models:
                     print(i.state_dict()['fc2.bias'])                   
                 
