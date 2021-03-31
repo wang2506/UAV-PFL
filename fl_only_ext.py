@@ -376,7 +376,7 @@ for save_type in [settings.iid_style]:
                     i.train()
                 
                 print('check global')
-                print(w_global['fc1.bias'])
+                print(w_global['fc2.bias'])
                 
             elif (t+1)% swarm_period == 0:                
                 fl_swarm_models,agg_w_swarms,agg_t_swarms = sw_agg(fl_swarm_models,swarm_w)
