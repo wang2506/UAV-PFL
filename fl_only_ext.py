@@ -247,7 +247,7 @@ for save_type in [settings.iid_style]:
             default_w = pickle.load(f)             
         
         # lr = 1e-3 #1e-2 #CNN
-        lr = 1e-4
+        lr = 5e-4
         # lr = 2*1e-4
         
     print(global_net)
