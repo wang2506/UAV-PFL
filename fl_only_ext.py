@@ -364,6 +364,7 @@ for save_type in [settings.iid_style]:
 
             if (t+1) % (global_period) == 0: # global agg
                 # fl_swarm_models,agg_w_swarms,agg_t_swarms = sw_agg(fl_swarm_models,swarm_w)
+                agg_t_swarms = np.ones_like(agg_t_swarms)
                 
                 # global agg
                 w_global = FedAvg2(agg_w_swarms,agg_t_swarms)
