@@ -239,10 +239,10 @@ for save_type in [settings.iid_style]:
         with open(cwd+'/data/CNN_new_w','rb') as f:
             default_w = pickle.load(f)             
         
-        # lr,lr2 = 1e-3,1e-2 #CNN
+        lr,lr2 = 1e-3,1e-2 #CNN
         # debug lr-rates
-        lr = 2*1e-4
-        lr2 = 1e-2
+        # lr = 2*1e-4
+        # lr2 = 1e-2
         
     print(global_net)
     global_net.train()
@@ -259,7 +259,7 @@ for save_type in [settings.iid_style]:
         global_period = settings.rd_val
     
     ## main loop for ratio variance ##
-    for ratio in [1,2,4,6,8,10]:
+    for ratio in [1,2,4]:#,6,8,10]:
         # ratio dynamics
         if settings.ratio == 'global': #global dynamic, swarm varied
              global_period = swarm_period * ratio
