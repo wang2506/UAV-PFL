@@ -246,8 +246,8 @@ for save_type in [settings.iid_style]:
         with open(cwd+'/data/CNN_new_w','rb') as f:
             default_w = pickle.load(f)             
         
-        # lr = 1e-3 #1e-2 #CNN
-        lr = 2*1e-4
+        lr = 1e-3 #1e-2 #CNN
+        # lr = 2*1e-4
         
     print(global_net)
     global_net.train()
@@ -389,11 +389,11 @@ for save_type in [settings.iid_style]:
                 #     total_loss_temp += loss/len(fl_swarm_models) #swarms
                     
                 # select any of the swarm_models
-                # fl_acc_temp_all, total_loss_temp_all = test_img2(fl_swarm_models[0],dataset_test,\
-                #         bs=batch_size,indexes=all_test_indexes,device=device)
+                fl_acc_temp_all, total_loss_temp_all = test_img2(fl_swarm_models[0],dataset_test,\
+                        bs=batch_size,indexes=all_test_indexes,device=device)
                 
-                fl_acc_temp_all, total_loss_temp_all = test_img2(fl_swarm_models[0],dataset_train,\
-                        bs=batch_size,indexes=range(len(dataset_train)),device=device)
+                # fl_acc_temp_all, total_loss_temp_all = test_img2(fl_swarm_models[0],dataset_train,\
+                #         bs=batch_size,indexes=range(len(dataset_train)),device=device)
                     
                 # fl_acc.append(fl_acc_temp)
                 # total_loss.append(total_loss_temp)
