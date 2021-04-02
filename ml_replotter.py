@@ -109,7 +109,7 @@ for ratio in [1,2,4]:#4,6,8]:
     
     swarm_period = 1
     global_period = ratio*swarm_period
-    for iid_style in ['mild']:#,'mild']: #,'iid']: #crashed on frankie for some reason...; wtf ,'extreme'
+    for iid_style in ['extreme']:#,'mild']: #,'iid']: #crashed on frankie for some reason...; wtf ,'extreme'
         
         with open(data_loc+'fl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
                   +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style+'_debug','rb') as f:

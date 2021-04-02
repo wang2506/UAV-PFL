@@ -246,7 +246,8 @@ for save_type in [settings.iid_style]:
         with open(cwd+'/data/CNN_new_w','rb') as f:
             default_w = pickle.load(f)             
         
-        lr = 1e-3 #1e-2 #CNN
+        # lr = 1e-3 #1e-2 #CNN
+        lr = 2e-3
         # lr = 4e-4
         # lr = 2*1e-4
         
