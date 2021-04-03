@@ -373,7 +373,7 @@ for save_type in [settings.iid_style]:
                 # agg_t_swarms = np.ones_like(agg_t_swarms)
                 
                 # global agg
-                w_global = FedAvg2(swarm_w,np.ones_like(len(swarm_w)))
+                w_global = FedAvg2(swarm_w,np.ones_like(nodes_per_swarm))
                 
                 for i in fl_swarm_models:
                     i.load_state_dict(w_global)
