@@ -70,7 +70,8 @@ nodes_per_swarm = [np.random.randint(2,4) for i in range(settings.swarms)]
 
 # labels_per_node assignment function
 def pop_labels(temp_lpn,temp_ls,max_labels=10,flag=True):
-    starting_list = list(range(10))
+    starting_list = list(range(max_labels))
+    freq_tracker = np.zeros(max_labels) #label frequency tracker
     for i,j in enumerate(temp_lpn):
         j = int(j)
         tts = sorted(random.sample(range(max_labels),j))
@@ -88,18 +89,30 @@ def pop_labels(temp_lpn,temp_ls,max_labels=10,flag=True):
         else:
             # first ensure that everying in the starting list is covered
             if len(starting_list) != 0:
-                if j >= len(starting_list):
+                if j > len(starting_list):
                     tts = deepcopy(starting_list)
-                    starting_list = []
-                    tts2 = sorted(random.sample(range(max_labels),j-len(starting_list)))
+                    diff = j -len(starting_list)
+                    
+                    starting_list = list(range(max_labels))
+                    
+                    tts2 = sorted(random.sample(starting_list,diff))
                     
                     for val in tts2:
+                        while val in tts:
+                            val = np.random.randint(0,10)
                         tts.append(val)
+                        del starting_list[starting_list.index(val)]    
+                    
+                    for val in tts:
+                        freq_tracker[val] += 1
+                    
                 else: 
                     tts = sorted(random.sample(starting_list,j))
                 
                     for val in tts:
+                        freq_tracker[val] += 1
                         del starting_list[starting_list.index(val)]
+                        
                 temp_ls[i] = tts
             else:
                 temp_ls[i] = tts
@@ -246,8 +259,7 @@ for save_type in [settings.iid_style]:
         with open(cwd+'/data/CNN_new_w','rb') as f:
             default_w = pickle.load(f)             
         
-        # lr = 1e-3 #1e-2 #CNN
-        lr = 2e-3
+        lr = 1e-3 #1e-2 #CNN
         # lr = 4e-4
         # lr = 2*1e-4
         
