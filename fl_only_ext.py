@@ -399,7 +399,7 @@ for save_type in [settings.iid_style]:
             uav_counter = 0
             for ind,val in enumerate(nodes_per_swarm):
                 for w_no in range(val):
-                    worker_models[uav_counter].load_state_dict(fl_swarm_models[ind])
+                    worker_models[uav_counter].load_state_dict(fl_swarm_models[ind].state_dict())
                     uav_counter += 1
             
             # global agg
