@@ -125,7 +125,7 @@ for save_type in [settings.iid_style]:
     if save_type == 'extreme': #lpc = labels_per_cluster
         lpc = [1 for i in range(settings.swarms)] #static qty of labels per node
     elif save_type == 'mild':
-        lpc = [np.random.randint(3,4) for i in range(settings.swarms)] #static qty of labels per node
+        lpc = [np.random.randint(2,3) for i in range(settings.swarms)] #static qty of labels per node
     else:
         lpc = [10 for i in range(settings.swarms)]
     
@@ -212,12 +212,12 @@ for save_type in [settings.iid_style]:
                 for j in range(total_time)}
         for j in range(total_time):
             node_train_sets[j] = pop_nts(ls[j],data_qty[j],\
-                            node_train_sets[j],nodes_per_swarm,debug=True)
+                            node_train_sets[j],nodes_per_swarm)#,debug=True)
             
     else:
         node_train_sets = {i: [] for i in range(sum(nodes_per_swarm))}
         node_train_sets = pop_nts(ls,data_qty,\
-                        node_train_sets,nodes_per_swarm,debug=True)
+                        node_train_sets,nodes_per_swarm)#,debug=True)
     
     # # saving the data
     # cwd = os.getcwd()

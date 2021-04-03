@@ -69,7 +69,8 @@ nodes_per_swarm = [np.random.randint(2,4) for i in range(settings.swarms)]
 
 # labels_per_node assignment function
 def pop_labels(temp_lpn,temp_ls,max_labels=10,flag=True):
-    starting_list = list(range(10))
+    starting_list = list(range(max_labels))
+    freq_tracker = np.zeros(max_labels) #label frequency tracker
     for i,j in enumerate(temp_lpn):
         j = int(j)
         tts = sorted(random.sample(range(max_labels),j))
@@ -77,6 +78,7 @@ def pop_labels(temp_lpn,temp_ls,max_labels=10,flag=True):
         if flag == True: #extreme flag
             if tts[0] in starting_list:
                 temp_ls[i] = tts
+                
                 del starting_list[starting_list.index(tts[0])]
             else:
                 sl_temp = starting_list[np.random.randint(0,len(starting_list))]
@@ -86,18 +88,30 @@ def pop_labels(temp_lpn,temp_ls,max_labels=10,flag=True):
         else:
             # first ensure that everying in the starting list is covered
             if len(starting_list) != 0:
-                if j >= len(starting_list):
+                if j > len(starting_list):
                     tts = deepcopy(starting_list)
-                    starting_list = []
-                    tts2 = sorted(random.sample(range(max_labels),j-len(starting_list)))
+                    diff = j -len(starting_list)
+                    
+                    starting_list = list(range(max_labels))
+                    
+                    tts2 = sorted(random.sample(starting_list,diff))
                     
                     for val in tts2:
+                        while val in tts:
+                            val = np.random.randint(0,10)
                         tts.append(val)
+                        del starting_list[starting_list.index(val)]    
+                    
+                    for val in tts:
+                        freq_tracker[val] += 1
+                    
                 else: 
                     tts = sorted(random.sample(starting_list,j))
                 
                     for val in tts:
+                        freq_tracker[val] += 1
                         del starting_list[starting_list.index(val)]
+                        
                 temp_ls[i] = tts
             else:
                 temp_ls[i] = tts
@@ -172,16 +186,21 @@ for save_type in [settings.iid_style]:
         data_per_swarm = pop_data_qty(data_per_swarm,data_qty)
         
     # %% populating data indexes for swarms/nodes [training sets]
-    def pop_nts(temp_ls,temp_qty,temp_nts,npc,train=train): #nts - node training set
+    def pop_nts(temp_ls,temp_qty,temp_nts,npc,train=train,debug=False): #nts - node training set
         counter = 0
         
         for ind_t_cluster, t_cluster in enumerate(npc): #npc = [3,5,2], nodes per cluster
             temp_ls_inner = temp_ls[ind_t_cluster]    
-            for i in range(t_cluster): 
-                for curr_label in temp_ls_inner:
-                    temp_nts[counter] += random.sample(train[curr_label],\
-                                    int(temp_qty[counter]/len(temp_ls_inner)))
-                
+            for i in range(t_cluster):
+                if debug == False:
+                    for curr_label in temp_ls_inner:
+                        temp_nts[counter] += random.sample(train[curr_label],\
+                                        int(temp_qty[counter]/len(temp_ls_inner)))
+                else:
+                    for curr_label in temp_ls_inner:
+                        temp_nts[counter] += random.sample(train[curr_label],\
+                                        len(train[curr_label]))
+                        
                 counter += 1
     
         return temp_nts
