@@ -220,6 +220,8 @@ for save_type in [settings.iid_style]:
         node_train_sets = pop_nts(ls,data_qty,\
                         node_train_sets,nodes_per_swarm)#,debug=True)
     
+    
+    
     # # saving the data
     # cwd = os.getcwd()
     # with open(cwd+'/data/'+str(init_seed)+data_source+str(nodes)+'_lpn','wb') as f:
@@ -272,7 +274,7 @@ for save_type in [settings.iid_style]:
     
     # %% running for all time
     # batch_size = 30 #12 #evenly divisible by 3
-    batch_size = 60
+    batch_size = 150
     
     # determine ratio inits 
     if settings.ratio_dynamic == False:
