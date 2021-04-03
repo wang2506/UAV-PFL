@@ -278,6 +278,7 @@ for save_type in [settings.iid_style]:
         global_period = settings.rd_val
     
     ## main loop for ratio variance ##
+    # calculate FL    
     for ratio in [1,2,4]:#,6,8,10]:
         # ratio dynamics
         if settings.ratio == 'global': #global dynamic, swarm varied
@@ -356,32 +357,23 @@ for save_type in [settings.iid_style]:
             
             return loc_models, w_swarms, t_swarm_total_qty
         
-        ## main loop for hierarchical FL ##
-        ### Hierarchical-FL procedure 
-        ### 1. create object for each node/device
-        ### 2. after \tau1 = swarm_period iterations, aggregate cluster-wise (weighed)
-        ### 3. after \tau2 = global_period swarm-wide aggregations, aggregate globally (weighted again)
+        # debug fl
         for t in range(int(total_time/swarm_period)):
-            # swarm_w = {i:[] for i in range(settings.swarms)}
-            # data_processed = {i:0 for i in range(swarms)}
 
             print('iteration:{}'.format(t))
-            print('hierarchical FL begins here')
+            print('trad FL begins here')
             
             swarm_w = run_one_iter(fl_swarm_models,ep_len=swarm_period) #one local training iter
-            
-            # for i in fl_swarm_models:
-            #     print(i.state_dict()['fc2.bias'])
-            
+
             # aggregation cycles         
-            fl_swarm_models,agg_w_swarms,agg_t_swarms = sw_agg(fl_swarm_models,swarm_w)
+            # fl_swarm_models,agg_w_swarms,agg_t_swarms = sw_agg(fl_swarm_models,swarm_w)
 
             if (t+1) % (global_period) == 0: # global agg
                 # fl_swarm_models,agg_w_swarms,agg_t_swarms = sw_agg(fl_swarm_models,swarm_w)
-                agg_t_swarms = np.ones_like(agg_t_swarms)
+                # agg_t_swarms = np.ones_like(agg_t_swarms)
                 
                 # global agg
-                w_global = FedAvg2(agg_w_swarms,agg_t_swarms)
+                w_global = FedAvg2(swarm_w,np.ones_like(len(swarm_w)))
                 
                 for i in fl_swarm_models:
                     i.load_state_dict(w_global)
@@ -451,22 +443,22 @@ for save_type in [settings.iid_style]:
         
         # streamline later this if-else is unneeded, but its 2 am rn
         # if settings.iid_style == 'extreme':
-        with open(cwd+'/data/fl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
+        with open(cwd+'/data/trad_fl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
             '_'+settings.nn_style+'_debug','wb') as f:
             pickle.dump(fl_acc,f)
     
-        with open(cwd+'/data/fl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
+        with open(cwd+'/data/trad_fl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
             '_'+settings.nn_style+'_debug','wb') as f:
             pickle.dump(total_loss,f)
         
-        with open(cwd+'/data/full_fl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
+        with open(cwd+'/data/trad_full_fl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
             '_'+settings.nn_style+'_debug','wb') as f:
             pickle.dump(fl_acc_full,f)
     
-        with open(cwd+'/data/full_fl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
+        with open(cwd+'/data/trad_full_fl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
             '_'+settings.nn_style+'_debug','wb') as f:
             pickle.dump(total_loss_full,f)
