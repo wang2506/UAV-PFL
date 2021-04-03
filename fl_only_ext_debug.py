@@ -383,7 +383,7 @@ for save_type in [settings.iid_style]:
             sw3 = []
             for i in sw2:
                 sw3 += i
-            len_nts = [len(i) for i in node_train_sets]
+            len_nts = [len(i) for i in node_train_sets.values()]
             
             if (t+1) % (global_period) == 0: # global agg
                 # fl_swarm_models,agg_w_swarms,agg_t_swarms = sw_agg(fl_swarm_models,swarm_w)
