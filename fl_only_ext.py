@@ -274,7 +274,7 @@ for save_type in [settings.iid_style]:
     
     # %% running for all time
     # batch_size = 30 #12 #evenly divisible by 3
-    batch_size = 15
+    batch_size = 9
     
     # determine ratio inits 
     if settings.ratio_dynamic == False:
