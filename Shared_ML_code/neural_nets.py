@@ -506,7 +506,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
             ## del_acc terms both plus and minus optim
             # SGD optim will naturally subtract the lr
             optim_plus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=-1e-2,momentum=0.5,weight_decay=1e-4)         
+                            del_acc=-self.del_acc,momentum=0.5,weight_decay=1e-4)         
             #del_acc = -self.del_acc
             #-self.del_acc
             
@@ -544,7 +544,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
             
             # cannot use torch.optim.SGD because this grad updates original params
             optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=1e-2,\
+                            del_acc=self.lr1*self.lr2/(self.del_acc),\
                         momentum=0.5,weight_decay=1e-4)
             # -self.lr1*self.lr2/(2*self.del_acc*self.bs)
             #self.lr1*self.lr2/(2*self.del_acc)
@@ -592,7 +592,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
             # reload to calc optim minus
             net.load_state_dict(temp_w_inner)            
             optim_minus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=1e-2,momentum=0.5,weight_decay=1e-4) 
+                            del_acc=self.del_acc,momentum=0.5,weight_decay=1e-4) 
             #self.del_acc
                 
             # optim_minus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
@@ -618,7 +618,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
             # print(net.state_dict()['fc2.bias'])
             
             optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=1e-2,\
+                            del_acc=self.lr1*self.lr2/(self.del_acc),\
                         momentum=0.5,weight_decay=1e-4)
             # *self.bs # on the denominator
             # self.lr1*self.lr2/(2*self.del_acc*self.bs)
