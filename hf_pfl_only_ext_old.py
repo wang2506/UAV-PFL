@@ -449,45 +449,45 @@ for save_type in [settings.iid_style]:
                 # print(total_loss)
         
         
-                ## calculate localized accuracy prior to aggregations
-                ## personalized model performance 
-                HF_hn_pfl_acc_temp = 0
-                total_loss_temp = 0
+                # ## calculate localized accuracy prior to aggregations
+                # ## personalized model performance 
+                # HF_hn_pfl_acc_temp = 0
+                # total_loss_temp = 0
                 
-                temp_pfl_swarm_models = deepcopy(HF_hn_pfl_swarm_models)
-                temp_swarm_w = run_one_iter(temp_pfl_swarm_models,meta=True)
+                # temp_pfl_swarm_models = deepcopy(HF_hn_pfl_swarm_models)
+                # temp_swarm_w = run_one_iter(temp_pfl_swarm_models,meta=True)
                 
-                # perform a sw_agg
-                temp_pfl_swarm_models,agg_w_swarms,agg_t_swarms = \
-                    sw_agg(temp_pfl_swarm_models,temp_swarm_w)
+                # # perform a sw_agg
+                # temp_pfl_swarm_models,agg_w_swarms,agg_t_swarms = \
+                #     sw_agg(temp_pfl_swarm_models,temp_swarm_w)
                 
-                for i,ii in enumerate(temp_pfl_swarm_models):
-                    ii.eval()
-                    temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
-                            indexes=swarm_test_sets[i],device=device)
+                # for i,ii in enumerate(temp_pfl_swarm_models):
+                #     ii.eval()
+                #     temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
+                #             indexes=swarm_test_sets[i],device=device)
                     
-                    HF_hn_pfl_acc_temp += temp_acc/len(HF_hn_pfl_swarm_models)
-                    total_loss_temp += loss/len(HF_hn_pfl_swarm_models) #swarms
+                #     HF_hn_pfl_acc_temp += temp_acc/len(HF_hn_pfl_swarm_models)
+                #     total_loss_temp += loss/len(HF_hn_pfl_swarm_models) #swarms
         
-                HF_hn_pfl_acc.append(HF_hn_pfl_acc_temp)
-                total_loss.append(total_loss_temp)
-                print('personalized meta metric')
-                print(HF_hn_pfl_acc[-1])
+                # HF_hn_pfl_acc.append(HF_hn_pfl_acc_temp)
+                # total_loss.append(total_loss_temp)
+                # print('personalized meta metric')
+                # print(HF_hn_pfl_acc[-1])
         
         # saving results
         cwd = os.getcwd()
         
-        # streamline later this if-else is unneeded, but its 2 am rn
-        # if settings.iid_style == 'extreme':
-        with open(cwd+'/data/hn_pfl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
-            settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
-            '_'+settings.nn_style+'_debug','wb') as f:
-            pickle.dump(HF_hn_pfl_acc,f)
+        # # streamline later this if-else is unneeded, but its 2 am rn
+        # # if settings.iid_style == 'extreme':
+        # with open(cwd+'/data/hn_pfl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
+        #     settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
+        #     '_'+settings.nn_style+'_debug','wb') as f:
+        #     pickle.dump(HF_hn_pfl_acc,f)
             
-        with open(cwd+'/data/hn_pfl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
-            settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
-            '_'+settings.nn_style+'_debug','wb') as f:
-            pickle.dump(total_loss,f)
+        # with open(cwd+'/data/hn_pfl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
+        #     settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
+        #     '_'+settings.nn_style+'_debug','wb') as f:
+        #     pickle.dump(total_loss,f)
         
         with open(cwd+'/data/full_hn_pfl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
