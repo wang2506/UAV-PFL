@@ -258,7 +258,7 @@ for save_type in [settings.iid_style]:
             default_w = pickle.load(f)
         
         # lr,lr2 = 1e-3,1e-2 #CNN
-        lr,lr2 = 1e-3,1e-3
+        lr,lr2 = 1e-3, 1e-3
         # debug lr-rates
         # lr = 2*1e-4
         # lr2 = 1e-2
