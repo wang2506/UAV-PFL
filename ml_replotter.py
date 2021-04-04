@@ -246,23 +246,23 @@ for i in range(3):
         ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
             label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
             color='forestgreen',linestyle='solid',marker='x')
-        # ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
-        #     label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
-        #     color='darkblue',linestyle='solid',marker='x')
+        ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
+            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            color='darkblue',linestyle='solid',marker='x')
     elif i == 1:
         ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
             label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 2$',\
             color='forestgreen',linestyle='dashed',marker='x')
-        # ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
-        #     label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 2$',\
-        #     color='darkblue',linestyle='dashed',marker='x')
+        ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
+            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 2$',\
+            color='darkblue',linestyle='dashed',marker='x')
     else:
         ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
             label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 4$',\
             color='forestgreen',linestyle='dotted',marker='x')
-        # ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
-        #     label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 4$',\
-        #     color='darkblue',linestyle='dotted',marker='x')
+        ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
+            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 4$',\
+            color='darkblue',linestyle='dotted',marker='x')
 
 ax2[ind].set_title(data_source.upper()+' Performance Accuracy Global')
 ax2[ind].set_ylabel('Accuracy (%)')
