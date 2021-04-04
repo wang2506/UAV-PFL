@@ -96,6 +96,7 @@ full_fl_ratios = []
 full_pfl_ratios = []
 
 full_fl_loss_ratios = []
+full_pfl_loss_ratios = []
 
 ## initial values
 init_acc = 10.5
@@ -115,7 +116,7 @@ for ratio in [1,2,4]:#4,6,8]:
     
     swarm_period = 1
     global_period = ratio*swarm_period
-    for iid_style in ['mild']:#,'mild']: #,'iid']: #crashed on frankie for some reason...; wtf ,'extreme'
+    for iid_style in ['extreme']:#,'mild']: #,'iid']: #crashed on frankie for some reason...; wtf ,'extreme'
         
         with open(data_loc+'fl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
                   +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style+'_debug','rb') as f:
@@ -139,7 +140,12 @@ for ratio in [1,2,4]:#4,6,8]:
                   +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style+'_debug','rb') as f:
             f_fl_loss = pk.load(f)
         
+        with open(data_loc+'full_hn_pfl_loss_'+iid_style+'_'+str(ratio)+'_'+data_source \
+                  +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style+'_debug','rb') as f:
+            f_pfl_loss = pk.load(f)
+            
         full_fl_loss.append(f_fl_loss)
+        full_pfl_loss.append(f_pfl_loss)
         
         total_fl_accs.append(fl_acc)
         total_pfl_accs.append(pfl_acc)
@@ -149,6 +155,7 @@ for ratio in [1,2,4]:#4,6,8]:
     
     
     full_fl_loss_ratios.append(full_fl_loss)
+    full_pfl_loss_ratios.append(full_pfl_loss)
     
     total_fl_ratios.append(total_fl_accs)
     total_pfl_ratios.append(total_pfl_accs)
@@ -218,15 +225,23 @@ for i in range(len(ratio_vec)): #3
         ax2[ind].plot(temp_indexes,full_fl_loss_ratios[i][0],\
             label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
             color='forestgreen',linestyle='solid')
+        ax2[ind].plot(temp_indexes,full_pfl_loss_ratios[i][0],\
+            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            color='darkblue',linestyle='solid')            
     elif i == 1:
         ax2[ind].plot(temp_indexes,full_fl_loss_ratios[i][0],\
             label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 2$',\
             color='forestgreen',linestyle='dashed')
+        ax2[ind].plot(temp_indexes,full_pfl_loss_ratios[i][0],\
+            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 2$',\
+            color='darkblue',linestyle='dashed')            
     else:
         ax2[ind].plot(temp_indexes,full_fl_loss_ratios[i][0],\
             label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 4$',\
             color='forestgreen',linestyle='dotted')
-
+        ax2[ind].plot(temp_indexes,full_pfl_loss_ratios[i][0],\
+            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 4$',\
+            color='darkblue',linestyle='dotted')
 
 ax2[ind].set_title(data_source.upper()+' loss global')
 ax2[ind].set_ylabel('loss val')
