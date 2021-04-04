@@ -382,6 +382,17 @@ for save_type in [settings.iid_style]:
         ### 1. create object for each node/device
         ### 2. after \tau1 = swarm_period iterations, aggregate cluster-wise (weighed)
         ### 3. after \tau2 = global_period swarm-wide aggregations, aggregate globally (weighted again)
+        print('initial accuracy measurement')
+        global_net.load_state_dict(default_w)
+        global_net.eval()
+        init_acc, init_loss = \
+            test_img2(global_net,dataset_test,\
+            bs=batch_size,indexes=all_test_indexes,device=device)
+        print(init_acc)
+        print('initial loss measurement')
+        print(init_loss)
+        
+        
         for t in range(int(total_time/swarm_period)):
             # swarm_w = {i:[] for i in range(settings.swarms)}
             # data_processed = {i:0 for i in range(swarms)}
