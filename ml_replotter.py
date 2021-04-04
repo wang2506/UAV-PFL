@@ -97,6 +97,10 @@ full_pfl_ratios = []
 
 full_fl_loss_ratios = []
 
+## initial values
+init_acc = 10.5
+init_loss = 2.302232319
+
 nn_style = 'CNN'
 # nn_style = 'MLP'
 ratio_vec = [1,2,4]#,6,8]
