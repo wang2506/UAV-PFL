@@ -157,7 +157,6 @@ for save_type in [settings.iid_style]:
     
     # data per device and total data per swarm
     avg_qty = 1000 #int(len(dataset_train)/sum(nodes_per_cluster)) # 650
-    # avg_qty = 2000
     
     def pop_data_qty(data_holder,data_qty,nodes_per_swarm=nodes_per_swarm):
         counter = 0
