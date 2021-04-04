@@ -264,6 +264,7 @@ for save_type in [settings.iid_style]:
         
         # lr,lr2 = 1e-3,1e-2 #CNN #works for bs = 30
         lr,lr2 = 1e-3, 1e-3
+        # del_acc
         # debug lr-rates
         # lr = 2*1e-4
         # lr2 = 1e-2
