@@ -214,11 +214,15 @@ for save_type in [settings.iid_style]:
             node_train_sets[j] = pop_nts(ls[j],data_qty[j],\
                             node_train_sets[j],nodes_per_swarm)#,debug=True)
             
-    else:
-        node_train_sets = {i: [] for i in range(sum(nodes_per_swarm))}
-        node_train_sets = pop_nts(ls,data_qty,\
-                        node_train_sets,nodes_per_swarm)#,debug=True)
-    
+    else: #TODO
+        # node_train_sets = {i: [] for i in range(sum(nodes_per_swarm))}
+        # node_train_sets = pop_nts(ls,data_qty,\
+        #                 node_train_sets,nodes_per_swarm)#,debug=True)
+        node_train_sets = {j:{i:[] for i in range(sum(nodes_per_swarm))} \
+                for j in range(total_time)}
+        for j in range(total_time):
+            node_train_sets[j] = pop_nts(ls[j],data_qty[j],\
+                            node_train_sets[j],nodes_per_swarm)#,debug=True)
     
     
     # # saving the data
@@ -346,7 +350,7 @@ for save_type in [settings.iid_style]:
             
             ## run FL swarm-wide aggregation only
             if settings.online == False:
-                temp_qty = deepcopy(data_qty).tolist() # TODO: see other TODO
+                temp_qty = deepcopy(data_qty).tolist()
             else:
                 temp_qty = 0*data_qty[t]
                 for t_prime in range(swarm_period*global_period):
@@ -400,7 +404,8 @@ for save_type in [settings.iid_style]:
             print('iteration:{}'.format(t))
             print('hierarchical FL begins here')
             
-            swarm_w = run_one_iter(worker_models,ep_len=swarm_period) #one local training iter
+            swarm_w = run_one_iter(worker_models,ep_len=swarm_period,]
+                    nts = node_train_sets[t]) #one local training iter
             
             # for i in fl_swarm_models:
             #     print(i.state_dict()['fc2.bias'])
