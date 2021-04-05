@@ -21,8 +21,8 @@ from Shared_ML_code.neural_nets import MLP, CNN, FedAvg, FPAvg, LocalUpdate, \
 from Shared_ML_code.testing import test_img, test_img2
 from Shared_ML_code.fl_parser import ml_parser
 
-gc.collect()
-torch.cuda.empty_cache()
+# gc.collect()
+# torch.cuda.empty_cache()
 
 # %% settings/parser
 settings = ml_parser()
