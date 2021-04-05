@@ -21,8 +21,8 @@ from Shared_ML_code.neural_nets import MLP, CNN, FedAvg, FPAvg, LocalUpdate, \
 from Shared_ML_code.testing import test_img, test_img2
 from Shared_ML_code.fl_parser import ml_parser
 
-# gc.collect()
-# torch.cuda.empty_cache()
+gc.collect()
+torch.cuda.empty_cache()
 
 # %% settings/parser
 settings = ml_parser()
@@ -35,7 +35,7 @@ np.random.seed(init_seed)
 torch.manual_seed(init_seed)
 
 if settings.comp == 'gpu':
-    device = torch.device('cuda:0')
+    device = torch.device('cuda:2')
 else:
     device = torch.device('cpu')
 
