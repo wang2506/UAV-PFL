@@ -132,7 +132,7 @@ for ratio in [1,2,4]:
         #     f_fl_acc = pk.load(f)
         
         ## full (i.e. global) accuracies
-        with open(data_loc+'4full_fl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
+        with open(data_loc+'3full_fl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
                   +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style+'_debug','rb') as f:
             f_fl_acc = pk.load(f)        
         
@@ -148,7 +148,7 @@ for ratio in [1,2,4]:
         #     f_fl_loss = pk.load(f)
         
         ## full/global losses
-        with open(data_loc+'4full_fl_loss_'+iid_style+'_'+str(ratio)+'_'+data_source \
+        with open(data_loc+'3full_fl_loss_'+iid_style+'_'+str(ratio)+'_'+data_source \
                   +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style+'_debug','rb') as f:
             f_fl_loss = pk.load(f)        
         
