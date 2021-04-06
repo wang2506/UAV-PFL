@@ -402,9 +402,9 @@ for save_type in [settings.iid_style]:
 
             print('iteration:{}'.format(t))
             print('hierarchical FL begins here')
-            swarm_w = run_one_iter(worker_models,ep_len=swarm_period)
-            # swarm_w = run_one_iter(worker_models,ep_len=swarm_period,\
-            #         nts = node_train_sets[t]) #one local training iter
+            # swarm_w = run_one_iter(worker_models,ep_len=swarm_period)
+            swarm_w = run_one_iter(worker_models,ep_len=swarm_period,\
+                    nts = node_train_sets[t]) #one local training iter
             
             # for i in fl_swarm_models:
             #     print(i.state_dict()['fc2.bias'])
