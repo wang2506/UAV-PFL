@@ -215,14 +215,14 @@ for save_type in [settings.iid_style]:
                             node_train_sets[j],nodes_per_swarm)#,debug=True)
             
     else: #TODO
-        node_train_sets = {i: [] for i in range(sum(nodes_per_swarm))}
-        node_train_sets = pop_nts(ls,data_qty,\
-                        node_train_sets,nodes_per_swarm)#,debug=True)
-        # node_train_sets = {j:{i:[] for i in range(sum(nodes_per_swarm))} \
-        #         for j in range(total_time)}
-        # for j in range(total_time):
-        #     node_train_sets[j] = pop_nts(ls,data_qty,\
-        #                     node_train_sets[j],nodes_per_swarm)#,debug=True)
+        # node_train_sets = {i: [] for i in range(sum(nodes_per_swarm))}
+        # node_train_sets = pop_nts(ls,data_qty,\
+        #                 node_train_sets,nodes_per_swarm)#,debug=True)
+        node_train_sets = {j:{i:[] for i in range(sum(nodes_per_swarm))} \
+                for j in range(total_time)}
+        for j in range(total_time):
+            node_train_sets[j] = pop_nts(ls,data_qty,\
+                            node_train_sets[j],nodes_per_swarm)#,debug=True)
     
     # # saving the data
     # cwd = os.getcwd()
