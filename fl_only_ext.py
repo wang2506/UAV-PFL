@@ -125,7 +125,7 @@ for save_type in [settings.iid_style]:
     if save_type == 'extreme': #lpc = labels_per_cluster
         lpc = [1 for i in range(settings.swarms)] #static qty of labels per node
     elif save_type == 'mild':
-        lpc = [np.random.randint(4,5) for i in range(settings.swarms)] #static qty of labels per node
+        lpc = [np.random.randint(3,4) for i in range(settings.swarms)] #static qty of labels per node
     else:
         lpc = [10 for i in range(settings.swarms)]
     
@@ -527,12 +527,12 @@ for save_type in [settings.iid_style]:
         #     '_'+settings.nn_style+'_debug','wb') as f:
         #     pickle.dump(total_loss,f)
         
-        with open(cwd+'/data/4full_fl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
+        with open(cwd+'/data/3full_fl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
             '_'+settings.nn_style+'_debug','wb') as f:
             pickle.dump(fl_acc_full,f)
     
-        with open(cwd+'/data/4full_fl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
+        with open(cwd+'/data/3full_fl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
             '_'+settings.nn_style+'_debug','wb') as f:
             pickle.dump(total_loss_full,f)
