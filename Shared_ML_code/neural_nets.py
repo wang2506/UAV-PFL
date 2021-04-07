@@ -396,9 +396,9 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
         # self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
         # self.ldr_train3 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
         
-        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs),shuffle=True)
-        self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs),shuffle=True)
-        self.ldr_train3 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs),shuffle=True)
+        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        self.ldr_train3 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
         
         # # CNN working with this one
         # self.ind1 = random.sample(self.indexes,int(len(indexes)/3))
