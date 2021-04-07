@@ -396,8 +396,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
         # self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
         # self.ldr_train3 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
         
-        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs),shuffle=True)
-        self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs),shuffle=True)
+        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
         
         
         # # CNN working with this one
@@ -438,7 +438,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
                 
                 # reshuffle it
                 self.ldr_train = DataLoader(segmentdataset(self.dataset,self.indexes),\
-                        batch_size=int(self.bs),shuffle=True)
+                        batch_size=int(self.bs/3),shuffle=True)
                 optimizer = SGD_PFL(net.parameters(),lr=self.lr1)
                 
                 for batch_index_in,(images_in,labels_in) in enumerate(self.ldr_train):
