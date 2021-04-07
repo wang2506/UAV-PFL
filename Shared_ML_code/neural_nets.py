@@ -439,7 +439,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
                 # reshuffle it
                 # self.ldr_train = DataLoader(segmentdataset(self.dataset,self.indexes),\
                 #         batch_size=int(self.bs/3),shuffle=True)
-                self.ldr_train = DataLoader(segmentdataset(self.dataset,self.ind),\
+                self.ldr_train = DataLoader(segmentdataset(self.dataset,self.ind1),\
                         batch_size=int(self.bs/3),shuffle=True)
                 optimizer = SGD_PFL(net.parameters(),lr=self.lr1)
                 
