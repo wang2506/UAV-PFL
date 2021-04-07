@@ -396,9 +396,9 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
         # self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
         # self.ldr_train3 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
         
-        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
-        self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
-        
+        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs),shuffle=True)
+        self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs),shuffle=True)
+        self.ldr_train3 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs),shuffle=True)
         
         # # CNN working with this one
         # self.ind1 = random.sample(self.indexes,int(len(indexes)/3))
@@ -423,11 +423,11 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
         for epoch in range(self.epochs):
             batch_loss = []
             
-            # # calculate the meta-function of SGD
-            # temp = deepcopy(net.state_dict())
-            # temp_params = [] #temp_params = deepcopy(net.parameters())
-            # for i,j in enumerate(net.parameters()):
-            #     temp_params.append(deepcopy(j))
+            # calculate the meta-function of SGD
+            org_state_dict = deepcopy(net.state_dict())
+            org_params = [] #temp_params = deepcopy(net.parameters())
+            for i,j in enumerate(net.parameters()):
+                org_params.append(deepcopy(j))
             
             # hierarchical test
             for batch_indx,(images,labels) in enumerate(self.ldr_train2):
@@ -460,8 +460,55 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
                 loss = self.loss_func(log_probs,labels)
                 #loss.retain_grad()
                 loss.backward()
-                optimizer.step()
+                optimizer2.step()
                 batch_loss.append(loss.item())
+            
+            # fo_state_dict = deepcopy(net.state_dict())
+            # fo_params = []
+            # for i,j in enumerate(net.parameters()):
+            #     fo_params.append(deepcopy(j))
+            
+            
+            # net.load_state_dict(org_state_dict)
+            # # HF params calc
+            # for batch_indx,(images,labels) in enumerate(self.ldr_train3):
+            #     temp = deepcopy(net.state_dict())
+            #     temp_params = []
+            #     for i,j in enumerate(net.parameters()):
+            #         temp_params.append(deepcopy(j))
+                    
+            #     self.ldr_train2 = DataLoader(segmentdataset(self.dataset,self.indexes),\
+            #             batch_size=int(self.bs/3),shuffle=True)
+            #     for batch_indx_o,(images_o,labels_o) in enumerate(self.ldr_train2):
+                    
+            #         # reshuffle it
+            #         self.ldr_train = DataLoader(segmentdataset(self.dataset,self.indexes),\
+            #                 batch_size=int(self.bs/3),shuffle=True)
+            #         optimizer = SGD_PFL(net.parameters(),lr=self.lr1)
+                    
+            #         for batch_index_in,(images_in,labels_in) in enumerate(self.ldr_train):
+            #             images_in,labels_in = images_in.to(self.device),labels_in.to(self.device)
+            #             net.zero_grad()
+            #             log_probs = net(images_in)
+            #             loss = self.loss_func(log_probs,labels_in)
+            #             # loss.retain_grad()
+            #             loss.backward()
+            #             optimizer.step()
+            #             break
+                    
+            #         optim_plus = SGD_FO_PFL(net.parameters(),temp_params,\
+            #                 lr=-self.lr2)#, momentum=0.5,weight_decay=1e-4)
+            #         images,labels = images.to(self.device),labels.to(self.device)
+            #         net.zero_grad()
+            #         log_probs = net(images)
+            #         loss = self.loss_func(log_probs,labels)
+            #         #loss.retain_grad()
+            #         loss.backward()
+            #         optimizer.step()
+            #         batch_loss.append(loss.item())
+                
+                
+                
             
             # ## inner params obtain - step size - eta_1
             # # total_loss = 0
