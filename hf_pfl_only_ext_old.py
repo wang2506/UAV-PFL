@@ -123,7 +123,7 @@ for save_type in [settings.iid_style]:
     if save_type == 'extreme': #lpc = labels_per_cluster
         lpc = [1 for i in range(settings.swarms)] #static qty of labels per node
     elif save_type == 'mild':
-        lpc = [np.random.randint(2,3) for i in range(settings.swarms)] #static qty of labels per node
+        lpc = [np.random.randint(3,4) for i in range(settings.swarms)] #static qty of labels per node
     else:
         lpc = [10 for i in range(settings.swarms)]
     
@@ -155,6 +155,11 @@ for save_type in [settings.iid_style]:
     
     # data per device and total data per swarm
     avg_qty = 1000 #int(len(dataset_train)/sum(nodes_per_cluster)) # 650
+    # if save_type == 'extreme':
+    #     avg_qty = 1000
+    # else:
+    #     avg_qty = 2500 #3 swarms
+    
     
     def pop_data_qty(data_holder,data_qty,nodes_per_swarm=nodes_per_swarm):
         counter = 0
@@ -213,9 +218,14 @@ for save_type in [settings.iid_style]:
                             node_train_sets[j],nodes_per_swarm)
             
     else:
-        node_train_sets = {i: [] for i in range(sum(nodes_per_swarm))}
-        node_train_sets = pop_nts(ls,data_qty,\
-                        node_train_sets,nodes_per_swarm)
+        # node_train_sets = {i: [] for i in range(sum(nodes_per_swarm))}
+        # node_train_sets = pop_nts(ls,data_qty,\
+        #                 node_train_sets,nodes_per_swarm)#,debug=True)
+        node_train_sets = {j:{i:[] for i in range(sum(nodes_per_swarm))} \
+                for j in range(total_time)}
+        for j in range(total_time):
+            node_train_sets[j] = pop_nts(ls,data_qty,\
+                            node_train_sets[j],nodes_per_swarm)#,debug=True)
     
     # # saving the data
     # cwd = os.getcwd()
@@ -279,7 +289,7 @@ for save_type in [settings.iid_style]:
         global_period = settings.rd_val
     
     ## main loop for ratio variance ##
-    for ratio in [4]:#,6,8,10]:
+    for ratio in [1,2,4]:#,6,8,10]:
         # ratio dynamics
         if settings.ratio == 'global': #global dynamic, swarm varied
              global_period = swarm_period * ratio
@@ -398,7 +408,10 @@ for save_type in [settings.iid_style]:
             print('iteration:{}'.format(t))
             print('HN-HF-PFL begins here')
             
-            swarm_w = run_one_iter(HF_hn_pfl_swarm_models,ep_len=swarm_period) #one local training iter
+            # swarm_w = run_one_iter(HF_hn_pfl_swarm_models,ep_len=swarm_period) #one local training iter
+            swarm_w = run_one_iter(HF_hn_pfl_swarm_models,ep_len=swarm_period,\
+                    nts = node_train_sets[t]) #one local training iter
+            
             
             # for i in HF_hn_pfl_swarm_models:
             #     print(i.state_dict()['fc2.bias'])
@@ -422,7 +435,7 @@ for save_type in [settings.iid_style]:
                     i.load_state_dict(w_global)
                     i.train()        
         
-        
+                
             ## evaluate model performance
             if ((t+1) % (global_period) == 0):
                 # HF_hn_pfl_acc_temp, total_loss_temp = 0, 0
@@ -466,52 +479,55 @@ for save_type in [settings.iid_style]:
                 # print(total_loss)
         
         
-                # ## calculate localized accuracy prior to aggregations
-                # ## personalized model performance 
-                # HF_hn_pfl_acc_temp = 0
-                # total_loss_temp = 0
+                ## calculate localized accuracy prior to aggregations
+                ## personalized model performance 
+                HF_hn_pfl_acc_temp = 0
+                total_loss_temp = 0
                 
-                # temp_pfl_swarm_models = deepcopy(HF_hn_pfl_swarm_models)
+                temp_pfl_swarm_models = deepcopy(HF_hn_pfl_swarm_models)
                 # temp_swarm_w = run_one_iter(temp_pfl_swarm_models,meta=True)
+                temp_swarm_w = run_one_iter(temp_pfl_swarm_models,ep_len=1,\
+                    nts = node_train_sets[t]) #one local training iter                
                 
-                # # perform a sw_agg
-                # temp_pfl_swarm_models,agg_w_swarms,agg_t_swarms = \
-                #     sw_agg(temp_pfl_swarm_models,temp_swarm_w)
                 
-                # for i,ii in enumerate(temp_pfl_swarm_models):
-                #     ii.eval()
-                #     temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
-                #             indexes=swarm_test_sets[i],device=device)
+                # perform a sw_agg
+                temp_pfl_swarm_models,agg_w_swarms,agg_t_swarms = \
+                    sw_agg(temp_pfl_swarm_models,temp_swarm_w)
+                
+                for i,ii in enumerate(temp_pfl_swarm_models):
+                    ii.eval()
+                    temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
+                            indexes=swarm_test_sets[i],device=device)
                     
-                #     HF_hn_pfl_acc_temp += temp_acc/len(HF_hn_pfl_swarm_models)
-                #     total_loss_temp += loss/len(HF_hn_pfl_swarm_models) #swarms
+                    HF_hn_pfl_acc_temp += temp_acc/len(HF_hn_pfl_swarm_models)
+                    total_loss_temp += loss/len(HF_hn_pfl_swarm_models) #swarms
         
-                # HF_hn_pfl_acc.append(HF_hn_pfl_acc_temp)
-                # total_loss.append(total_loss_temp)
-                # print('personalized meta metric')
-                # print(HF_hn_pfl_acc[-1])
+                HF_hn_pfl_acc.append(HF_hn_pfl_acc_temp)
+                total_loss.append(total_loss_temp)
+                print('personalized meta metric')
+                print(HF_hn_pfl_acc[-1])
         
         # saving results
         cwd = os.getcwd()
         
-        # # streamline later this if-else is unneeded, but its 2 am rn
-        # # if settings.iid_style == 'extreme':
-        # with open(cwd+'/data/hn_pfl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
-        #     settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
-        #     '_'+settings.nn_style+'_debug','wb') as f:
-        #     pickle.dump(HF_hn_pfl_acc,f)
+        # streamline later this if-else is unneeded, but its 2 am rn
+        # if settings.iid_style == 'extreme':
+        with open(cwd+'/data/3hn_pfl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
+            settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
+            '_'+settings.nn_style+'_debug','wb') as f:
+            pickle.dump(HF_hn_pfl_acc,f)
             
-        # with open(cwd+'/data/hn_pfl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
-        #     settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
-        #     '_'+settings.nn_style+'_debug','wb') as f:
-        #     pickle.dump(total_loss,f)
+        with open(cwd+'/data/3hn_pfl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
+            settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
+            '_'+settings.nn_style+'_debug','wb') as f:
+            pickle.dump(total_loss,f)
         
-        with open(cwd+'/data/full_hn_pfl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
+        with open(cwd+'/data/3full_hn_pfl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
             '_'+settings.nn_style+'_debug','wb') as f:
             pickle.dump(HF_hn_pfl_acc_full,f)
         
-        with open(cwd+'/data/full_hn_pfl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
+        with open(cwd+'/data/3full_hn_pfl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
             '_'+settings.nn_style+'_debug','wb') as f:
             pickle.dump(total_loss_full,f)
