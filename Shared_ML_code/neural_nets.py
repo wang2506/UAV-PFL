@@ -383,7 +383,7 @@ class LocalUpdate_FO_PFL(object):
 
 
 class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard coding
-    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-3):
+    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-4):
         self.device = device
         self.bs = bs
         self.lr1 = lr1
@@ -594,7 +594,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
             optim_minus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
                             del_acc=self.del_acc,momentum=0.5,weight_decay=1e-4) 
             #self.del_acc
-                
+            
             # optim_minus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
             #                 del_acc=self.del_acc,momentum=0.5,weight_decay=1e-4)
             
