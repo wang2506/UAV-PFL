@@ -35,7 +35,7 @@ np.random.seed(init_seed)
 torch.manual_seed(init_seed)
 
 if settings.comp == 'gpu':
-    device = torch.device('cuda:1')
+    device = torch.device('cuda:2')
 else:
     device = torch.device('cpu')
 
@@ -157,10 +157,10 @@ for save_type in [settings.iid_style]:
     
     # data per device and total data per swarm
     avg_qty = 1000 #int(len(dataset_train)/sum(nodes_per_cluster)) # 650
-    if save_type == 'extreme':
-        avg_qty = 1000
-    else:
-        avg_qty = 2500
+    # if save_type == 'extreme':
+    #     avg_qty = 1000
+    # else:
+    #     avg_qty = 2500 #3 swarms
     
     
     def pop_data_qty(data_holder,data_qty,nodes_per_swarm=nodes_per_swarm):
@@ -489,48 +489,48 @@ for save_type in [settings.iid_style]:
                 # print(total_loss)
                 
 
-                # ## calculate localized accuracy prior to aggregations
-                # ## personalized model performance 
-                # fl_acc_temp = 0
-                # total_loss_temp = 0
+                ## calculate localized accuracy prior to aggregations
+                ## personalized model performance 
+                fl_acc_temp = 0
+                total_loss_temp = 0
                 
-                # temp_fl_swarm_models = deepcopy(fl_swarm_models)
-                # # temp_swarm_w = run_one_iter(temp_fl_swarm_models) 
+                temp_fl_swarm_models = deepcopy(fl_swarm_models)
+                # temp_swarm_w = run_one_iter(temp_fl_swarm_models) 
                 
-                # temp_worker_models = deepcopy(worker_models)
-                # temp_swarm_w = run_one_iter(temp_worker_models)
+                temp_worker_models = deepcopy(worker_models)
+                temp_swarm_w = run_one_iter(temp_worker_models)
                 
-                # # perform a sw_agg
-                # temp_fl_swarm_models,agg_w_swarms,agg_t_swarms = \
-                #     sw_agg(temp_fl_swarm_models,temp_swarm_w)
+                # perform a sw_agg
+                temp_fl_swarm_models,agg_w_swarms,agg_t_swarms = \
+                    sw_agg(temp_fl_swarm_models,temp_swarm_w)
                 
-                # for i,ii in enumerate(temp_fl_swarm_models):
-                #     ii.eval()
-                #     temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
-                #             indexes=swarm_test_sets[i],device=device)
+                for i,ii in enumerate(temp_fl_swarm_models):
+                    ii.eval()
+                    temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
+                            indexes=swarm_test_sets[i],device=device)
                     
-                #     fl_acc_temp += temp_acc/len(fl_swarm_models)
-                #     total_loss_temp += loss/len(fl_swarm_models) #swarms
+                    fl_acc_temp += temp_acc/len(fl_swarm_models)
+                    total_loss_temp += loss/len(fl_swarm_models) #swarms
                     
-                # fl_acc.append(fl_acc_temp)
-                # total_loss.append(total_loss_temp)
-                # print('personalized meta metric')
-                # print(fl_acc[-1])
+                fl_acc.append(fl_acc_temp)
+                total_loss.append(total_loss_temp)
+                print('personalized meta metric')
+                print(fl_acc[-1])
         
         # saving results
         cwd = os.getcwd()
         
         # streamline later this if-else is unneeded, but its 2 am rn
         # if settings.iid_style == 'extreme':
-        # with open(cwd+'/data/3fl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
-        #     settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
-        #     '_'+settings.nn_style+'_debug','wb') as f:
-        #     pickle.dump(fl_acc,f)
+        with open(cwd+'/data/3fl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
+            settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
+            '_'+settings.nn_style+'_debug','wb') as f:
+            pickle.dump(fl_acc,f)
     
-        # with open(cwd+'/data/3fl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
-        #     settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
-        #     '_'+settings.nn_style+'_debug','wb') as f:
-        #     pickle.dump(total_loss,f)
+        with open(cwd+'/data/3fl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
+            settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
+            '_'+settings.nn_style+'_debug','wb') as f:
+            pickle.dump(total_loss,f)
         
         with open(cwd+'/data/3full_fl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
