@@ -392,18 +392,18 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
         self.dataset = dataset
         self.indexes = indexes
         self.epochs = epochs
-        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
-        self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
-        self.ldr_train3 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        # self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        # self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
+        # self.ldr_train3 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
         
         # CNN working with this one
-        # self.ind1 = random.sample(self.indexes,int(len(indexes)/3))
-        # self.ind2 = random.sample(self.indexes,int(len(indexes)/3))
-        # self.ind3 = random.sample(self.indexes,int(len(indexes)/3))
+        self.ind1 = random.sample(self.indexes,int(len(indexes)/3))
+        self.ind2 = random.sample(self.indexes,int(len(indexes)/3))
+        self.ind3 = random.sample(self.indexes,int(len(indexes)/3))
         
-        # self.ldr_train = DataLoader(segmentdataset(dataset,self.ind1),batch_size=bs,shuffle=True)
-        # self.ldr_train2 = DataLoader(segmentdataset(dataset,self.ind2),batch_size=bs,shuffle=True)
-        # self.ldr_train3 = DataLoader(segmentdataset(dataset,self.ind3),batch_size=bs,shuffle=True)
+        self.ldr_train = DataLoader(segmentdataset(dataset,self.ind1),batch_size=bs,shuffle=True)
+        self.ldr_train2 = DataLoader(segmentdataset(dataset,self.ind2),batch_size=bs,shuffle=True)
+        self.ldr_train3 = DataLoader(segmentdataset(dataset,self.ind3),batch_size=bs,shuffle=True)
         self.loss_func = nn.CrossEntropyLoss()
         
     def train(self,net):
@@ -435,7 +435,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
             temp_params = [] #temp_params = deepcopy(net.parameters())
             for i,j in enumerate(net.parameters()):
                 temp_params.append(deepcopy(j))
-                
+            
             ## inner params obtain - step size - eta_1
             total_loss = 0
             for batch_indx,(images,labels) in enumerate(self.ldr_train):
@@ -483,6 +483,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
                 loss.backward() #this computes the gradient
                 optimizer2.step()
                 
+                batch_loss.append(loss.item())
                 # scaler.scale(loss).backward()
                 # scaler.step(optimizer2)
                 
@@ -673,11 +674,11 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
             
             net.load_state_dict(manual_w1)
             
-            # epoch_loss.append(sum(batch_loss)/len(batch_loss))
-            epoch_loss.append(5)
+            epoch_loss.append(sum(batch_loss)/len(batch_loss))
             
-        return net,net.state_dict(),5#(sum(batch_loss)/len(batch_loss))
+        return net,net.state_dict(),(sum(batch_loss)/len(batch_loss))
 
+## change how we're calculating accuracy TODO
 
 class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
     def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=5e-1):
