@@ -413,7 +413,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
     def train(self,net):
         net.train()
         # optimizer = torch.optim.SGD(net.parameters(),lr=self.lr1, momentum=0.5,weight_decay=1e-4) #l2 penalty
-        optimizer = SGD_PFL(net.parameters(),lr=self.lr1) #, momentum=0.5,weight_decay=1e-4)
+        # optimizer = SGD_PFL(net.parameters(),lr=self.lr1) #, momentum=0.5,weight_decay=1e-4)
         
         # optimizer2 = torch.optim.SGD(net.parameters(),lr=self.lr2, momentum=0.5,weight_decay=1e-4)
         # use amp.autocast + amp.GradScaler
@@ -439,6 +439,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
                 # reshuffle it
                 self.ldr_train = DataLoader(segmentdataset(self.dataset,self.indexes),\
                         batch_size=int(self.bs),shuffle=True)
+                optimizer = SGD_PFL(net.parameters(),lr=self.lr1)
+                
                 for batch_index_in,(images_in,labels_in) in enumerate(self.ldr_train):
                     images_in,labels_in = images_in.to(self.device),labels_in.to(self.device)
                     net.zero_grad()
