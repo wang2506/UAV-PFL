@@ -383,7 +383,7 @@ class LocalUpdate_FO_PFL(object):
 
 
 class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard coding
-    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-4):
+    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None,del_acc=1e-3):
         self.device = device
         self.bs = bs
         self.lr1 = lr1
@@ -503,175 +503,180 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
             ## need to check if load_state_dict also changes net.parameters()
             ### confirmed that this works as I thought
             
-            ## del_acc terms both plus and minus optim
-            # SGD optim will naturally subtract the lr
-            optim_plus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=-self.del_acc,momentum=0.5,weight_decay=1e-4)         
-            #del_acc = -self.del_acc
-            #-self.del_acc
-            
+            # ## del_acc terms both plus and minus optim
+            # # SGD optim will naturally subtract the lr
             # optim_plus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            # del_acc=-self.del_acc,momentum=0.5,weight_decay=1e-4)       
+            #                 del_acc=-self.del_acc,momentum=0.5,weight_decay=1e-4)         
+            # #del_acc = -self.del_acc
+            # #-self.del_acc
             
-            # optim plus
-            total_loss_op = 0
-            for batch_indx,(images,labels) in enumerate(self.ldr_train2):
-                images,labels = images.to(self.device),labels.to(self.device)
-                net.zero_grad()
+            # # optim_plus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
+            #                 # del_acc=-self.del_acc,momentum=0.5,weight_decay=1e-4)       
+            
+            # # optim plus
+            # total_loss_op = 0
+            # for batch_indx,(images,labels) in enumerate(self.ldr_train2):
+            #     images,labels = images.to(self.device),labels.to(self.device)
+            #     net.zero_grad()
                 
-                # with amp.autocast():
-                log_probs = net(images)
-                loss = self.loss_func(log_probs,labels)
-                # print(loss.item())
-                # if loss.item() >= 100: #the grad result is so small, as the params are stable
-                    # break #need to force out otherwise the torch calc will produce nan's
+            #     # with amp.autocast():
+            #     log_probs = net(images)
+            #     loss = self.loss_func(log_probs,labels)
+            #     # print(loss.item())
+            #     # if loss.item() >= 100: #the grad result is so small, as the params are stable
+            #         # break #need to force out otherwise the torch calc will produce nan's
 
-                total_loss_op += loss.item()
-                # print(total_loss_op)
-                loss.retain_grad()
+            #     total_loss_op += loss.item()
+            #     # print(total_loss_op)
+            #     loss.retain_grad()
             
-                loss.backward() #this computes the gradient
-                # # print(net.state_dict()['fc2.bias'])
-                optim_plus.step()
+            #     loss.backward() #this computes the gradient
+            #     # # print(net.state_dict()['fc2.bias'])
+            #     optim_plus.step()
                 
-                # scaler.scale(loss).backward()
-                # scaler.step(optim_plus)
+            #     # scaler.scale(loss).backward()
+            #     # scaler.step(optim_plus)
                 
-            # print('optim plus printing')
-            # print(net.state_dict()['fc2.bias'])
-            # print('loss_optim_plus = '+ str(total_loss_op))
-            # optim_plus_w_org = deepcopy(net.state_dict())
+            # # print('optim plus printing')
+            # # print(net.state_dict()['fc2.bias'])
+            # # print('loss_optim_plus = '+ str(total_loss_op))
+            # # optim_plus_w_org = deepcopy(net.state_dict())
             
-            # cannot use torch.optim.SGD because this grad updates original params
-            optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.lr1*self.lr2/(2*self.del_acc),\
-                        momentum=0.5,weight_decay=1e-4)
-            # -self.lr1*self.lr2/(2*self.del_acc*self.bs)
-            #self.lr1*self.lr2/(2*self.del_acc)
-            
-            # 1e-4/(2*1e-3) = ~1e-1 vs 1e-3 * 1e-2/(2*1e-3) = 1e-2
-            # looks like this self.lr2/2*self.del_acc works well for MNIST
+            # # cannot use torch.optim.SGD because this grad updates original params
             # optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-            #                 del_acc=self.lr2/(2*self.del_acc),\
-            #             momentum=0.5,weight_decay=1e-4)            
-            
-            # optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-            #                 del_acc=self.lr1/(2*self.del_acc),\
+            #                 del_acc=-self.lr1*self.lr2/(2*self.del_acc),\
             #             momentum=0.5,weight_decay=1e-4)
+            # # -self.lr1*self.lr2/(2*self.del_acc*self.bs)
+            # #self.lr1*self.lr2/(2*self.del_acc)
             
-            # total_loss_op2 = 0
-            for batch_indx,(images,labels) in enumerate(self.ldr_train3):
-                images,labels = images.to(self.device),labels.to(self.device)
-                net.zero_grad()
-                
-                # with amp.autocast():
-                log_probs = net(images)
-                loss = self.loss_func(log_probs,labels)
-                loss.retain_grad()
-                # total_loss_op2 += loss.item()
-                
-                
-                batch_loss.append(loss.item()) #### this is superfluous
-                loss.backward() #this computes the gradient
-                optim_plus2.step()
-                
-                # scaler.scale(loss).backward()
-                # scaler.step(optim_plus2)
-                
-            optim_plus_w = deepcopy(net.state_dict())
-            # print('optim plus 2 params')
-            # print(optim_plus_w['fc2.bias'])
-            # print('optim plus 2 losses')
-            # print(total_loss_op2)
+            # # 1e-4/(2*1e-3) = ~1e-1 vs 1e-3 * 1e-2/(2*1e-3) = 1e-2
+            # # looks like this self.lr2/2*self.del_acc works well for MNIST
+            # # optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
+            # #                 del_acc=self.lr2/(2*self.del_acc),\
+            # #             momentum=0.5,weight_decay=1e-4)            
             
-            optim_plus_w_params = []
-            for i,j in enumerate(net.parameters()):
-                optim_plus_w_params.append(deepcopy(j))
+            # # optim_plus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
+            # #                 del_acc=self.lr1/(2*self.del_acc),\
+            # #             momentum=0.5,weight_decay=1e-4)
             
-            # optim minus
-            # reload to calc optim minus
-            net.load_state_dict(temp_w_inner)            
-            optim_minus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.del_acc,momentum=0.5,weight_decay=1e-4) 
-            #self.del_acc
+            # # total_loss_op2 = 0
+            # for batch_indx,(images,labels) in enumerate(self.ldr_train3):
+            #     images,labels = images.to(self.device),labels.to(self.device)
+            #     net.zero_grad()
+                
+            #     # with amp.autocast():
+            #     log_probs = net(images)
+            #     loss = self.loss_func(log_probs,labels)
+            #     loss.retain_grad()
+            #     # total_loss_op2 += loss.item()
+                
+                
+            #     batch_loss.append(loss.item()) #### this is superfluous
+            #     loss.backward() #this computes the gradient
+            #     optim_plus2.step()
+                
+            #     # scaler.scale(loss).backward()
+            #     # scaler.step(optim_plus2)
+                
+            # optim_plus_w = deepcopy(net.state_dict())
+            # # print('optim plus 2 params')
+            # # print(optim_plus_w['fc2.bias'])
+            # # print('optim plus 2 losses')
+            # # print(total_loss_op2)
             
+            # optim_plus_w_params = []
+            # for i,j in enumerate(net.parameters()):
+            #     optim_plus_w_params.append(deepcopy(j))
+            
+            # # optim minus
+            # # reload to calc optim minus
+            # net.load_state_dict(temp_w_inner)            
             # optim_minus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-            #                 del_acc=self.del_acc,momentum=0.5,weight_decay=1e-4)
+            #                 del_acc=self.del_acc,momentum=0.5,weight_decay=1e-4) 
+            # #self.del_acc
             
-            for batch_indx,(images,labels) in enumerate(self.ldr_train2):
-                images,labels = images.to(self.device),labels.to(self.device)
-                net.zero_grad()
-                
-                # with amp.autocast():
-                log_probs = net(images)
-                loss = self.loss_func(log_probs,labels)
-                # loss.retain_grad()
-                
-                loss.backward() #this computes the gradient
-                optim_minus.step()
-                
-                # scaler.scale(loss).backward()
-                # scaler.step(optim_minus)
-                
-            # print('start of optim_minus')
-            # # net.load_state_dict(optim_plus_w_org)
-            # print(net.state_dict()['fc2.bias'])
+            # # optim_minus = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
+            # #                 del_acc=self.del_acc,momentum=0.5,weight_decay=1e-4)
             
-            optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-                            del_acc=self.lr1*self.lr2/(2*self.del_acc),\
-                        momentum=0.5,weight_decay=1e-4)
-            # *self.bs # on the denominator
-            # self.lr1*self.lr2/(2*self.del_acc*self.bs)
-            #self.lr1*self.lr2/(self.del_acc)
+            # for batch_indx,(images,labels) in enumerate(self.ldr_train2):
+            #     images,labels = images.to(self.device),labels.to(self.device)
+            #     net.zero_grad()
+                
+            #     # with amp.autocast():
+            #     log_probs = net(images)
+            #     loss = self.loss_func(log_probs,labels)
+            #     # loss.retain_grad()
+                
+            #     loss.backward() #this computes the gradient
+            #     optim_minus.step()
+                
+            #     # scaler.scale(loss).backward()
+            #     # scaler.step(optim_minus)
+                
+            # # print('start of optim_minus')
+            # # # net.load_state_dict(optim_plus_w_org)
+            # # print(net.state_dict()['fc2.bias'])
             
             # optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-            #                 del_acc=self.lr2/(2*self.del_acc),\
-            #             momentum=0.5,weight_decay=1e-4)                
+            #                 del_acc=self.lr1*self.lr2/(2*self.del_acc),\
+            #             momentum=0.5,weight_decay=1e-4)
+            # # *self.bs # on the denominator
+            # # self.lr1*self.lr2/(2*self.del_acc*self.bs)
+            # #self.lr1*self.lr2/(self.del_acc)
             
-            # optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
-            #                 del_acc=self.lr1/(2*self.del_acc),\
-            #             momentum=0.5,weight_decay=1e-4)                         
+            # # optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
+            # #                 del_acc=self.lr2/(2*self.del_acc),\
+            # #             momentum=0.5,weight_decay=1e-4)                
             
-            for batch_indx,(images,labels) in enumerate(self.ldr_train3):
-                images,labels = images.to(self.device),labels.to(self.device)
-                net.zero_grad()
+            # # optim_minus2 = SGD_HN_PFL_del(net.parameters(),deepcopy(temp_params),\
+            # #                 del_acc=self.lr1/(2*self.del_acc),\
+            # #             momentum=0.5,weight_decay=1e-4)                         
+            
+            # for batch_indx,(images,labels) in enumerate(self.ldr_train3):
+            #     images,labels = images.to(self.device),labels.to(self.device)
+            #     net.zero_grad()
                 
-                # with amp.autocast():
-                log_probs = net(images)
-                loss = self.loss_func(log_probs,labels)
-                loss.retain_grad()
+            #     # with amp.autocast():
+            #     log_probs = net(images)
+            #     loss = self.loss_func(log_probs,labels)
+            #     loss.retain_grad()
                 
-                loss.backward() #this computes the gradient
-                optim_minus2.step()
+            #     loss.backward() #this computes the gradient
+            #     optim_minus2.step()
                 
-                # scaler.scale(loss).backward()
-                # scaler.step(optim_minus2)
+            #     # scaler.scale(loss).backward()
+            #     # scaler.step(optim_minus2)
             
-            optim_minus_w = deepcopy(net.state_dict())
-            # print('optim minus2 params')
-            # print(optim_minus_w['fc2.bias'])
+            # optim_minus_w = deepcopy(net.state_dict())
+            # # print('optim minus2 params')
+            # # print(optim_minus_w['fc2.bias'])
             
-            optim_minus_w_params = []
-            for i,j in enumerate(net.parameters()):
-                optim_minus_w_params.append(deepcopy(j))
+            # optim_minus_w_params = []
+            # for i,j in enumerate(net.parameters()):
+            #     optim_minus_w_params.append(deepcopy(j))
             
-            # scaler.update() #update scale for next iteration
+            # # scaler.update() #update scale for next iteration
             
-            # manual_w1, optim_plus_w, optim_minus_w combination
-            template_w = deepcopy(temp)
+            # # manual_w1, optim_plus_w, optim_minus_w combination
+            # template_w = deepcopy(temp)
             
-            for k_i in template_w.keys():
-                template_w[k_i] = manual_w1[k_i] + optim_plus_w[k_i] \
-                    + optim_minus_w[k_i] - 2*template_w[k_i]
+            # for k_i in template_w.keys():
+            #     template_w[k_i] = manual_w1[k_i] + optim_plus_w[k_i] \
+            #         + optim_minus_w[k_i] - 2*template_w[k_i]
             
-            # print('everything put together params')
-            # print(template_w['fc2.bias'])
             
-            net.load_state_dict(template_w)
             
-            epoch_loss.append(sum(batch_loss)/len(batch_loss))
+            # # print('everything put together params')
+            # # print(template_w['fc2.bias'])
             
-        return net,net.state_dict(),(sum(batch_loss)/len(batch_loss))
+            # net.load_state_dict(template_w)
+            
+            net.load_state_dict(manual_w1)
+            
+            # epoch_loss.append(sum(batch_loss)/len(batch_loss))
+            epoch_loss.append(5)
+            
+        return net,net.state_dict(),5#(sum(batch_loss)/len(batch_loss))
 
 
 class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2

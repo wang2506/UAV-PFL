@@ -105,7 +105,7 @@ init_loss = 2.302232319
 nn_style = 'CNN'
 # nn_style = 'MLP'
 ratio_vec = [1,2,4]
-for ratio in [1,2,4]:
+for ratio in [1,2,4,8]:
     ## reload data
     total_fl_accs, total_pfl_accs = [], []
     full_fl_accs, full_pfl_accs = [], []
