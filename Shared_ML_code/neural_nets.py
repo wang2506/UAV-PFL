@@ -411,21 +411,13 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
         
     def train(self,net):
         net.train()
-        # print(len(self.ldr_train))
-        # print(len(self.ldr_train2))
-        # print(len(self.ldr_train3))
-        
-        decay_factor = 1e-5
-        
         # optimizer = torch.optim.SGD(net.parameters(),lr=self.lr1, momentum=0.5,weight_decay=1e-4) #l2 penalty
-        optimizer = SGD_PFL(net.parameters(),lr=self.lr1, momentum=0.5,weight_decay=1e-2)
+        optimizer = SGD_PFL(net.parameters(),lr=self.lr1)#, momentum=0.5,weight_decay=1e-4)
         
         # optimizer2 = torch.optim.SGD(net.parameters(),lr=self.lr2, momentum=0.5,weight_decay=1e-4)
-        
         # use amp.autocast + amp.GradScaler
         # scaler = amp.GradScaler()
-        
-        
+
         epoch_loss = []
         for epoch in range(self.epochs):
             batch_loss = []
@@ -440,19 +432,19 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
                 temp_params.append(deepcopy(j))
             
             ## inner params obtain - step size - eta_1
-            total_loss = 0
+            # total_loss = 0
             for batch_indx,(images,labels) in enumerate(self.ldr_train):
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
                 # with amp.autocast(): # not in pytorch 1.5??
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
-                total_loss += loss.item()
-                loss.retain_grad()
+                # total_loss += loss.item()
+                # loss.retain_grad()
                 
-                batch_loss.append(loss.item())
                 loss.backward()
                 optimizer.step()
+                batch_loss.append(loss.item())
                 # scaler.scale(loss).backward() #this computes the gradient
                 # scaler.step(optimizer)
             # print('loss testing')

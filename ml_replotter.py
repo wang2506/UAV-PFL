@@ -274,7 +274,7 @@ ax2[ind].legend()
 
 
 ind = 1
-for i in range(3): 
+for i in range(len(ratio_vec)): 
     if i == 0:
         temp_indexes = np.arange(0,40,step=1)#)4) #total_fl_ratios[i][0]
     elif i == 1:
