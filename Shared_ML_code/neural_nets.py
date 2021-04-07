@@ -396,8 +396,9 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
         # self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
         # self.ldr_train3 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
         
-        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs),shuffle=True)
-        self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs),shuffle=True)        
+        self.ldr_train = list(DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs),shuffle=True))
+        self.ldr_train2 = list(DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs),shuffle=True))
+        
         
         # # CNN working with this one
         # self.ind1 = random.sample(self.indexes,int(len(indexes)/3))
@@ -422,69 +423,99 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
         for epoch in range(self.epochs):
             batch_loss = []
             
-            # calculate the meta-function of SGD
-            temp = deepcopy(net.state_dict())
-            # print('start of LocalUpdate_HF_PFL')
-            # print(temp['fc2.bias'])
+            # # calculate the meta-function of SGD
+            # temp = deepcopy(net.state_dict())
+            # temp_params = [] #temp_params = deepcopy(net.parameters())
+            # for i,j in enumerate(net.parameters()):
+            #     temp_params.append(deepcopy(j))
             
-            temp_params = [] #temp_params = deepcopy(net.parameters())
-            for i,j in enumerate(net.parameters()):
-                temp_params.append(deepcopy(j))
-            
-            ## inner params obtain - step size - eta_1
-            # total_loss = 0
-            for batch_indx,(images,labels) in enumerate(self.ldr_train):
+            # hierarchical test
+            for batch_indx,(images,labels) in enumerate(self.ldr_train2):
+                temp = deepcopy(net.state_dict())
+                temp_params = []
+                for i,j in enumerate(net.parameters()):
+                    temp_params.append(deepcopy(j))
+                
+                self.ldr_train = random.shuffle(self.ldr_train)
+                for batch_index_in,(images_in,labels_in) in enumerate(self.ldr_train):
+                    images_in,labels_in = images_in.to(self.device),labels_in.to(self.device)
+                    net.zero_grad()
+                    log_probs = net(images_in)
+                    loss = self.loss_func(log_probs,labels_in)
+                    # loss.retain_grad()
+                    loss.backward()
+                    optimizer.step()
+                    break
+                
+                
+                optimizer2 = SGD_FO_PFL(net.parameters(),temp_params,\
+                        lr=self.lr2)#, momentum=0.5,weight_decay=1e-4)
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
-                # with amp.autocast(): # not in pytorch 1.5??
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
-                # total_loss += loss.item()
-                # loss.retain_grad()
-                
+                #loss.retain_grad()
                 loss.backward()
                 optimizer.step()
-                # batch_loss.append(loss.item())
-                # scaler.scale(loss).backward() #this computes the gradient
-                # scaler.step(optimizer)
-            # print('loss testing')
-            # print(total_loss)
-            
-            # this produces the intermediate parameters - needed inner for all three terms
-            temp_w_inner = deepcopy(net.state_dict()) #used to find intermediate loss
-            # print('w inner result')
-            # print(temp_w_inner['fc2.bias'])
-            
-            temp_w_inner_params = []
-            for i,j in enumerate(net.parameters()):
-                temp_w_inner_params.append(deepcopy(j))
-            
-            ## calculate term 1 - the optim2 term on batch 2
-            # we use the same optimizer as FO_PFL for the isolated batch 2 term
-            # optimizer2 = SGD_FO_PFL(net.parameters(),deepcopy(temp_params),\
-                        # lr=self.lr2)#, momentum=0.5,weight_decay=1e-4)
-            optimizer2 = SGD_PFL(net.parameters(),lr=self.lr2)
-            
-            # lr = self.lr2/self.bs
-            # are the parameters updating correctly?
-            
-            # total_loss = 0
-            for batch_indx,(images,labels) in enumerate(self.ldr_train2):
-                images,labels = images.to(self.device),labels.to(self.device)
-                net.zero_grad()
-                
-                # with amp.autocast():
-                log_probs = net(images)
-                loss = self.loss_func(log_probs,labels)
-                # total_loss += loss.item()
-                loss.retain_grad()
-                
-                loss.backward() #this computes the gradient
-                optimizer2.step()
-                
                 batch_loss.append(loss.item())
-                # scaler.scale(loss).backward()
-                # scaler.step(optimizer2)
+            
+            # ## inner params obtain - step size - eta_1
+            # # total_loss = 0
+            # for batch_indx,(images,labels) in enumerate(self.ldr_train):
+            #     images,labels = images.to(self.device),labels.to(self.device)
+            #     net.zero_grad()
+            #     # with amp.autocast(): # not in pytorch 1.5??
+            #     log_probs = net(images)
+            #     loss = self.loss_func(log_probs,labels)
+            #     # total_loss += loss.item()
+            #     # loss.retain_grad()
+                
+            #     loss.backward()
+            #     optimizer.step()
+            #     # batch_loss.append(loss.item())
+            #     # scaler.scale(loss).backward() #this computes the gradient
+            #     # scaler.step(optimizer)
+            # # print('loss testing')
+            # # print(total_loss)
+            
+            # # this produces the intermediate parameters - needed inner for all three terms
+            # temp_w_inner = deepcopy(net.state_dict()) #used to find intermediate loss
+            # # print('w inner result')
+            # # print(temp_w_inner['fc2.bias'])
+            
+            # temp_w_inner_params = []
+            # for i,j in enumerate(net.parameters()):
+            #     temp_w_inner_params.append(deepcopy(j))
+            
+            # ## calculate term 1 - the optim2 term on batch 2
+            # # we use the same optimizer as FO_PFL for the isolated batch 2 term
+            # # base params (i.e. deepcopy(temp_params)) not being updated...
+            # temp_optim2_params = deepcopy(temp_params)
+            # optimizer2 = SGD_FO_PFL(net.parameters(),temp_optim2_params,\
+            #             lr=self.lr2)#, momentum=0.5,weight_decay=1e-4)
+            # # optimizer2 = SGD_PFL(net.parameters(),lr=self.lr2)
+            # print(temp_optim2_params[-1])
+            # # lr = self.lr2/self.bs
+            # # are the parameters updating correctly?
+            
+            # # total_loss = 0
+            # for batch_indx,(images,labels) in enumerate(self.ldr_train2):
+            #     images,labels = images.to(self.device),labels.to(self.device)
+            #     net.zero_grad()
+                
+            #     # with amp.autocast():
+            #     log_probs = net(images)
+            #     loss = self.loss_func(log_probs,labels)
+            #     # total_loss += loss.item()
+            #     loss.retain_grad()
+                
+            #     loss.backward() #this computes the gradient
+            #     optimizer2.step()
+                
+            #     print(temp_optim2_params[-1])
+            #     batch_loss.append(loss.item())
+            #     # scaler.scale(loss).backward()
+            #     # scaler.step(optimizer2)
                 
             # # print('loss testing optim2')
             # # print(total_loss)
