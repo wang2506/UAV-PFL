@@ -396,8 +396,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
         # self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
         # self.ldr_train3 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs/3),shuffle=True)
         
-        self.ldr_train = list(DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs),shuffle=True))
-        self.ldr_train2 = list(DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs),shuffle=True))
+        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs),shuffle=True)
+        self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),batch_size=int(bs),shuffle=True)
         
         
         # # CNN working with this one
@@ -436,7 +436,9 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
                 for i,j in enumerate(net.parameters()):
                     temp_params.append(deepcopy(j))
                 
-                self.ldr_train = random.shuffle(self.ldr_train)
+                # reshuffle it
+                self.ldr_train = DataLoader(segmentdataset(self.dataset,self.indexes),\
+                        batch_size=int(self.bs),shuffle=True)
                 for batch_index_in,(images_in,labels_in) in enumerate(self.ldr_train):
                     images_in,labels_in = images_in.to(self.device),labels_in.to(self.device)
                     net.zero_grad()
