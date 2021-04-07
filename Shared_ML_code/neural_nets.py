@@ -405,9 +405,9 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
         self.ind2 = random.sample(self.indexes,int(len(indexes)/3))
         self.ind3 = random.sample(self.indexes,int(len(indexes)/3))
         
-        self.ldr_train = DataLoader(segmentdataset(dataset,self.ind1),batch_size=bs,shuffle=True)
-        self.ldr_train2 = DataLoader(segmentdataset(dataset,self.ind2),batch_size=bs,shuffle=True)
-        self.ldr_train3 = DataLoader(segmentdataset(dataset,self.ind3),batch_size=bs,shuffle=True)
+        self.ldr_train = DataLoader(segmentdataset(dataset,self.ind1),batch_size=int(bs/3),shuffle=True)
+        self.ldr_train2 = DataLoader(segmentdataset(dataset,self.ind2),batch_size=int(bs/3),shuffle=True)
+        self.ldr_train3 = DataLoader(segmentdataset(dataset,self.ind3),batch_size=int(bs/3),shuffle=True)
         self.loss_func = nn.CrossEntropyLoss()
         
     def train(self,net):
@@ -439,8 +439,8 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
                 # reshuffle it
                 # self.ldr_train = DataLoader(segmentdataset(self.dataset,self.indexes),\
                 #         batch_size=int(self.bs/3),shuffle=True)
-                self.ldr_train = DataLoader(segmentdataset(self.dataset,self.ind2),\
-                        batch_size=self.bs,shuffle=True)
+                self.ldr_train = DataLoader(segmentdataset(self.dataset,self.ind),\
+                        batch_size=int(self.bs/3),shuffle=True)
                 optimizer = SGD_PFL(net.parameters(),lr=self.lr1)
                 
                 for batch_index_in,(images_in,labels_in) in enumerate(self.ldr_train):
