@@ -444,44 +444,45 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
                 
                 loss.backward()
                 optimizer.step()
-                batch_loss.append(loss.item())
+                # batch_loss.append(loss.item())
                 # scaler.scale(loss).backward() #this computes the gradient
                 # scaler.step(optimizer)
             # print('loss testing')
             # print(total_loss)
             
-            # # this produces the intermediate parameters - needed inner for all three terms
-            # temp_w_inner = deepcopy(net.state_dict()) #used to find intermediate loss
-            # # print('w inner result')
-            # # print(temp_w_inner['fc2.bias'])
+            # this produces the intermediate parameters - needed inner for all three terms
+            temp_w_inner = deepcopy(net.state_dict()) #used to find intermediate loss
+            # print('w inner result')
+            # print(temp_w_inner['fc2.bias'])
             
-            # temp_w_inner_params = []
-            # for i,j in enumerate(net.parameters()):
-            #     temp_w_inner_params.append(deepcopy(j))
+            temp_w_inner_params = []
+            for i,j in enumerate(net.parameters()):
+                temp_w_inner_params.append(deepcopy(j))
             
-            # ## calculate term 1 - the optim2 term on batch 2
-            # # we use the same optimizer as FO_PFL for the isolated batch 2 term
-            # optimizer2 = SGD_FO_PFL(net.parameters(),deepcopy(temp_params),\
-            #             lr=self.lr2, momentum=0.5,weight_decay=1e-4)
-            # # lr = self.lr2/self.bs
+            ## calculate term 1 - the optim2 term on batch 2
+            # we use the same optimizer as FO_PFL for the isolated batch 2 term
+            optimizer2 = SGD_FO_PFL(net.parameters(),deepcopy(temp_params),\
+                        lr=self.lr2)#, momentum=0.5,weight_decay=1e-4)
+            # lr = self.lr2/self.bs
+            # are the parameters updating correctly?
             
             # total_loss = 0
-            # for batch_indx,(images,labels) in enumerate(self.ldr_train2):
-            #     images,labels = images.to(self.device),labels.to(self.device)
-            #     net.zero_grad()
+            for batch_indx,(images,labels) in enumerate(self.ldr_train2):
+                images,labels = images.to(self.device),labels.to(self.device)
+                net.zero_grad()
                 
-            #     # with amp.autocast():
-            #     log_probs = net(images)
-            #     loss = self.loss_func(log_probs,labels)
-            #     total_loss += loss.item()
-            #     loss.retain_grad()
+                # with amp.autocast():
+                log_probs = net(images)
+                loss = self.loss_func(log_probs,labels)
+                # total_loss += loss.item()
+                loss.retain_grad()
                 
-            #     loss.backward() #this computes the gradient
-            #     optimizer2.step()
+                loss.backward() #this computes the gradient
+                optimizer2.step()
                 
-            #     batch_loss.append(loss.item())
-            #     # scaler.scale(loss).backward()
-            #     # scaler.step(optimizer2)
+                batch_loss.append(loss.item())
+                # scaler.scale(loss).backward()
+                # scaler.step(optimizer2)
                 
             # # print('loss testing optim2')
             # # print(total_loss)
