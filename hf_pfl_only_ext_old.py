@@ -443,12 +443,12 @@ for save_type in [settings.iid_style]:
             if ((t+1) % (global_period) == 0):
                 # HF_hn_pfl_acc_temp, total_loss_temp = 0, 0
                 
-                HF_hn_pfl_acc_temp_all, total_loss_temp_all = 0, 0
+                # HF_hn_pfl_acc_temp_all, total_loss_temp_all = 0, 0
                 
-                for i,ii in enumerate(HF_hn_pfl_swarm_models):
-                    ii.eval()
-                    temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
-                            indexes=swarm_test_sets[i],device=device)
+                # for i,ii in enumerate(HF_hn_pfl_swarm_models):
+                #     ii.eval()
+                #     temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
+                #             indexes=swarm_test_sets[i],device=device)
                     
                     # temp_acc_full, loss_full = test_img2(ii,dataset_test,\
                     #         bs=batch_size,indexes=all_test_indexes,device=device)
@@ -456,8 +456,8 @@ for save_type in [settings.iid_style]:
                     # HF_hn_pfl_acc_temp += temp_acc/len(HF_hn_pfl_swarm_models)
                     # total_loss_temp += loss/len(HF_hn_pfl_swarm_models) #swarms
                     
-                    HF_hn_pfl_acc_temp_all += temp_acc/len(HF_hn_pfl_swarm_models)
-                    total_loss_temp_all += loss/len(HF_hn_pfl_swarm_models) #swarms
+                    # HF_hn_pfl_acc_temp_all += temp_acc/len(HF_hn_pfl_swarm_models)
+                    # total_loss_temp_all += loss/len(HF_hn_pfl_swarm_models) #swarms
                     
                     # HF_hn_pfl_acc_temp_all += temp_acc_full * static_data_per_swarm[i] \
                     #     / sum(static_data_per_swarm)
@@ -465,9 +465,9 @@ for save_type in [settings.iid_style]:
                     #     / sum(static_data_per_swarm)
                 
                 # # selection of any of the models is fine 
-                # HF_hn_pfl_acc_temp_all, total_loss_temp_all = \
-                #     test_img2(HF_hn_pfl_swarm_models[0],dataset_test,\
-                #     bs=batch_size,indexes=all_test_indexes,device=device)
+                HF_hn_pfl_acc_temp_all, total_loss_temp_all = \
+                    test_img2(HF_hn_pfl_swarm_models[0],dataset_test,\
+                    bs=batch_size,indexes=all_test_indexes,device=device)
                 
                 
                 # HF_hn_pfl_acc.append(HF_hn_pfl_acc_temp)

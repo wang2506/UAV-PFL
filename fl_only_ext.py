@@ -446,13 +446,13 @@ for save_type in [settings.iid_style]:
             if ((t+1) % (global_period) == 0):
                 # fl_acc_temp, total_loss_temp = 0, 0
                 
-                fl_acc_temp_all, total_loss_temp_all = 0, 0
+                # fl_acc_temp_all, total_loss_temp_all = 0, 0
                 
-                uav_counter = 0
-                for i,ii in enumerate(fl_swarm_models):
-                    ii.eval()
-                    temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
-                            indexes=swarm_test_sets[i],device=device)
+                # uav_counter = 0
+                # for i,ii in enumerate(fl_swarm_models):
+                #     ii.eval()
+                #     temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
+                #             indexes=swarm_test_sets[i],device=device)
                     # swarm_dataset_indexes = []
                     # for j in range(uav_counter,uav_counter+nodes_per_swarm[i]): 
                     #     swarm_dataset_indexes += node_train_sets[j]
@@ -464,19 +464,19 @@ for save_type in [settings.iid_style]:
                 #     # fl_acc_temp += temp_acc/len(fl_swarm_models)
                 #     # total_loss_temp += loss/len(fl_swarm_models) #swarms
                     
-                    fl_acc_temp_all += temp_acc/len(fl_swarm_models)
-                    total_loss_temp_all += loss/len(fl_swarm_models)
-                    
+                    # fl_acc_temp_all += temp_acc/len(fl_swarm_models)
+                    # total_loss_temp_all += loss/len(fl_swarm_models)
+                
                 # # select any of the swarm_models
                 # fl_acc_temp_all, total_loss_temp_all = test_img2(global_net,dataset_test,\
                 #         bs=batch_size,indexes=all_test_indexes,device=device)
                 
-                # fl_acc_temp_all, total_loss_temp_all = test_img2(fl_swarm_models[0],dataset_test,\
-                #         bs=batch_size,indexes=all_test_indexes,device=device)
+                fl_acc_temp_all, total_loss_temp_all = test_img2(fl_swarm_models[0],dataset_test,\
+                        bs=batch_size,indexes=all_test_indexes,device=device)
                 
                 # fl_acc_temp_all, total_loss_temp_all = test_img2(fl_swarm_models[0],dataset_train,\
                 #         bs=batch_size,indexes=range(len(dataset_train)),device=device)
-                    
+                
                 # fl_acc.append(fl_acc_temp)
                 # total_loss.append(total_loss_temp)
                 
@@ -487,7 +487,7 @@ for save_type in [settings.iid_style]:
                 print('global metric')
                 print(fl_acc_full[-1])
                 # print(total_loss)
-                
+
 
                 ## calculate localized accuracy prior to aggregations
                 ## personalized model performance 
