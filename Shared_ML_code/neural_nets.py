@@ -464,14 +464,12 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
             # optimizer2 = SGD_FO_PFL(net.parameters(),deepcopy(temp_params),\
                         # lr=self.lr2)#, momentum=0.5,weight_decay=1e-4)
             optimizer2 = SGD_PFL(net.parameters(),lr=self.lr2)
+            
             # lr = self.lr2/self.bs
             # are the parameters updating correctly?
             
             # total_loss = 0
             for batch_indx,(images,labels) in enumerate(self.ldr_train2):
-                optimizer2 = SGD_FO_PFL
-                
-                
                 images,labels = images.to(self.device),labels.to(self.device)
                 net.zero_grad()
                 
