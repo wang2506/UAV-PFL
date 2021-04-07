@@ -298,7 +298,7 @@ for save_type in [settings.iid_style]:
              global_period = swarm_period * ratio
         elif settings.ratio == 'swarm':
              swarm_period = global_period * ratio
-            
+        
         cycles = total_time/(swarm_period*global_period)
         # total_time = swarm_period*global_period*cycles
     
