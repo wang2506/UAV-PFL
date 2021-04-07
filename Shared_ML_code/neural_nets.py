@@ -450,6 +450,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
                 total_loss += loss.item()
                 loss.retain_grad()
                 
+                batch_loss.append(loss.item())
                 loss.backward()
                 optimizer.step()
                 # scaler.scale(loss).backward() #this computes the gradient
