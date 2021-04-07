@@ -156,11 +156,11 @@ for save_type in [settings.iid_style]:
     # %% populating data for nodes/swarms
     
     # data per device and total data per swarm
-    avg_qty = 1000 #int(len(dataset_train)/sum(nodes_per_cluster)) # 650
-    # if save_type == 'extreme':
-    #     avg_qty = 1000
-    # else:
-    #     avg_qty = 2500 #3 swarms
+    # avg_qty = 1000 #int(len(dataset_train)/sum(nodes_per_cluster)) # 650
+    if save_type == 'extreme':
+        avg_qty = 1000
+    else:
+        avg_qty = 2500 #3 swarms
     
     
     def pop_data_qty(data_holder,data_qty,nodes_per_swarm=nodes_per_swarm):
@@ -292,7 +292,7 @@ for save_type in [settings.iid_style]:
         global_period = settings.rd_val
     
     ## main loop for ratio variance ##
-    for ratio in [8]:#1,2,4,
+    for ratio in [1,2,4,8]:#1,2,4,
         # ratio dynamics
         if settings.ratio == 'global': #global dynamic, swarm varied
              global_period = swarm_period * ratio
