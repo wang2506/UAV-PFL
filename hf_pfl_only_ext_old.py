@@ -264,9 +264,12 @@ for save_type in [settings.iid_style]:
         # with open(cwd+'/data/CNN_default_w','rb') as f:
         #     default_w = pickle.load(f)        
     
-        with open(cwd+'/data/CNN_new_w','rb') as f:
-            default_w = pickle.load(f)
-        
+        try:
+            with open(cwd+'/data/CNN_new_w','rb') as f:
+                default_w = pickle.load(f)
+        except:
+            default_w = deepcopy(global_net.state_dict())
+            
         lr,lr2 = 1e-3,1e-2 #CNN
         # lr,lr2 = 1e-3, 1e-3
         # debug lr-rates
@@ -289,7 +292,7 @@ for save_type in [settings.iid_style]:
         global_period = settings.rd_val
     
     ## main loop for ratio variance ##
-    for ratio in [1,2,4]:#,6,8,10]:
+    for ratio in [1,2,4,8]:#,6,8,10]:
         # ratio dynamics
         if settings.ratio == 'global': #global dynamic, swarm varied
              global_period = swarm_period * ratio
