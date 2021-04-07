@@ -327,11 +327,11 @@ for save_type in [settings.iid_style]:
                         if settings.online == False:
                             local_obj = LocalUpdate(device,bs=batch_size,lr=lr,\
                                 epochs=ep_len,dataset=dataset_train,\
-                                indexes=node_train_sets[uav_counter])
+                                indexes=nts[uav_counter])
                         else:
                             local_obj = LocalUpdate(device,bs=batch_size,lr=lr,\
                                 epochs=ep_len,dataset=dataset_train,\
-                                indexes=node_train_sets[uav_counter])
+                                indexes=nts[uav_counter])
                                 
                         # _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
                         _,w,loss = local_obj.train(net=loc_models[ind_i].to(device))
@@ -342,11 +342,11 @@ for save_type in [settings.iid_style]:
                         if settings.online == False:
                             local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr1=lr,\
                                 lr2=lr2,epochs=ep_len,dataset=dataset_train,\
-                                indexes=node_train_sets[uav_counter])
+                                indexes=nts[uav_counter])
                         else:
                             local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr1=lr,\
                                 lr2=lr2,epochs=ep_len,dataset=dataset_train,\
-                                indexes=node_train_sets[uav_counter])
+                                indexes=nts[uav_counter])
                                 
                         # _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
                         _,w,loss = local_obj.train(net=deepcopy(loc_models[ind_i]).to(device))
