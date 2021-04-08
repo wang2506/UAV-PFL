@@ -161,7 +161,7 @@ for save_type in [settings.iid_style]:
         if settings.data_style == 'mnist':
             avg_qty = 2500 #3 swarms
         elif settings.data_style == 'fmnist':
-            avg_qty = 3000
+            avg_qty = 3500 #3k data was ok
     
     def pop_data_qty(data_holder,data_qty,nodes_per_swarm=nodes_per_swarm):
         counter = 0

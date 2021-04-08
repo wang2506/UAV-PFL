@@ -102,8 +102,8 @@ full_pfl_loss_ratios = []
 init_acc = 10.5
 init_loss = 2.302232319
 
-# data_source = 'mnist'
-data_source = 'fmnist'
+data_source = 'mnist'
+# data_source = 'fmnist'
 
 nn_style = 'CNN'
 # nn_style = 'MLP'
