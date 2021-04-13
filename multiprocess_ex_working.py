@@ -442,7 +442,7 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1,theta=0.8):#, \
     # init_delta_u = 50 #1e-10
     
     # max_approx_iters = 2 #5 #10 #50 #100 #100 #200 #50
-    max_approx_iters = 3 
+    max_approx_iters = 2
     plot_obj = []
     plot_energy = []
     plot_acc = []
@@ -964,8 +964,8 @@ if __name__ == '__main__':
     # clusters_vec = range(10)
     # swarms_vec = range(4)
     
-    T_s_vec = [18]
-    tau_s1_vec,tau_s2_vec = range(1,2),range(1,2)    
+    T_s_vec = [20]
+    tau_s1_vec,tau_s2_vec = range(2,3),range(2,3)    
     clusters_vec = [0] #range(8)
     swarms_vec = [0] #range(3)    
     # theta = [0.1, 0.25, 0.5, 0.75, 0.9]

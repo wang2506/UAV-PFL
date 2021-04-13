@@ -990,7 +990,7 @@ if __name__ == '__main__':
     # swarms_vec = range(4)
     
     T_s_vec = [180]
-    tau_s1_vec,tau_s2_vec = range(1,2),range(1,2)    
+    tau_s1_vec,tau_s2_vec = range(2,3),range(2,3)    
     clusters_vec = [0] #range(8)
     swarms_vec = [0] #range(3)    
     # theta = [0.1, 0.25, 0.5, 0.75, 0.9]
