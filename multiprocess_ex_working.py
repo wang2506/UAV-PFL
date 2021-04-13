@@ -835,10 +835,13 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1,theta=0.8):#, \
             #     print(sigma_j[j].value)
             #     print(D_j[i][j].value)
             
+            # temp_acc = (grad_fu_scale*(delta_diff_sigma + mu_F**2 * upsilon) \
+            #     + 3 * eta_2**2 * mu_F * gamma_u_F/(eta_2/2 -6*eta_2**2 *mu_F/2) ) \
+            #     + mismatch*T_s/tau_s1 \
+            #     + init_loss_max/(T_s*(eta_2/2 - 6 *eta_2**2*mu_F/2))
+            
             temp_acc = (grad_fu_scale*(delta_diff_sigma + mu_F**2 * upsilon) \
-                + 3 * eta_2**2 * mu_F * gamma_u_F/(eta_2/2 -6*eta_2**2 *mu_F/2) ) \
-                + mismatch*T_s/tau_s1 \
-                + init_loss_max/(T_s*(eta_2/2 - 6 *eta_2**2*mu_F/2))
+                + 3 * eta_2**2 * mu_F * gamma_u_F)            
             
             # print(init_loss_max)
             # print(T_s)
@@ -937,11 +940,13 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1,theta=0.8):#, \
     plot_obj = np.roll(plot_obj,1)
     
     
+    # plot_acc[0] = init_learning_estimate + grad_fu_scale * upsilon_estimate \
+    #     + 3*eta_2**2 * mu_F *gamma_u_F / (eta_2/2 - 6 * eta_2**2 * mu_F/2)  \
+    #     + mismatch_estimate *T_s/tau_s1 \
+    #     + init_loss_max/(T_s*(eta_2/2 - 6 *eta_2**2*mu_F/2))
     plot_acc[0] = init_learning_estimate + grad_fu_scale * upsilon_estimate \
         + 3*eta_2**2 * mu_F *gamma_u_F / (eta_2/2 - 6 * eta_2**2 * mu_F/2)  \
-        + mismatch_estimate *T_s/tau_s1 \
-        + init_loss_max/(T_s*(eta_2/2 - 6 *eta_2**2*mu_F/2))
-        
+        + mismatch_estimate        
     plot_obj[0] = plot_acc[0]*theta + (1-theta)*plot_energy[0]
     
     # print(time.time() - start)
