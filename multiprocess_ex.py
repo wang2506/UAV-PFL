@@ -992,8 +992,8 @@ if __name__ == '__main__':
     tau_s1_vec,tau_s2_vec = range(1,2),range(1,2)    
     clusters_vec = [0] #range(8)
     swarms_vec = [0] #range(3)    
-    theta = [0.1, 0.25, 0.5, 0.75, 0.9]
-    # theta = [0.01, 0.05, 0.1, 0.15, 0.2, 0.3,0.4,0.5,0.6,0.7,0.8,0.85,0.9,0.95]
+    # theta = [0.1, 0.25, 0.5, 0.75, 0.9]
+    theta = [0.01, 0.05, 0.1, 0.15, 0.2, 0.3,0.4,0.5,0.6,0.7,0.8,0.85,0.9,0.95]
     
     max_run_index = len(T_s_vec)*len(tau_s1_vec)*len(tau_s2_vec)*\
         len(clusters_vec)*len(swarms_vec)*len(theta)
