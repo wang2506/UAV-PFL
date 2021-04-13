@@ -55,10 +55,15 @@ build_char_vectors()
 # tau_s1 = 1,2
 # tau_s2 = 1,2
 # T_s = 180, 220, 260
-def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1):
+def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1,theta=0.8):#, \
+        #run_index=None):
     print('starting new geo_optim')
     print('T_s = {}, swarm_no ={}, cluster_no = {}, tau_s1 = {}, tau_s2 = {}' \
           .format(T_s, swarm_no, cluster_no,tau_s1,tau_s2))
+    # try:
+    #     print('run_index='+str(run_index))
+    # except:
+    #     print('no run index')
     
     # T_s = 200 #20
     # np.random.seed(swarm_no*10 + cluster_no)
@@ -168,8 +173,8 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1):
     ## 
     alphas = {i:cp.Variable(shape=(workers,3),pos=True) for i in range(K_s1)}
     
-    worker_c = [1e5 for i in range(workers)] #1e4
-    freq_min = 0.5*1e9
+    worker_c = [1e4 for i in range(workers)] #1e4
+    freq_min = 10e6 #0.5*1e9
     freq_max = 2.3*1e9
     worker_freq = {i:[cp.Variable(pos=True) for i in range(workers)] for i in range(K_s1)}
     capacitance = 2e-28 #2e-28 #2e-16 #2e-28 #10*1e-12
@@ -380,7 +385,7 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1):
         zeta_p = np.zeros(workers).tolist()
         zeta_g_j = np.zeros(workers).tolist()
         zeta_g_h = np.zeros(coordinators).tolist()
-        zeta_local = 1000
+        zeta_local = 5#1
         
         # implementing zeta constraint
         for j in range(workers):    
@@ -414,12 +419,12 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1):
         for h in range(coordinators):
             constraints.append(D_j[i][workers+h] <= B_j_coord[i][h])
         
-        eng_bat_j = 2000 * np.ones(shape=workers)
-        eng_bat_h = 2000 * np.ones(shape=coordinators)
+        eng_bat_j = 20000 * np.ones(shape=workers)
+        eng_bat_h = 20000 * np.ones(shape=coordinators)
         eng_thresh_j = 20 * np.ones(shape=workers)
         eng_thresh_h = 20 * np.ones(shape=coordinators)
         
-        eng_bat_l = 2000
+        eng_bat_l = 20000
         eng_thresh_l = 20 
         
         # energy limits 
@@ -434,15 +439,24 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1):
         # constraints.append(eng_f_l  + eng_tx_l \
         #         <= (eng_bat_l - eng_thresh_l)/ K_s1)
         
-    
+        
     ## 1-theta terms
-    eta_2 = 5e-4 #1e-4
-    mu_F = 10 #200,20
+    eta_2 = 1e-4 #1e-4
+    mu_F = 20
     grad_fu_scale = 1/(eta_2/2 - 6 *eta_2**2 * mu_F/2) * (3*eta_2**2 *mu_F/2 + eta_2)
     
-    B, eta_1, mu = 50, 1e-3, 10 #100 #500, mu =10; 50,1e-3,10
-    sigma_j_H,sigma_j_G = 50,50 #100, 100 ##sigma_j_H greatly affects data?, 50,50
-    gamma_u_F, gamma_F = 50,50 #3*B**2 *eta_1**2*50 + 192*50, 3*B**2 *eta_1**2*50 + 192*50  #50, 50
+    B, eta_1, mu = 500, 1e-3, 10 #500
+    sigma_j_H,sigma_j_G = 50, 50 ##sigma_j_H greatly affects data?
+    gamma_u_F, gamma_F = 10, 10
+    
+    # ## 1-theta terms
+    # eta_2 = 5e-4 #1e-4
+    # mu_F = 10 #200,20
+    # grad_fu_scale = 1/(eta_2/2 - 6 *eta_2**2 * mu_F/2) * (3*eta_2**2 *mu_F/2 + eta_2)
+    
+    # B, eta_1, mu = 50, 1e-3, 10 #100 #500, mu =10; 50,1e-3,10
+    # sigma_j_H,sigma_j_G = 50,50 #100, 100 ##sigma_j_H greatly affects data?, 50,50
+    # gamma_u_F, gamma_F = 50,50 #3*B**2 *eta_1**2*50 + 192*50, 3*B**2 *eta_1**2*50 + 192*50  #50, 50
     init_loss_max = 3 #empirically found value
     
     ## need to approximate delta_u
@@ -450,7 +464,7 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1):
     delta_u_holder = []
     # init_delta_u = 50 #1e-10
     
-    max_approx_iters = 2 #5 #10 #50 #100 #100 #200 #50
+    max_approx_iters = 2 #5 #10 #50 #100 #100 #200 #50 #2
     plot_obj = []
     plot_energy = []
     plot_acc = []
@@ -463,7 +477,8 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1):
     test_init_varrho = 0.1
     
     sigma_c_H,sigma_c_G = 50, 50
-    B_cluster = 50
+    # B_cluster = 50
+    B_cluster = 500
     
     for i in range(1,K_s1):
         for t in range(max_approx_iters):
@@ -787,14 +802,18 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1):
         
             
             # learning combine
-            theta = 0.8
+            # theta = 0.8
+            obj_energy = (1-theta)*(eng_p_obj + eng_tx_u_obj + eng_tx_q + sum(eng_tx_w) \
+                + eng_tx_l + sum(eng_f_j) + sum(eng_f_h) + eng_f_l )
             
-            true_objective = (1-theta)*(eng_p_obj + eng_tx_u_obj + eng_tx_q + sum(eng_tx_w) \
-                + eng_tx_l + sum(eng_f_j) + sum(eng_f_h) + eng_f_l ) + \
-                theta * (grad_fu_scale*(delta_diff_sigma + mu_F**2 * upsilon) \
+            # obj_energy = (1-theta)*(eng_p_obj + eng_tx_u_obj + eng_tx_q)
+            
+            obj_grad = theta * (grad_fu_scale*(delta_diff_sigma + mu_F**2 * upsilon) \
                 + 3 * eta_2**2 * mu_F * gamma_u_F / (eta_2/2 - 6 * eta_2**2 * mu_F/2)) + \
                 + theta*mismatch * T_s/tau_s1 \
                 + theta* init_loss_max/(T_s*(eta_2/2 - 6 *eta_2**2*mu_F/2))
+            
+            true_objective = obj_energy + obj_grad
                 
             #     #delta_i/delta_u
             
@@ -829,6 +848,7 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1):
             
             temp_energy = (eng_p_obj + eng_tx_u_obj + eng_tx_q + sum(eng_tx_w) \
                 + eng_tx_l + sum(eng_f_j) + sum(eng_f_h) + eng_f_l).value
+            
             # plot_energy.append(np.round(temp_energy,5))
             plot_energy.append(temp_energy)
             
@@ -938,7 +958,14 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1):
             3 * eta_1**2 * sigma_c_H * sigma_c_G * ( 1 + mu**2 * eta_1**2 ) \
             + 12 * sigma_c_G * temp_df_est * ( 1 + mu**2 * eta_1**2) ) / temp_df_est**2
     
+    
+    
     # calc initial point
+    # install a shift
+    plot_acc = np.roll(plot_acc,1) #deepcopy(plot_acc[0])
+    plot_obj = np.roll(plot_obj,1)
+    
+    
     plot_acc[0] = init_learning_estimate + grad_fu_scale * upsilon_estimate \
         + 3*eta_2**2 * mu_F *gamma_u_F / (eta_2/2 - 6 * eta_2**2 * mu_F/2)  \
         + mismatch_estimate *T_s/tau_s1 \
@@ -947,32 +974,58 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1):
     plot_obj[0] = plot_acc[0]*theta + (1-theta)*plot_energy[0]
     
     # print(time.time() - start)
-    return plot_acc, plot_obj, plot_energy, alphas[i], rho[i], varrho[i], worker_freq[i]
+    return plot_acc, plot_obj, plot_energy, alphas[i], rho[i], varrho[i], worker_freq[i],\
+        T_s, swarm_no, cluster_no, tau_s1,tau_s2,theta
     
 if __name__ == '__main__':
     start = time.time()
     
     from itertools import product
-    T_s_vec = [180,220,260]
-    tau_s1_vec,tau_s2_vec = range(1,3),range(1,3)
-    clusters_vec = range(10)
-    swarms_vec = range(4)    
+    # T_s_vec = [180,220,260]
+    # tau_s1_vec,tau_s2_vec = range(1,3),range(1,3)
+    # clusters_vec = range(10)
+    # swarms_vec = range(4)
     
-    with Pool(10) as p:
+    T_s_vec = [180]
+    tau_s1_vec,tau_s2_vec = range(1,2),range(1,2)    
+    clusters_vec = [0] #range(8)
+    swarms_vec = [0] #range(3)    
+    theta = [0.1, 0.25, 0.5, 0.75, 0.9]
+    # theta = [0.01, 0.05, 0.1, 0.15, 0.2, 0.3,0.4,0.5,0.6,0.7,0.8,0.85,0.9,0.95]
+    
+    max_run_index = len(T_s_vec)*len(tau_s1_vec)*len(tau_s2_vec)*\
+        len(clusters_vec)*len(swarms_vec)*len(theta)
+    
+    with Pool(5) as p:
         # print(p.map(geo_optim_solve,[0,1,2,3]))
         # print('done, commence next iter')
         print('begin running')
         # results = p.map(geo_optim_solve,[[180,0,0],[220,0,0]])#[0,1,2,3])
         
         #T_s, swarm_no, cluster_no, taus1, taus2
+        # results = p.starmap(geo_optim_solve,\
+        #     product(T_s_vec,swarms_vec,clusters_vec,tau_s1_vec,tau_s2_vec))
+        
         results = p.starmap(geo_optim_solve,\
-            product(T_s_vec,swarms_vec,clusters_vec,tau_s1_vec,tau_s2_vec))
+            product(T_s_vec,swarms_vec,clusters_vec,tau_s1_vec,tau_s2_vec,theta))
         
     cwd = os.getcwd()
-    with open(cwd+'/geo_optim_chars/results_all','wb') as f:
+    # with open(cwd+'/geo_optim_chars/results_all','wb') as f:
+    #     pk.dump(results,f)
+    
+    # with open(cwd+'/geo_optim_chars/results_theta_var2','wb') as f:
+        # pk.dump(results,f)
+    
+    with open(cwd+'/geo_optim_chars/ordering_test_theta','wb') as f:
         pk.dump(results,f)
-        
+    
     print(time.time()-start)
+    
+    # %% plotting
+    # rng_result_energy = 61.27
+    # rng_result_grad = 5.532
+    
+    # %% plot 1 - varying iteration number vs objective/learning/gradient
     
     
     
