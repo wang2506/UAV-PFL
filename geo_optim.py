@@ -46,7 +46,7 @@ for theta in [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     # devices = 10 #2  #9-12
     # #5 uavs, 10 device, 10 uavs, 15 devices, 100 iterations
     
-    T_s = 20 #20
+    T_s = 200 #20
     # np.random.seed(swarm_no*10 + cluster_no)
     K_s1 = 2 #1 #for buggy reasons
     K_s2 = 2 #5
@@ -64,7 +64,6 @@ for theta in [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     cluster_no = 0
     with open(cwd+'/geo_optim_chars/workers_swarm_no'+str(swarm_no),'rb') as f:
         workers = pk.load(f)[0]
-    workers = 2
     with open(cwd+'/geo_optim_chars/coordinators_swarm_no'+str(swarm_no),'rb') as f:
         coordinators = pk.load(f)[0]
     with open(cwd+'/geo_optim_chars/devices_cluster_no'+str(cluster_no),'rb') as f:

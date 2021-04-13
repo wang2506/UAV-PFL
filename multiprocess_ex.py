@@ -984,20 +984,20 @@ if __name__ == '__main__':
     start = time.time()
     
     from itertools import product
-    # T_s_vec = [180,220,260]
-    # tau_s1_vec,tau_s2_vec = range(1,3),range(1,3)
-    # clusters_vec = range(10)
-    # swarms_vec = range(4)
+    T_s_vec = [180,220,260]
+    tau_s1_vec,tau_s2_vec = range(1,3),range(1,3)
+    clusters_vec = range(8)
+    swarms_vec = range(3)
     
-    T_s_vec = [180]
-    tau_s1_vec,tau_s2_vec = range(2,3),range(2,3)    
-    clusters_vec = [0] #range(8)
-    swarms_vec = [0] #range(3)    
+    # T_s_vec = [180]
+    # tau_s1_vec,tau_s2_vec = range(2,3),range(2,3)    
+    # clusters_vec = [0] #range(8)
+    # swarms_vec = [0] #range(3)    
     # theta = [0.1, 0.25, 0.5, 0.75, 0.9]
-    theta = [0.01, 0.05, 0.1, 0.15, 0.2, 0.3,0.4,0.5,0.6,0.7,0.8,0.85,0.9,0.95]
+    # theta = [0.01, 0.05, 0.1, 0.15, 0.2, 0.3,0.4,0.5,0.6,0.7,0.8,0.85,0.9,0.95]
     
     max_run_index = len(T_s_vec)*len(tau_s1_vec)*len(tau_s2_vec)*\
-        len(clusters_vec)*len(swarms_vec)*len(theta)
+        len(clusters_vec)*len(swarms_vec)#*len(theta)
     
     with Pool(5) as p:
         # print(p.map(geo_optim_solve,[0,1,2,3]))
@@ -1010,7 +1010,7 @@ if __name__ == '__main__':
         #     product(T_s_vec,swarms_vec,clusters_vec,tau_s1_vec,tau_s2_vec))
         
         results = p.starmap(geo_optim_solve,\
-            product(T_s_vec,swarms_vec,clusters_vec,tau_s1_vec,tau_s2_vec,theta))
+            product(T_s_vec,swarms_vec,clusters_vec,tau_s1_vec,tau_s2_vec))#,theta))
         
     cwd = os.getcwd()
     # with open(cwd+'/geo_optim_chars/results_all','wb') as f:
