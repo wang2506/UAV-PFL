@@ -964,7 +964,7 @@ if __name__ == '__main__':
     # clusters_vec = range(10)
     # swarms_vec = range(4)
     
-    T_s_vec = [180]
+    T_s_vec = [18]
     tau_s1_vec,tau_s2_vec = range(1,2),range(1,2)    
     clusters_vec = [0] #range(8)
     swarms_vec = [0] #range(3)    
