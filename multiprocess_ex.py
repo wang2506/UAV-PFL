@@ -974,7 +974,8 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1,theta=0.8):#, \
     plot_obj[0] = plot_acc[0]*theta + (1-theta)*plot_energy[0]
     
     # print(time.time() - start)
-    return plot_acc, plot_obj, plot_energy, alphas[i], rho[i], varrho[i], worker_freq[i],\
+    return plot_acc, plot_obj, plot_energy, alphas[i].value, rho[i].value,\
+        varrho[i].value, worker_freq[i],\
         T_s, swarm_no, cluster_no, tau_s1,tau_s2,theta
     
 if __name__ == '__main__':
