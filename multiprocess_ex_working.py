@@ -442,7 +442,7 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1,theta=0.8):#, \
     # init_delta_u = 50 #1e-10
     
     # max_approx_iters = 2 #5 #10 #50 #100 #100 #200 #50
-    max_approx_iters = 2
+    max_approx_iters = 5
     plot_obj = []
     plot_energy = []
     plot_acc = []
