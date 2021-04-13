@@ -188,7 +188,7 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1,theta=0.8):#, \
     
     ## flight energy coeffs
     # max_speed_uav = 57 #
-    min_speed_uav = 7.5 # km/h
+    min_speed_uav = 10 # km/h
     seconds_conversion = 2 #5
     air_density = 1.225 
     zero_lift_drag_max = 0.0378 #based on sopwith camel 
@@ -233,17 +233,6 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1,theta=0.8):#, \
     # psi_m = c1 * (min_speed_uav**3) + c2/speed   # parameter for leader flight to nearest AP
     psi_l = psi_j[np.random.randint(0,workers)] #+ 2*psi_m*2/tau_s2
     
-    c1 = 0.5 * air_density * (zero_lift_breakpoint +\
-        (zero_lift_drag_max-zero_lift_breakpoint)*np.random.rand()) * \
-        (wing_area_breakpoint + (wing_area_max - wing_area_breakpoint)*np.random.rand())
-    
-    c2 = 2 * (weight_breakpoint + (weight_max - weight_breakpoint)*np.random.rand())**2 \
-        / (np.pi * oswald_eff * (wing_area_breakpoint + \
-        (wing_area_max - wing_area_breakpoint)*np.random.rand()) * air_density**3 )   
-    
-    psi_l_AP = c1 * (min_speed_uav**3) + c2/min_speed_uav
-    
-    # print(psi_l_AP)
     
     D_q = {i:[500 for j in range(devices)]  for i in range(K_s1)}
     
@@ -337,11 +326,8 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1,theta=0.8):#, \
         for h in range(coordinators):
             eng_f_h[h] += seconds_conversion * psi_h[h]
     
-        eng_f_l = seconds_conversion * psi_l + (K_s2 * (psi_l_AP-psi_l))
-        # print(seconds_conversion * psi_l )
-        # print((K_s2 * (psi_l_AP-psi_l)))
-        
-        
+        eng_f_l = seconds_conversion * psi_l
+    
         # leader energy computation
         eng_tx_l = 0
     
@@ -386,7 +372,7 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1,theta=0.8):#, \
         zeta_p = np.zeros(workers).tolist()
         zeta_g_j = np.zeros(workers).tolist()
         zeta_g_h = np.zeros(coordinators).tolist()
-        zeta_local = 5#1
+        zeta_local = 5 #1000
         
         # implementing zeta constraint
         for j in range(workers):    
@@ -414,11 +400,11 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1,theta=0.8):#, \
             
             constraints.append(zeta_g_h[h] <= zeta_local)
             
-        # # data capacity constraints
-        for j in range(workers):
-            constraints.append(D_j[i][j] <= B_j[i][j])
-        for h in range(coordinators):
-            constraints.append(D_j[i][workers+h] <= B_j_coord[i][h])
+        # # # data capacity constraints
+        # for j in range(workers):
+        #     constraints.append(D_j[i][j] <= B_j[i][j])
+        # for h in range(coordinators):
+        #     constraints.append(D_j[i][workers+h] <= B_j_coord[i][h])
         
         eng_bat_j = 20000 * np.ones(shape=workers)
         eng_bat_h = 20000 * np.ones(shape=coordinators)
@@ -440,7 +426,7 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1,theta=0.8):#, \
         # constraints.append(eng_f_l  + eng_tx_l \
         #         <= (eng_bat_l - eng_thresh_l)/ K_s1)
         
-        
+    
     ## 1-theta terms
     eta_2 = 1e-4 #1e-4
     mu_F = 20
@@ -450,22 +436,13 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1,theta=0.8):#, \
     sigma_j_H,sigma_j_G = 50, 50 ##sigma_j_H greatly affects data?
     gamma_u_F, gamma_F = 10, 10
     
-    # ## 1-theta terms
-    # eta_2 = 5e-4 #1e-4
-    # mu_F = 10 #200,20
-    # grad_fu_scale = 1/(eta_2/2 - 6 *eta_2**2 * mu_F/2) * (3*eta_2**2 *mu_F/2 + eta_2)
-    
-    # B, eta_1, mu = 50, 1e-3, 10 #100 #500, mu =10; 50,1e-3,10
-    # sigma_j_H,sigma_j_G = 50,50 #100, 100 ##sigma_j_H greatly affects data?, 50,50
-    # gamma_u_F, gamma_F = 50,50 #3*B**2 *eta_1**2*50 + 192*50, 3*B**2 *eta_1**2*50 + 192*50  #50, 50
-    init_loss_max = 3 #empirically found value
-    
     ## need to approximate delta_u
     # delta_u = D_j[]
     delta_u_holder = []
     # init_delta_u = 50 #1e-10
     
-    max_approx_iters = 2 #5 #10 #50 #100 #100 #200 #50 #2
+    # max_approx_iters = 2 #5 #10 #50 #100 #100 #200 #50
+    max_approx_iters = 3 
     plot_obj = []
     plot_energy = []
     plot_acc = []
@@ -477,8 +454,7 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1,theta=0.8):#, \
     test_init_rho = 0.05
     test_init_varrho = 0.1
     
-    sigma_c_H,sigma_c_G = 50, 50
-    # B_cluster = 50
+    sigma_c_H,sigma_c_G = 50, 50 #50, 50
     B_cluster = 500
     
     for i in range(1,K_s1):
@@ -792,7 +768,7 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1,theta=0.8):#, \
                     D_j[i][j]*tau_s1*tau_s2 * sigma_j[j]/delta_u_approx \
                     + 24 * eta_2**2 * gamma_F) * \
                     ( (8+48*eta_2**2*mu_F**2)**(tau_s1*tau_s2) - 1) /( (8+48*eta_2**2 *mu_F**2) - 1)    
-                
+            
             upsilon = upsilon_pt1 + upsilon_pt2
             
             # mismatch calc
@@ -803,19 +779,13 @@ def geo_optim_solve(T_s, swarm_no, cluster_no, tau_s1=1,tau_s2=1,theta=0.8):#, \
         
             
             # learning combine
-            # theta = 0.8
-            obj_energy = (1-theta)*(eng_p_obj + eng_tx_u_obj + eng_tx_q + sum(eng_tx_w) \
-                + eng_tx_l + sum(eng_f_j) + sum(eng_f_h) + eng_f_l )
+            # theta = 0.3
             
-            # obj_energy = (1-theta)*(eng_p_obj + eng_tx_u_obj + eng_tx_q)
-            
-            obj_grad = theta * (grad_fu_scale*(delta_diff_sigma + mu_F**2 * upsilon) \
-                + 3 * eta_2**2 * mu_F * gamma_u_F / (eta_2/2 - 6 * eta_2**2 * mu_F/2)) + \
-                + theta*mismatch * T_s/tau_s1 \
-                + theta* init_loss_max/(T_s*(eta_2/2 - 6 *eta_2**2*mu_F/2))
-            
-            true_objective = obj_energy + obj_grad
-                
+            true_objective = (1-theta)*(eng_p_obj + eng_tx_u_obj + eng_tx_q + sum(eng_tx_w) \
+                + eng_tx_l + sum(eng_f_j) + sum(eng_f_h) + eng_f_l ) + \
+                theta* (grad_fu_scale*(delta_diff_sigma + mu_F**2 * upsilon) \
+                + 3 * eta_2**2 * mu_F * gamma_u_F / (eta_2/2 - 6 * eta_2**2 * mu_F/2) \
+                + mismatch)
             #     #delta_i/delta_u
             
             # true_objective = (1-theta)*(eng_p_obj + eng_tx_u_obj + eng_tx_q + sum(eng_tx_w) \
