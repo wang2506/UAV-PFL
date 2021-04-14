@@ -478,7 +478,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     
     
     # new way to calculate reward as per equation (58) of the paper
-    C = 1000 #O(100) or O(1000) try both
+    C = 10000 #O(100) or O(1000) try both
     c1 = 0.2 #O(1)
     c2 = 0.25 #O(1)
     c3 = 0.005 #O(0.01)
@@ -527,10 +527,10 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     
     # add the value together
     current_reward = C/(sum(reward_vec)+em_hold+gs_hold)
-    print('check the reward calc')
-    print(sum(reward_vec))
-    print(em_hold)
-    print(gs_hold)
+    # print('check the reward calc')
+    # print(sum(reward_vec))
+    # print(em_hold)
+    # print(gs_hold)
     
     # check for battery failures (cannot afford to lose any UAVs)
     # bat_penalty = 0
