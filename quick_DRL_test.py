@@ -398,47 +398,71 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
             index_counter += 1
             #fixed indexing because 3rd is energy, and final is consumption
     
+    # this comment block is working DRL reward caclulation code
+    # it just doesn't follow our formulation exactly
     ## build reward vector/matrix
-    reward_vec = np.zeros(shape=len(test_DQN.U)).tolist()
-    index_counter = 0
-    for i,j in enumerate(reward_vec):
-        if new_positions[i] < 8:
-            ## this previous working result
-            reward_vec[i] = 1000*60/ historical_data[index_counter][0][-1] #1000*10
-            # reward_vec[i] = historical_data[index_counter][0][-1]
-            index_counter += 1
-    
-    current_reward = 0
-    cluster_bat_drains = 0
-    for i,j in enumerate(new_positions): #next_state_set 
-        # print(i,j)
-        # travel cost
-        battery_status[i] -= travel_energy[current_swarm_pos[i],j]
-        
-        ## filter for device cluster or recharge station
-        if j < 8: #len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
-            battery_status[i] -= cluster_bat_drain[i] #[j] # drain by cluster needs
-            cluster_bat_drains += cluster_bat_drain[i]
+    # reward_vec = np.zeros(shape=len(test_DQN.U)).tolist()
+    # index_counter = 0
+    # for i,j in enumerate(reward_vec):
+    #     if new_positions[i] < 8:
+    #         ## this previous working result
+    #         reward_vec[i] = 1000*60/ historical_data[index_counter][0][-1] #1000*10
+    #         # this should be [index_counter][1][-1]
             
-            ## reward function calculated based on elapsed time x cluster factor
-            if battery_status[i] > min_battery_levels[i] :#0: #min thresh
-                
-                # model drift is now just a penalty term 
-                # if cluster_expectations[j]*next_state_visits[j] < cluster_limits[j]:
-                #     current_reward += cluster_expectations[j]*next_state_visits[j]
-                # else:
-                #     current_reward += cluster_limits[j]
-                
-                current_reward += reward_vec[i] #from gradient
-                
-        else: #it is a recharge station
-            battery_status[i] = 48600#2000 #100 #reset to 100%
-
-        #previously was cluster_expectations[j] * next_state_visits[j]
-        next_state_visits[j] = 0 # zero out since now it will be visited
+    #         # reward_vec[i] = historical_data[index_counter][0][-1]
+    #         index_counter += 1
     
-    # #c1= c2, c3 =0.1 , C is 50
-    # grad_decay = 0
+    # current_reward = 0
+    # cluster_bat_drains = 0
+    # for i,j in enumerate(new_positions): #next_state_set 
+    #     # print(i,j)
+    #     # travel cost
+    #     battery_status[i] -= travel_energy[current_swarm_pos[i],j]
+        
+    #     ## filter for device cluster or recharge station
+    #     if j < 8: #len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
+    #         battery_status[i] -= cluster_bat_drain[i] #[j] # drain by cluster needs
+    #         cluster_bat_drains += cluster_bat_drain[i]
+            
+    #         ## reward function calculated based on elapsed time x cluster factor
+    #         if battery_status[i] > min_battery_levels[i] :#0: #min thresh
+                
+    #             # model drift is now just a penalty term 
+    #             # if cluster_expectations[j]*next_state_visits[j] < cluster_limits[j]:
+    #             #     current_reward += cluster_expectations[j]*next_state_visits[j]
+    #             # else:
+    #             #     current_reward += cluster_limits[j]
+                
+    #             current_reward += reward_vec[i] #from gradient
+                
+    #     else: #it is a recharge station
+    #         battery_status[i] = 48600#2000 #100 #reset to 100%
+
+    #     #previously was cluster_expectations[j] * next_state_visits[j]
+    #     next_state_visits[j] = 0 # zero out since now it will be visited
+    
+    
+    # # #c1= c2, c3 =0.1 , C is 50
+    # # grad_decay = 0
+    # # for i,j in enumerate(next_state_visits):
+    # #     if i < len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
+            
+    # #         # if j * 0.25 * cluster_expectations[i] > 0.5 * cluster_limits[i]:
+    # #         #     penalty += 0.5* cluster_limits[i]
+    # #         # else:
+    # #         #     penalty += j * 0.25 * cluster_expectations[i]
+    
+    # #         if j * 0.5* cluster_expectations[i] > 0.5*cluster_limits[i]:
+    # #             grad_decay += cluster_limits[i]
+    # #         else:
+    # #             grad_decay += j * 0.5* cluster_expectations[i]
+    
+    # # current_reward = 1e4/(0.05*current_reward + 0.2*grad_decay + 0.005*cluster_bat_drains)
+    
+    # ## calculate penalty for not visiting certain nodes (25% of their nominal value)
+    # penalty = 0
+    
+    # # old DRL reward calc 
     # for i,j in enumerate(next_state_visits):
     #     if i < len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
             
@@ -448,16 +472,46 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     #         #     penalty += j * 0.25 * cluster_expectations[i]
     
     #         if j * 0.5* cluster_expectations[i] > 0.5*cluster_limits[i]:
-    #             grad_decay += cluster_limits[i]
+    #             penalty += cluster_limits[i]
     #         else:
-    #             grad_decay += j * 0.5* cluster_expectations[i]
+    #             penalty += j * 0.5* cluster_expectations[i]
     
-    # current_reward = 1e4/(0.05*current_reward + 0.2*grad_decay + 0.005*cluster_bat_drains)
     
-    ## calculate penalty for not visiting certain nodes (25% of their nominal value)
-    penalty = 0
+    # new way to calculate reward as per equation (58) of the paper
+    C = 1000 #O(100) or O(1000) try both
+    c1 = 0.2 #O(1)
+    c2 = 0.25 #O(1)
+    c3 = 0.005 #O(0.01)
     
-    # old DRL reward calc 
+    # determine the reward from the complementary geoemetric programming
+    reward_vec = np.zeros(shape=len(test_DQN.U)).tolist()
+    index_counter = 0
+    for i,j in enumerate(reward_vec):
+        if new_positions[i] < 8:
+            ## this previous working result
+            reward_vec[i] = c1*historical_data[index_counter][1][-1] #1000*10
+            # this should be [index_counter][1][-1]
+            index_counter += 1
+    
+    # calculate the energy movement costs - also update the visitations vector
+    em_hold = 0
+    for i,j in enumerate(new_positions): #next_state_set 
+        # travel cost
+        battery_status[i] -= travel_energy[current_swarm_pos[i],j]
+        em_hold += c3*travel_energy[current_swarm_pos[i],j]
+        
+        ## filter for device cluster or recharge station
+        if j < 8: #len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
+            battery_status[i] -= cluster_bat_drain[i] #[j] # drain by cluster needs
+
+        else: #it is a recharge station
+            battery_status[i] = 48600#2000 #100 #reset to 100%
+
+        #previously was cluster_expectations[j] * next_state_visits[j]
+        next_state_visits[j] = 0 # zero out since now it will be visited    
+    
+    # determine G(s)
+    gs_hold = 0
     for i,j in enumerate(next_state_visits):
         if i < len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
             
@@ -466,13 +520,17 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
             # else:
             #     penalty += j * 0.25 * cluster_expectations[i]
     
-            if j * 0.5* cluster_expectations[i] > 0.5*cluster_limits[i]:
-                penalty += cluster_limits[i]
+            if j * cluster_expectations[i] > cluster_limits[i]:
+                gs_hold += c2*cluster_limits[i]
             else:
-                penalty += j * 0.5* cluster_expectations[i]
+                gs_hold += j*c2*cluster_expectations[i]
+    
+    # add the value together
+    current_reward = C/(sum(reward_vec)+em_hold+gs_hold)
     
     # check for battery failures (cannot afford to lose any UAVs)
     # bat_penalty = 0
+    penalty = 0
     for i,j in enumerate(battery_status):
         if j < min_battery_levels[i]: #0:
             penalty += 1000 #20000
@@ -558,7 +616,7 @@ cluster_limits = 20*cluster_expectations #3
 
 # calculate real movement costs from cluster to cluster to recharge station
 min_dist = 500 #meters
-max_dist = 2000 #1km
+max_dist = 1000 #1km 2km
 # speed = 5000 #5km/hr
 scaling = 0.1
 

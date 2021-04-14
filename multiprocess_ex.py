@@ -1019,8 +1019,11 @@ if __name__ == '__main__':
     # with open(cwd+'/geo_optim_chars/results_theta_var2','wb') as f:
         # pk.dump(results,f)
     
-    with open(cwd+'/geo_optim_chars/ordering_test_theta','wb') as f:
-        pk.dump(results,f)
+    with open(cwd+'/geo_optim_chars/results_all','wb') as f:
+        pk.dump(results,f)    
+    
+    # with open(cwd+'/geo_optim_chars/ordering_test_theta','wb') as f:
+    #     pk.dump(results,f)
     
     print(time.time()-start)
     

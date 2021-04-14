@@ -418,7 +418,7 @@ for theta in [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     # init_delta_u = 50 #1e-10
     
     # max_approx_iters = 2 #5 #10 #50 #100 #100 #200 #50
-    max_approx_iters = 5
+    max_approx_iters = 2
     plot_obj = []
     plot_energy = []
     plot_acc = []
