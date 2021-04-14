@@ -527,6 +527,10 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     
     # add the value together
     current_reward = C/(sum(reward_vec)+em_hold+gs_hold)
+    print('check the reward calc')
+    print(sum(reward_vec))
+    print(em_hold)
+    print(gs_hold)
     
     # check for battery failures (cannot afford to lose any UAVs)
     # bat_penalty = 0

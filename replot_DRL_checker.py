@@ -26,10 +26,10 @@ plt.figure(1)
 
 f1,ax1 = plt.subplots(1,2,figsize=(10,4))
 
-for ep_start in [0.6,0.8]:
-    for gamma in [0.7,0.8]:
+for ep_start in [0.7]:#[0.6,0.8]:
+    for gamma in [0.7]:#[0.7,0.8]:
         
-        with open(cwd+'/data/10_'+str(ep_start)+'_rewardtest_large_'+str(gamma),'rb') as f:
+        with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'+str(gamma),'rb') as f:
             data = pickle.load(f)
     
         data_fixer = moving_average(data,2000)
@@ -79,9 +79,9 @@ ax1[0].legend()
 # plot average reward per 10 iterations
 # data_fixer = [sum(data[j:j+1000])/1000 for j,jj in enumerate(data) if j % 1000 == 0]
 # plots for battery
-for ep_start in [0.6,0.8]:
-    for gamma in [0.7,0.8]:
-        with open(cwd+'/data/10_'+str(ep_start)+'_batterytest_large_'+str(gamma),'rb') as f:
+for ep_start in [0.7]:#[0.6,0.8]:
+    for gamma in [0.7]:#[0.7,0.8]:
+        with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'+str(gamma),'rb') as f:
             data_b = pickle.load(f)
         
         data_b2 = [mean(i) for i in data_b]
@@ -132,7 +132,7 @@ leg1 = ax1[0].legend(h[:],l[:],bbox_to_anchor=(0.0,1.03,2,0.2),\
                         # mode='expand',fontsize='large',**kw)
 ax1[0].add_artist(leg1)
 
-plt.savefig(cwd+'/drl_plots/DRL.pdf',dpi=1000, bbox_inches='tight')
+# plt.savefig(cwd+'/drl_plots/DRL.pdf',dpi=1000, bbox_inches='tight')
 
 # # with open(cwd+'/data/0_'+str(ep_start)+'_'+'battery'\
 # #           +'test_large'+'_'+str(gamma),'rb') as f:
