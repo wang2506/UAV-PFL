@@ -27,16 +27,17 @@ plt.figure(1)
 f1,ax1 = plt.subplots(1,2,figsize=(10,4))
 
 for ep_start in [0.7]:#[0.6,0.8]:
-    for gamma in [0.7]:#[0.7,0.8]:
+    for gamma in [0.7,0.8]:#[0.7,0.8]:
         
         with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'+str(gamma),'rb') as f:
             data = pickle.load(f)
     
-        data_fixer = moving_average(data,2000)
+        data_fixer = moving_average(data,1000)
         
         if ep_start == 0.6:
             if gamma == 0.6:
-                ax1[0].plot(data_fixer[:10000],label=str(gamma),linestyle='dotted')
+                ax1[0].plot(data_fixer[:10000],label=str(gamma)\
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted')
             elif gamma == 0.7:
                 ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', color = 'forestgreen')
@@ -45,7 +46,8 @@ for ep_start in [0.7]:#[0.6,0.8]:
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', color = 'darkblue')
         elif ep_start == 0.7:
             if gamma == 0.6:
-                ax1[0].plot(data_fixer[:10000],label=str(gamma),linestyle='dotted')
+                ax1[0].plot(data_fixer[:10000],label=str(gamma)\
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted')
             elif gamma == 0.7:
                 ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', color = 'forestgreen')
@@ -54,13 +56,14 @@ for ep_start in [0.7]:#[0.6,0.8]:
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', color = 'darkblue')
         else:
             if gamma == 0.6:
-                ax1[0].plot(data_fixer[:10000],label=str(gamma),linestyle='dotted')
+                ax1[0].plot(data_fixer[:10000],label=str(gamma)\
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot')
             elif gamma == 0.7:
                 ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ = '+str(gamma) \
-                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted',color = 'forestgreen')
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot',color = 'forestgreen')
             else:
                 ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ = '+str(gamma) \
-                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted',color = 'darkblue')
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot',color = 'darkblue')
 
 ax1[0].set_title(r'Moving Average 2000 Epochs')
 ax1[0].grid(True)
@@ -89,7 +92,8 @@ for ep_start in [0.7]:#[0.6,0.8]:
     
         if ep_start == 0.6:
             if gamma == 0.6:
-                ax1[1].plot(data_b2[:10000],label=str(gamma),linestyle='dotted')
+                ax1[1].plot(data_b2[:10000],label=str(gamma)\
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted')
             elif gamma == 0.7:
                 ax1[1].plot(data_b2[:10000],label=r'$\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', color = 'forestgreen')
@@ -98,7 +102,8 @@ for ep_start in [0.7]:#[0.6,0.8]:
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', color = 'darkblue')
         elif ep_start == 0.7:
             if gamma == 0.6:
-                ax1[1].plot(data_b2[:10000],label=str(gamma),linestyle='dotted')
+                ax1[1].plot(data_b2[:10000],label=str(gamma)\
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted')
             elif gamma == 0.7:
                 ax1[1].plot(data_b2[:10000],label=r'$\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', color = 'forestgreen')
@@ -107,16 +112,17 @@ for ep_start in [0.7]:#[0.6,0.8]:
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', color = 'darkblue')
         else:
             if gamma == 0.6:
-                ax1[1].plot(data_b2[:10000],label=str(gamma),linestyle='dotted')
+                ax1[1].plot(data_b2[:10000],label=str(gamma)\
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot')
             elif gamma == 0.7:
                 ax1[1].plot(data_b2[:10000],label=r'$\gamma$ = '+str(gamma) \
-                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted',color = 'forestgreen')
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot',color = 'forestgreen')
             else:
                 ax1[1].plot(data_b2[:10000],label=r'$\gamma$ = '+str(gamma) \
-                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted',color = 'darkblue')    
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot',color = 'darkblue')    
     
     
-ax1[1].set_title('Moving Average 2000 Epochs')
+ax1[1].set_title('Moving Average 1000 Epochs')
 ax1[1].grid(True)
 ax1[1].set_xlabel('Epoch')
 ax1[1].set_ylabel('Average Battery Level (J)')
