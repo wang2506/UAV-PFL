@@ -616,8 +616,14 @@ action_space = action_space_calc(list(range(args.Clusters + args.recharge_points
 #cluster_expectations = 100*np.random.rand(args.Clusters) # the distribution change over time
 # cluster_expectations = 100*np.array([0.005,1.6,0.8,3,0.3,0.02])
 # cluster_limits = 100*np.array([1,2.2,1.3,5,1.1,2.1])
-cluster_expectations = 25*np.random.rand(args.Clusters) #20
-cluster_limits = 20*cluster_expectations #3
+time_drift_min = 2*np.array(range(1,args.Clusters+1)) 
+#*np.random.rand(args.Clusters) #linear function for all clusters
+time_drift_max = deepcopy(time_drift_min) + np.array([13,11,15,3,2,5,5,1])
+
+# cluster_expectations = 25*np.random.rand(args.Clusters) #20
+# cluster_limits = 20*cluster_expectations #3
+cluster_limits = 20*time_drift_max
+
 
 # calculate real movement costs from cluster to cluster to recharge station
 min_dist = 500 #meters
@@ -702,6 +708,8 @@ for e in range(episodes):
     
     # print(init_last_visit)
     # determine drift based on init_last_visit
+    cluster_expectations = deepcopy(time_drift_min) #initially it will be minimum
+    
     init_state_set += (np.multiply(cluster_expectations,init_last_visit)).tolist()
     init_state_set += init_battery_levels
     # init_state_set.append( 250*args.Clusters )
@@ -719,6 +727,8 @@ for e in range(episodes):
     
     ## iterate over the timesteps
     for timestep in range(args.G_timesteps):
+        cluster_expectations = time_drift_min + \
+            (time_drift_max-time_drift_min)*10*(timestep+1)/(args.G_timesteps)
         
         # calculate the reward
         if args.linear == True:
@@ -886,7 +896,7 @@ for e in range(episodes):
             plt.title('reward over time')    
             
             # # save image
-            plt.savefig(cwd+'/plots/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'linear.png')
+            # plt.savefig(cwd+'/plots/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'linear.png')
             
             plt.clf()
             
