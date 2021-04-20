@@ -75,6 +75,16 @@ parser.add_argument('--DQN_update_period',type=int,default=20,\
                     help='DQN update period') #50
 #8,3,2,4,2,2
 
+# parameters to find a greedy baseline
+parser.add_argument('--greed_base',type=bool,default=False,\
+                    help='greedy baseline calculation')
+    
+# hard coded perviously, need to backtrack to get this automated
+# parser.add_argument('--dynamic_drift',type=bool,default=False,\
+                    # help='dynamic model drift')
+
+    
+    
 args = parser.parse_args()
 
 # %% DQN object 
@@ -246,7 +256,8 @@ class DQN:
 
     ##########################################################################
     ## action
-    def calc_action(self,state,args,ep_greed):
+    def calc_action(self,state,args,ep_greed,\
+        action_space,prev_action_ind=0,):
         
         ## with prob epsilon choose random action
         if np.random.rand() <= ep_greed:
@@ -268,6 +279,52 @@ class DQN:
         # print('state')
         # print(state)
         # print('end state')
+        # args.greed_base = True
+        greed_base = deepcopy(args.greed_base)
+        if greed_base == True:
+            # first look at the state, find the current positions
+            # then travel to the next position by index
+            # pos_temp = np.where(np.array(state[-13:-3]).astype(int) == 0)
+            pos_temp = action_space[prev_action_ind]
+            pos_temp2 = list(pos_temp[1])
+            pos_temp_new = np.zeros_like(pos_temp2)
+            
+            
+            # look at energy, if energy falls below min_thresh (8440)
+            # go recharge
+            nrg_temp = state[-16:-13]
+            for ind_nrg,nrg_temp_inst in enumerate(nrg_temp):
+                if nrg_temp_inst < 8440:
+                    if 7 not in pos_temp_new:
+                        pos_temp_new[ind_nrg] = 7
+                        pos_temp2[ind_nrg] = 7
+                    elif 8 not in pos_temp_new:
+                        pos_temp_new[ind_nrg] = 8
+                        pos_temp2[ind_nrg] = 8
+                    else:
+                        pos_temp_new[ind_nrg] = 9
+                        pos_temp2[ind_nrg] = 9
+                else:
+                    # increment by 1
+                    pos_temp2[ind_nrg] += 1
+                    # wrap around
+                    if pos_temp2[ind_nrg] == 10:
+                        pos_temp2[ind_nrg] = 0
+            
+            # choose temporal traits randomly
+            # so, find all sets that match pos_temp2
+            # ast = action space temp
+            ast = np.array([list(atemp[1]) for atemp in action_space])
+            as_ts = np.where((pos_temp2[0] == ast[:,0]) \
+                & (pos_temp2[1] == ast[:,1]) & (pos_temp2[2] == ast[:,2]))            
+            
+            # as_temp_search = np.where(bool_temp == True)
+            #np.where(pos_temp2 == action_space_temp)
+            
+            # do a greed method for action determination
+            action_indexes = as_ts[0][np.random.randint(0,len(as_ts[0]))]
+            # rev_action_ind + 1 
+            
         
         return action_indexes #which index the swarm should go to next
     
@@ -616,13 +673,16 @@ action_space = action_space_calc(list(range(args.Clusters + args.recharge_points
 #cluster_expectations = 100*np.random.rand(args.Clusters) # the distribution change over time
 # cluster_expectations = 100*np.array([0.005,1.6,0.8,3,0.3,0.02])
 # cluster_limits = 100*np.array([1,2.2,1.3,5,1.1,2.1])
-time_drift_min = 2*np.array(range(1,args.Clusters+1)) 
-#*np.random.rand(args.Clusters) #linear function for all clusters
-time_drift_max = deepcopy(time_drift_min) + np.array([13,11,15,3,2,5,5,1])
 
-# cluster_expectations = 25*np.random.rand(args.Clusters) #20
-# cluster_limits = 20*cluster_expectations #3
-cluster_limits = 20*time_drift_max
+## do the time_drift_min and time_drift_max for dynamic model drift
+# time_drift_min = 2*np.array(range(1,args.Clusters+1)) 
+#*np.random.rand(args.Clusters) #linear function for all clusters
+# time_drift_max = deepcopy(time_drift_min) + np.array([13,11,15,3,2,5,5,1])
+# cluster_limits = 20*time_drift_max
+
+## static model drift
+cluster_expectations = 25*np.random.rand(args.Clusters) #20
+cluster_limits = 20*cluster_expectations #3
 
 
 # calculate real movement costs from cluster to cluster to recharge station
@@ -708,7 +768,7 @@ for e in range(episodes):
     
     # print(init_last_visit)
     # determine drift based on init_last_visit
-    cluster_expectations = deepcopy(time_drift_min) #initially it will be minimum
+    # cluster_expectations = deepcopy(time_drift_min) #initially it will be minimum
     
     init_state_set += (np.multiply(cluster_expectations,init_last_visit)).tolist()
     init_state_set += init_battery_levels
@@ -727,8 +787,8 @@ for e in range(episodes):
     
     ## iterate over the timesteps
     for timestep in range(args.G_timesteps):
-        cluster_expectations = time_drift_min + \
-            (time_drift_max-time_drift_min)*10*(timestep+1)/(args.G_timesteps)
+        # cluster_expectations = time_drift_min + \
+            # (time_drift_max-time_drift_min)*10*(timestep+1)/(args.G_timesteps)
         
         # calculate the reward
         if args.linear == True:
@@ -739,7 +799,7 @@ for e in range(episodes):
                     freq_visits[timestep][freq_val] = 1 #np.array(init_state_set[-13:-3])
                 
                 action_set = test_DQN.calc_action(state=init_state_set, \
-                                                  args=args,ep_greed =ep_greed)
+                        args=args,ep_greed =ep_greed,action_space=action_space)
                 # map action_set to a movement                
                 
                 # rewards, state_set = reward_state_calc(test_DQN,init_state_set,action_set,\
@@ -765,8 +825,10 @@ for e in range(episodes):
                 # freq_visits[timestep] = freq_visits[timestep-1] + \
                 #     np.array(current_state_set[-13:-3])
                 
+                prev_action_set = deepcopy(action_set)
                 action_set = test_DQN.calc_action(state=current_state_set, \
-                                                  args=args,ep_greed =ep_greed)
+                    args=args,ep_greed =ep_greed,action_space=action_space, \
+                    prev_action_ind=action_set)
                 
                 rewards, state_set,next_swarm_pos = reward_state_calc(test_DQN,current_state_set,\
                     action_set,action_space,cluster_expectations,cluster_limits,\
@@ -900,23 +962,44 @@ for e in range(episodes):
             
             plt.clf()
             
-            # save data
-            with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'reward'\
-                      +'test_large'+'_'+str(args.g_discount)+'_dynamic','wb') as f:
-                pk.dump(reward_storage,f)
-            #+'_extra'
-            #str(fig_no)+
-            with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'battery'\
-                      +'test_large'+'_'+str(args.g_discount)+'_dynamic','wb') as f:
-                pk.dump(battery_storage,f)
-            #str(fig_no)+
-            with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'all_states'\
-                      +'test_large'+'_'+str(args.g_discount)+'_dynamic','wb') as f:
-                pk.dump(state_save,f)
+            # TODO : not really a todo, just a quick scroller
+            if args.greed_base == True:
+                # save data
+                with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'reward'\
+                          +'test_large'+'_'+str(args.g_discount)+'_greedy','wb') as f:
+                    pk.dump(reward_storage,f)
+                #+'_extra'
+                #str(fig_no)+
+                with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'battery'\
+                          +'test_large'+'_'+str(args.g_discount)+'_greedy','wb') as f:
+                    pk.dump(battery_storage,f)
+                #str(fig_no)+
+                with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'all_states'\
+                          +'test_large'+'_'+str(args.g_discount)+'_greedy','wb') as f:
+                    pk.dump(state_save,f)
+                
+                with open(cwd+'/data/new10'+str(args.ep_greed)+'_'+'visit_freq_large'+\
+                          '_'+str(args.g_discount)+'_greedy','wb') as f:
+                    pk.dump(freq_visits,f)            
             
-            with open(cwd+'/data/new10'+str(args.ep_greed)+'_'+'visit_freq_large'+\
-                      '_'+str(args.g_discount)+'_dynamic','wb') as f:
-                pk.dump(freq_visits,f)
+            else:
+                # save data
+                with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'reward'\
+                          +'test_large'+'_'+str(args.g_discount)+'_dynamic','wb') as f:
+                    pk.dump(reward_storage,f)
+                #+'_extra'
+                #str(fig_no)+
+                with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'battery'\
+                          +'test_large'+'_'+str(args.g_discount)+'_dynamic','wb') as f:
+                    pk.dump(battery_storage,f)
+                #str(fig_no)+
+                with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'all_states'\
+                          +'test_large'+'_'+str(args.g_discount)+'_dynamic','wb') as f:
+                    pk.dump(state_save,f)
+                
+                with open(cwd+'/data/new10'+str(args.ep_greed)+'_'+'visit_freq_large'+\
+                          '_'+str(args.g_discount)+'_dynamic','wb') as f:
+                    pk.dump(freq_visits,f)
             
             # with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small_states','wb') as f:
             #     pk.dump(state_set_all,f)

@@ -6,7 +6,7 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-
+import matplotlib as mpl
 from statistics import median,mean
 
 # %% moving average function
@@ -27,7 +27,7 @@ plt.figure(1)
 f1,ax1 = plt.subplots(1,2,figsize=(10,4))
 
 for ep_start in [0.7]:#[0.6,0.8]:
-    for gamma in [0.7,0.8]:#[0.7,0.8]:
+    for gamma in [0.6,0.7,0.8]:#[0.7,0.8]:
         
         with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'+str(gamma),'rb') as f:
             data = pickle.load(f)
@@ -36,7 +36,7 @@ for ep_start in [0.7]:#[0.6,0.8]:
         
         if ep_start == 0.6:
             if gamma == 0.6:
-                ax1[0].plot(data_fixer[:10000],label=str(gamma)\
+                ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ =' + str(gamma)\
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted')
             elif gamma == 0.7:
                 ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ = '+str(gamma) \
@@ -46,7 +46,7 @@ for ep_start in [0.7]:#[0.6,0.8]:
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', color = 'darkblue')
         elif ep_start == 0.7:
             if gamma == 0.6:
-                ax1[0].plot(data_fixer[:10000],label=str(gamma)\
+                ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ =' +str(gamma)\
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted')
             elif gamma == 0.7:
                 ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ = '+str(gamma) \
@@ -56,7 +56,7 @@ for ep_start in [0.7]:#[0.6,0.8]:
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', color = 'darkblue')
         else:
             if gamma == 0.6:
-                ax1[0].plot(data_fixer[:10000],label=str(gamma)\
+                ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ =' +str(gamma)\
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot')
             elif gamma == 0.7:
                 ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ = '+str(gamma) \
@@ -83,7 +83,7 @@ ax1[0].legend()
 # data_fixer = [sum(data[j:j+1000])/1000 for j,jj in enumerate(data) if j % 1000 == 0]
 # plots for battery
 for ep_start in [0.7]:#[0.6,0.8]:
-    for gamma in [0.7]:#[0.7,0.8]:
+    for gamma in [0.6,0.7,0.8]:#[0.7,0.8]:
         with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'+str(gamma),'rb') as f:
             data_b = pickle.load(f)
         
@@ -92,7 +92,7 @@ for ep_start in [0.7]:#[0.6,0.8]:
     
         if ep_start == 0.6:
             if gamma == 0.6:
-                ax1[1].plot(data_b2[:10000],label=str(gamma)\
+                ax1[1].plot(data_b2[:10000],label=r'$\gamma$ =' + str(gamma)\
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted')
             elif gamma == 0.7:
                 ax1[1].plot(data_b2[:10000],label=r'$\gamma$ = '+str(gamma) \
@@ -102,7 +102,7 @@ for ep_start in [0.7]:#[0.6,0.8]:
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', color = 'darkblue')
         elif ep_start == 0.7:
             if gamma == 0.6:
-                ax1[1].plot(data_b2[:10000],label=str(gamma)\
+                ax1[1].plot(data_b2[:10000],label=r'$\gamma$ =' + str(gamma)\
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted')
             elif gamma == 0.7:
                 ax1[1].plot(data_b2[:10000],label=r'$\gamma$ = '+str(gamma) \
@@ -112,7 +112,7 @@ for ep_start in [0.7]:#[0.6,0.8]:
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', color = 'darkblue')
         else:
             if gamma == 0.6:
-                ax1[1].plot(data_b2[:10000],label=str(gamma)\
+                ax1[1].plot(data_b2[:10000],label=r'$\gamma$ =' + str(gamma)\
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot')
             elif gamma == 0.7:
                 ax1[1].plot(data_b2[:10000],label=r'$\gamma$ = '+str(gamma) \
@@ -125,7 +125,8 @@ for ep_start in [0.7]:#[0.6,0.8]:
 ax1[1].set_title('Moving Average 1000 Epochs')
 ax1[1].grid(True)
 ax1[1].set_xlabel('Epoch')
-ax1[1].set_ylabel('Average Battery Level (J)')
+ax1[1].set_ylabel('Average Battery Level (kJ)')
+ax1[1].set_yticklabels(['36','36','38','40','42','44','46'])
 # ax1[1].legend()
 
 h,l = ax1[0].get_legend_handles_labels()
@@ -138,7 +139,8 @@ leg1 = ax1[0].legend(h[:],l[:],bbox_to_anchor=(0.0,1.03,2,0.2),\
                         # mode='expand',fontsize='large',**kw)
 ax1[0].add_artist(leg1)
 
-# plt.savefig(cwd+'/drl_plots/DRL.pdf',dpi=1000, bbox_inches='tight')
+
+plt.savefig(cwd+'/drl_plots/DRL.pdf',dpi=1000, bbox_inches='tight')
 
 # # with open(cwd+'/data/0_'+str(ep_start)+'_'+'battery'\
 # #           +'test_large'+'_'+str(gamma),'rb') as f:
@@ -205,26 +207,83 @@ ax1[0].add_artist(leg1)
 # %% replot the paper
 
 
+# %% visit frequency plotter
+for ep_start in [0.7]:#[0.6,0.8]:
+    for gamma in [0.7]:#[0.7,0.8]:
+        with open(cwd+'/data/new10'+str(ep_start)+'_visit_freq_large_'\
+                  +str(gamma)+'_dynamic','rb') as f:
+            freqs = pickle.load(f)
 
+        # The dynamic model drift is linear
+        
+        # extract freqs in intervals of 1000
+        ## because timestep%100, last batch is at timestep 9800
+        final_freq = freqs[9800] - freqs[8800]
+        
+        mid_freq2 = freqs[6800] - freqs[5800]
+        
+        mid_freq = freqs[3800] - freqs[2800]
+        
+        init_freq = freqs[1800] - freqs[800]
+        
+        x = np.arange(len(final_freq))  # the label locations
+        width = 0.8  # the width of the bars
+        
+        # setup double axes
+        cats = 4 #cats = categories
+        plt.figure(3)
+        fig, ax = plt.subplots()
+        rects_init = ax.bar(x - 1.5*width/cats, init_freq, width=width/cats, \
+            label='initial',edgecolor='black',color='goldenrod')
+        rects_mid1 = ax.bar(x - 0.5*width/cats, mid_freq, width=width/cats, \
+            label='middle',edgecolor='black',color='forestgreen')
+        rects_mid2 = ax.bar(x + 0.5*width/cats, mid_freq2, width=width/cats, \
+            label='middle 2',edgecolor='black',color='royalblue')
+        rects_final = ax.bar(x + 1.5*width/cats, final_freq, width=width/cats, \
+            label='final',edgecolor='black',color='darkmagenta')
 
+        plt.title('Hist frequences with recharge stations')
+        ax.set_axisbelow(True)
+        ax.grid(True)
+        ax.set_ylabel('frequency over the last 1000 epochs')
+        
+        loc = mpl.ticker.MultipleLocator(base=1.0)
+        ax.xaxis.set_major_locator(loc)
+        
+        ax_ticks = ['C '+str(i) for i in range(9)]
+        ax_ticks += ['R '+str(i+1) for i in range(2)]
+        ax.set_xticklabels(ax_ticks) #this thing always drops the index 0 for some reason
+        
+        plt.savefig(cwd+'/drl_plots/freq_recharge.pdf',dpi=1000, bbox_inches='tight')
+        
+        # setup double axes
+        plt.figure(4)
+        fig,ax = plt.subplots()
+        # 2 recharge stations
+        y = np.arange(len(final_freq[:8]))
+        rects_init = ax.bar(y - 1.5*width/cats, init_freq[:8], width=width/cats, \
+            label='initial',edgecolor='black',color='goldenrod')
+        rects_mid1 = ax.bar(y - 0.5*width/cats, mid_freq[:8], width=width/cats, \
+            label='middle',edgecolor='black',color='forestgreen')
+        rects_mid2 = ax.bar(y + 0.5*width/cats, mid_freq2[:8], width=width/cats, \
+            label='middle 2',edgecolor='black',color='royalblue')
+        rects_final = ax.bar(y + 1.5*width/cats, final_freq[:8], width=width/cats, \
+            label='final',edgecolor='black',color='darkmagenta')
+        
+        plt.title('hist frequencies without recharge stations')
 
+        ax.set_axisbelow(True)
+        ax.grid(True)
+        ax.set_ylabel('frequency over the last 1000 epochs')
 
+        loc = mpl.ticker.MultipleLocator(base=1.0)
+        ax.xaxis.set_major_locator(loc)
+        
+        ax_ticks = ['C '+str(i) for i in range(9)]
+        # ax_ticks += ['R '+str(i+1) for i in range(2)]
+        ax.set_xticklabels(ax_ticks) #this thing always drops the index 0 for some reason
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        plt.savefig(cwd+'/drl_plots/freq_no_recharge.pdf',dpi=1000, bbox_inches='tight')
 
 
 

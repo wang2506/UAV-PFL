@@ -48,10 +48,10 @@ ax3.grid(True)
 # 0.4
 plot_counter = 0
 theta_vec = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
+for theta in theta_vec: #[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     # %% objective function test
     # T_s = 20
-    np.random.seed(1) # prevents randomization from messing up energies
+    
     K_s1 = 2 #1
     K_s2 = 2#5
     tau_s1 = 2
@@ -344,22 +344,19 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
                 constraints.append(alphas[i][j,k] <= 1)
     
         # freqs
+        # TODO : not really a todo, but an annotation
+        # this is where I'm doing the greedy frequency maximization
         for j in range(workers):
             constraints.append(worker_freq[i][j] <= freq_max)
-            constraints.append(worker_freq[i][j] >= freq_min)
-    
+            # constraints.append(worker_freq[i][j] >= freq_min)
+            constraints.append(worker_freq[i][j] >= freq_max - 5)        
     
         # offloading vars
         for j in range(devices):
             for k in range(coordinators+workers):
                 constraints.append(rho[i][j,k] <= 1)
                 constraints.append(rho[i][j,k] >= 1e-10)
-                # constraints.append(rho[i][j,k] >= 0.99)
-                
             constraints.append(cp.sum(rho[i][j,:]) <= 1)
-            # equality constraint throws error
-            # constraints.append(cp.sum(rho[i][j,:]) >= 0.59)
-            # constraints.append(cp.sum(rho[i][j,:]) <= 1.51)
     
         for j in range(coordinators):
             for k in range(workers):
@@ -785,8 +782,9 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
                 theta* (grad_fu_scale*(delta_diff_sigma + mu_F**2 * upsilon) \
                 + 3 * eta_2**2 * mu_F * gamma_u_F / (eta_2/2 - 6 * eta_2**2 * mu_F/2) \
                 + mismatch)
-            # + sum(eng_f_j) + sum(eng_f_h) + eng_f_l 
             #     #delta_i/delta_u
+            # + sum(eng_f_j) + sum(eng_f_h) + eng_f_l 
+            
             
             # true_objective = (1-theta)*(eng_p_obj + eng_tx_u_obj + eng_tx_q + sum(eng_tx_w) \
             #     + eng_tx_l + sum(eng_f_j) + sum(eng_f_h) + eng_f_l )
@@ -821,7 +819,7 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
             temp_energy = (eng_p_obj + eng_tx_u_obj + eng_tx_q + sum(eng_tx_w) \
                 + eng_tx_l).value
             # + sum(eng_f_j) + sum(eng_f_h) + eng_f_l
-            
+                
             # plot_energy.append(np.round(temp_energy,5))
             plot_energy.append(temp_energy)
             
@@ -924,7 +922,7 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     
     
     # calc init estimated energy
-    const_energies = sum(eng_tx_w) + eng_tx_l # + sum(eng_f_j) + sum(eng_f_h) + eng_f_l
+    const_energies = sum(eng_tx_w) + eng_tx_l #+ sum(eng_f_j) + sum(eng_f_h) + eng_f_l
     test_init_rho = 0.4
     eng_p_obj2 = 0 
     eng_p2 = np.zeros(devices).tolist()
@@ -1001,14 +999,14 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
 
     ## store the plot_obj/energy/acc
     cwd = os.getcwd()
-    with open(cwd+'/geo_optim_chars/greed/default_'+str(theta)+'_obj','wb') as f:
+    with open(cwd+'/geo_optim_chars/greed/freq_max_'+str(theta)+'_obj','wb') as f:
         pk.dump(plot_obj,f)
 
-    with open(cwd+'/geo_optim_chars/greed/default_'+str(theta)+'_energy','wb') as f:
+    with open(cwd+'/geo_optim_chars/greed/freq_max_'+str(theta)+'_energy','wb') as f:
         pk.dump(plot_energy,f)
 
-    with open(cwd+'/geo_optim_chars/greed/default_'+str(theta)+'_acc','wb') as f:
-        pk.dump(plot_acc,f)        
+    with open(cwd+'/geo_optim_chars/greed/freq_max_'+str(theta)+'_acc','wb') as f:
+        pk.dump(plot_acc,f)     
         
     # ## store the data
     # cwd = os.getcwd()
@@ -1020,7 +1018,7 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     
     # with open(cwd+'/geo_optim_chars/'+str(theta)+'alphas','wb') as f:
     #     pk.dump(alphas[1].value,f)
-    
+        
     # # worker freqs and D_j
     # worker_freq2 = []
     # for l in worker_freq[1]:
