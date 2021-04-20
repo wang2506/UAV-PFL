@@ -279,7 +279,7 @@ class DQN:
         # print('state')
         # print(state)
         # print('end state')
-        # args.greed_base = True
+        args.greed_base = True
         greed_base = deepcopy(args.greed_base)
         if greed_base == True:
             # first look at the state, find the current positions
@@ -828,7 +828,7 @@ for e in range(episodes):
                 prev_action_set = deepcopy(action_set)
                 action_set = test_DQN.calc_action(state=current_state_set, \
                     args=args,ep_greed =ep_greed,action_space=action_space, \
-                    prev_action_ind=action_set)
+                    prev_action_ind=prev_action_set)
                 
                 rewards, state_set,next_swarm_pos = reward_state_calc(test_DQN,current_state_set,\
                     action_set,action_space,cluster_expectations,cluster_limits,\
