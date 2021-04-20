@@ -260,19 +260,20 @@ class DQN:
         action_space,prev_action_ind=0,):
         
         ## with prob epsilon choose random action
-        if np.random.rand() <= ep_greed:
-            ## randomly select next device cluster + update the cluster holder            
-            action_indexes = np.random.randint(0,self.action_size)
-        else:
-            ## choose action with highest q-value
-            
-            if args.linear == True:
-                state = np.reshape(state,[1,self.input_size])
+        if args.greed_base == False:
+            if np.random.rand() <= ep_greed:
+                ## randomly select next device cluster + update the cluster holder            
+                action_indexes = np.random.randint(0,self.action_size)
             else:
-                state = np.reshape(state,[1,self.input_size[0],self.input_size[1]])
-            
-            q_values = self.q_net.predict(state)
-            action_indexes = np.argmax(q_values[0])
+                ## choose action with highest q-value
+                
+                if args.linear == True:
+                    state = np.reshape(state,[1,self.input_size])
+                else:
+                    state = np.reshape(state,[1,self.input_size[0],self.input_size[1]])
+                
+                q_values = self.q_net.predict(state)
+                action_indexes = np.argmax(q_values[0])
         
             #print(q_values)
             
@@ -280,8 +281,8 @@ class DQN:
         # print(state)
         # print('end state')
         # args.greed_base = True
-        greed_base = deepcopy(args.greed_base)
-        if greed_base == True:
+        # greed_base = deepcopy(args.greed_base)
+        if args.greed_base == True:
             # first look at the state, find the current positions
             # then travel to the next position by index
             # pos_temp = np.where(np.array(state[-13:-3]).astype(int) == 0)
