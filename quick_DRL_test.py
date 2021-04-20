@@ -279,7 +279,7 @@ class DQN:
         # print('state')
         # print(state)
         # print('end state')
-        args.greed_base = True
+        # args.greed_base = True
         greed_base = deepcopy(args.greed_base)
         if greed_base == True:
             # first look at the state, find the current positions
@@ -322,7 +322,10 @@ class DQN:
             #np.where(pos_temp2 == action_space_temp)
             
             # do a greed method for action determination
-            action_indexes = as_ts[0][np.random.randint(0,len(as_ts[0]))]
+            if len(as_ts[0]) == 0:
+                action_indexes = as_ts[0]
+            else:
+                action_indexes = as_ts[0][np.random.randint(0,len(as_ts[0]))]
             # rev_action_ind + 1 
             
         
