@@ -69,7 +69,7 @@ ax1[0].set_title(r'Moving Average 2000 Epochs')
 ax1[0].grid(True)
 ax1[0].set_xlabel('Epoch')
 ax1[0].set_ylabel('Reward')
-ax1[0].legend()
+# ax1[0].legend()
 
 # plt.xlabel('10th iterations instance')
 # plt.ylabel('average reward over the latest 10 iterations')
@@ -129,18 +129,18 @@ ax1[1].set_ylabel('Average Battery Level (kJ)')
 ax1[1].set_yticklabels(['36','36','38','40','42','44','46'])
 # ax1[1].legend()
 
-h,l = ax1[0].get_legend_handles_labels()
-kw = dict(ncol=4,loc = 'lower center',frameon=False)
-# kw2 = dict(ncol=3,loc = 'lower center',frameon=False)
-#(x, y, width, height)
-leg1 = ax1[0].legend(h[:],l[:],bbox_to_anchor=(0.0,1.03,2,0.2),\
-                mode='expand',fontsize='large',**kw)
-# leg2 = ax1[0].legend(h[0::2],l[0::2],bbox_to_anchor=(0.1,1.11,1.8,0.2),\
-                        # mode='expand',fontsize='large',**kw)
-ax1[0].add_artist(leg1)
+# h,l = ax1[0].get_legend_handles_labels()
+# kw = dict(ncol=4,loc = 'lower center',frameon=False)
+# # kw2 = dict(ncol=3,loc = 'lower center',frameon=False)
+# #(x, y, width, height)
+# leg1 = ax1[0].legend(h[:],l[:],bbox_to_anchor=(0.0,1.03,2,0.2),\
+#                 mode='expand',fontsize='large',**kw)
+# # leg2 = ax1[0].legend(h[0::2],l[0::2],bbox_to_anchor=(0.1,1.11,1.8,0.2),\
+#                         # mode='expand',fontsize='large',**kw)
+# ax1[0].add_artist(leg1)
 
 
-plt.savefig(cwd+'/drl_plots/DRL.pdf',dpi=1000, bbox_inches='tight')
+# plt.savefig(cwd+'/drl_plots/DRL.pdf',dpi=1000, bbox_inches='tight')
 
 # # with open(cwd+'/data/0_'+str(ep_start)+'_'+'battery'\
 # #           +'test_large'+'_'+str(gamma),'rb') as f:
@@ -283,11 +283,42 @@ for ep_start in [0.7]:#[0.6,0.8]:
         # ax_ticks += ['R '+str(i+1) for i in range(2)]
         ax.set_xticklabels(ax_ticks) #this thing always drops the index 0 for some reason
 
-        plt.savefig(cwd+'/drl_plots/freq_no_recharge.pdf',dpi=1000, bbox_inches='tight')
+        # plt.savefig(cwd+'/drl_plots/freq_no_recharge.pdf',dpi=1000, bbox_inches='tight')
 
 
+# %% plotting the greedy DRL
+
+for ep_start in [0.7]:#[0.6,0.8]:
+    for gamma in [0.7]:#[0.7,0.8]:
+        with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'\
+                  +str(gamma)+'_greedy','rb') as f:
+            g_reward = pickle.load(f)
+
+        with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'\
+                  +str(gamma)+'_greedy','rb') as f:
+            g_bat = pickle.load(f)
 
 
+        # fig,ax_g = plt.subplots(1,2,figsize=(10,4))
+        g_reward2 = moving_average(g_reward,1000)
+        ax1[0].plot(g_reward2,label='greedy',color='chocolate')
+        
+        
+        g_bat2 = [mean(i) for i in g_bat]
+        g_bat2 = moving_average(g_bat2,1000)
+        ax1[1].plot(g_bat2,label='greedy',color='chocolate')
+        
+        # plt.savefig(cwd+'/drl_plots/freq_no_recharge.pdf',dpi=1000, bbox_inches='tight')
+
+h,l = ax1[0].get_legend_handles_labels()
+kw = dict(ncol=4,loc = 'lower center',frameon=False)
+# kw2 = dict(ncol=3,loc = 'lower center',frameon=False)
+#(x, y, width, height)
+leg1 = ax1[0].legend(h[:],l[:],bbox_to_anchor=(0.0,1.03,2,0.2),\
+                mode='expand',fontsize='large',**kw)
+# leg2 = ax1[0].legend(h[0::2],l[0::2],bbox_to_anchor=(0.1,1.11,1.8,0.2),\
+                        # mode='expand',fontsize='large',**kw)
+ax1[0].add_artist(leg1)
 
 
 

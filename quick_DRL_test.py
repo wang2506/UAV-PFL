@@ -78,7 +78,9 @@ parser.add_argument('--DQN_update_period',type=int,default=20,\
 # parameters to find a greedy baseline
 parser.add_argument('--greed_base',type=bool,default=False,\
                     help='greedy baseline calculation')
-    
+parser.add_argument('--greed_style',type=int,default=0,\
+                    help='0: graph greed, 1: min dist')
+
 # hard coded perviously, need to backtrack to get this automated
 # parser.add_argument('--dynamic_drift',type=bool,default=False,\
                     # help='dynamic model drift')
@@ -257,7 +259,8 @@ class DQN:
     ##########################################################################
     ## action
     def calc_action(self,state,args,ep_greed,\
-        action_space,prev_action_ind=0,):
+        action_space,prev_action_ind=0,\
+        min_md_pt_clusters=0,min_md_pt_recharge=0):
         
         ## with prob epsilon choose random action
         if args.greed_base == False:
@@ -281,54 +284,111 @@ class DQN:
         # print(state)
         # print('end state')
         # args.greed_base = True
+        # args.greed_style = 1
         # greed_base = deepcopy(args.greed_base)
         if args.greed_base == True:
-            # first look at the state, find the current positions
-            # then travel to the next position by index
-            # pos_temp = np.where(np.array(state[-13:-3]).astype(int) == 0)
-            pos_temp = action_space[prev_action_ind]
-            pos_temp2 = list(pos_temp[1])
-            pos_temp_new = np.zeros_like(pos_temp2)
-            
-            
-            # look at energy, if energy falls below min_thresh (8440)
-            # go recharge
-            nrg_temp = state[-16:-13]
-            for ind_nrg,nrg_temp_inst in enumerate(nrg_temp):
-                if nrg_temp_inst < 8440:
-                    if 7 not in pos_temp_new:
-                        pos_temp_new[ind_nrg] = 7
-                        pos_temp2[ind_nrg] = 7
-                    elif 8 not in pos_temp_new:
-                        pos_temp_new[ind_nrg] = 8
-                        pos_temp2[ind_nrg] = 8
+            if args.greed_style == 0:
+                # first look at the state, find the current positions
+                # then travel to the next position by index
+                # pos_temp = np.where(np.array(state[-13:-3]).astype(int) == 0)
+                pos_temp = action_space[prev_action_ind]
+                pos_temp2 = list(pos_temp[1])
+                pos_temp_new = np.zeros_like(pos_temp2)
+                
+                
+                # look at energy, if energy falls below min_thresh (8440)
+                # go recharge
+                nrg_temp = state[-16:-13]
+                for ind_nrg,nrg_temp_inst in enumerate(nrg_temp):
+                    if nrg_temp_inst < 8440:
+                        if 7 not in pos_temp_new:
+                            pos_temp_new[ind_nrg] = 7
+                            pos_temp2[ind_nrg] = 7
+                        elif 8 not in pos_temp_new:
+                            pos_temp_new[ind_nrg] = 8
+                            pos_temp2[ind_nrg] = 8
+                        else:
+                            pos_temp_new[ind_nrg] = 9
+                            pos_temp2[ind_nrg] = 9
                     else:
-                        pos_temp_new[ind_nrg] = 9
-                        pos_temp2[ind_nrg] = 9
+                        # increment by 1
+                        pos_temp2[ind_nrg] += 1
+                        # wrap around
+                        if pos_temp2[ind_nrg] == 10:
+                            pos_temp2[ind_nrg] = 0
+                
+                # choose temporal traits randomly
+                # so, find all sets that match pos_temp2
+                # ast = action space temp
+                ast = np.array([list(atemp[1]) for atemp in action_space])
+                as_ts = np.where((pos_temp2[0] == ast[:,0]) \
+                    & (pos_temp2[1] == ast[:,1]) & (pos_temp2[2] == ast[:,2]))            
+                
+                # as_temp_search = np.where(bool_temp == True)
+                #np.where(pos_temp2 == action_space_temp)
+                
+                # do a greed method for action determination
+                if len(as_ts[0]) == 0:
+                    action_indexes = as_ts[0]
                 else:
-                    # increment by 1
-                    pos_temp2[ind_nrg] += 1
-                    # wrap around
-                    if pos_temp2[ind_nrg] == 10:
-                        pos_temp2[ind_nrg] = 0
-            
-            # choose temporal traits randomly
-            # so, find all sets that match pos_temp2
-            # ast = action space temp
-            ast = np.array([list(atemp[1]) for atemp in action_space])
-            as_ts = np.where((pos_temp2[0] == ast[:,0]) \
-                & (pos_temp2[1] == ast[:,1]) & (pos_temp2[2] == ast[:,2]))            
-            
-            # as_temp_search = np.where(bool_temp == True)
-            #np.where(pos_temp2 == action_space_temp)
-            
-            # do a greed method for action determination
-            if len(as_ts[0]) == 0:
-                action_indexes = as_ts[0]
+                    action_indexes = as_ts[0][np.random.randint(0,len(as_ts[0]))]
+                    
+                # rev_action_ind + 1 
+            elif args.greed_style == 1: #min distance
+                pos_temp = action_space[prev_action_ind]
+                pos_temp2 = list(pos_temp[1])
+                pos_temp_new = np.zeros_like(pos_temp2)-1
+                
+                # look at energy, if energy falls below min_thresh (8440)
+                # go recharge
+                nrg_temp = state[-16:-13]
+                for ind_nrg,nrg_temp_inst in enumerate(nrg_temp):
+                    if nrg_temp_inst < 8440:
+                        if min_md_pt_recharge[pos_temp2[ind_nrg]] \
+                            not in pos_temp_new:
+                            pos_temp_new[ind_nrg] = \
+                                min_md_pt_recharge[pos_temp2[ind_nrg]]
+                            pos_temp2[ind_nrg] = \
+                                min_md_pt_recharge[pos_temp2[ind_nrg]]
+                        else: #you take whatever is available
+                            if 7 not in pos_temp_new:
+                                pos_temp_new[ind_nrg] = 7
+                                pos_temp2[ind_nrg] = 7
+                            elif 8 not in pos_temp_new:
+                                pos_temp_new[ind_nrg] = 8
+                                pos_temp2[ind_nrg] = 8
+                            else:
+                                pos_temp_new[ind_nrg] = 9
+                                pos_temp2[ind_nrg] = 9
+                    else:
+                        # travel to nearest distance cluster
+                        if min_md_pt_clusters[pos_temp2[ind_nrg]] \
+                            not in pos_temp_new:
+                            pos_temp_new[ind_nrg] = \
+                                min_md_pt_clusters[pos_temp2[ind_nrg]]
+                            pos_temp2[ind_nrg] = \
+                                min_md_pt_clusters[pos_temp2[ind_nrg]]
+                        else: # you take a random one
+                            tt_cluster = np.random.randint(0,8)
+                            while tt_cluster in pos_temp_new:
+                                tt_cluster = np.random.randint(0,8)
+                            pos_temp_new[ind_nrg] = tt_cluster
+                            pos_temp2[ind_nrg] = tt_cluster
+                
+                # choose temporal traits randomly
+                # so, find all sets that match pos_temp2
+                # ast = action space temp
+                ast = np.array([list(atemp[1]) for atemp in action_space])
+                as_ts = np.where((pos_temp2[0] == ast[:,0]) \
+                    & (pos_temp2[1] == ast[:,1]) & (pos_temp2[2] == ast[:,2]))   
+                
+                if len(as_ts[0]) == 0:
+                    action_indexes = as_ts[0]
+                else:
+                    action_indexes = as_ts[0][np.random.randint(0,len(as_ts[0]))]
+                    
             else:
-                action_indexes = as_ts[0][np.random.randint(0,len(as_ts[0]))]
-            # rev_action_ind + 1 
-            
+                raise Exception("That option isn't available")
         
         return action_indexes #which index the swarm should go to next
     
@@ -723,6 +783,20 @@ c2 = 2 * (weight_breakpoint + (weight_max - weight_breakpoint)*np.random.rand())
 move_dists = min_dist + (max_dist-min_dist)*\
     np.random.rand(args.Clusters+args.recharge_points,args.Clusters+args.recharge_points)
 
+
+## calc move_dist min indexes
+# [index0 contains the min next move of any swarm at cluster 0]
+min_md_pt = [] #min move dist points
+min_md_pt_clusters = []
+min_md_pt_recharge = []
+for ind,move_vec in enumerate(move_dists):
+    t_move_vec = deepcopy(move_vec)
+    t_move_vec[ind] = 10000
+    
+    min_md_pt.append(np.argmin(t_move_vec))
+    min_md_pt_clusters.append(np.argmin(t_move_vec[:7]))
+    min_md_pt_recharge.append(7+np.argmin(t_move_vec[7:]))
+
 #scaling * 
 temp_energy = move_dists/min_speed_uav * (c1 * (min_speed_uav**3) + c2/min_speed_uav)
 
@@ -803,8 +877,10 @@ for e in range(episodes):
                     freq_visits[timestep][freq_val] = 1 #np.array(init_state_set[-13:-3])
                 
                 action_set = test_DQN.calc_action(state=init_state_set, \
-                        args=args,ep_greed =ep_greed,action_space=action_space)
-                # map action_set to a movement                
+                        args=args,ep_greed =ep_greed,action_space=action_space,\
+                        min_md_pt_clusters=min_md_pt_clusters,\
+                        min_md_pt_recharge=min_md_pt_recharge)
+                # map action_set to a movement
                 
                 # rewards, state_set = reward_state_calc(test_DQN,init_state_set,action_set,\
                 #                 action_space,cluster_expectations,cluster_limits,\
@@ -832,7 +908,9 @@ for e in range(episodes):
                 prev_action_set = deepcopy(action_set)
                 action_set = test_DQN.calc_action(state=current_state_set, \
                     args=args,ep_greed =ep_greed,action_space=action_space, \
-                    prev_action_ind=prev_action_set)
+                    prev_action_ind=prev_action_set,\
+                    min_md_pt_clusters=min_md_pt_clusters,\
+                    min_md_pt_recharge=min_md_pt_recharge)
                 
                 rewards, state_set,next_swarm_pos = reward_state_calc(test_DQN,current_state_set,\
                     action_set,action_space,cluster_expectations,cluster_limits,\
@@ -970,21 +1048,25 @@ for e in range(episodes):
             if args.greed_base == True:
                 # save data
                 with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'reward'\
-                          +'test_large'+'_'+str(args.g_discount)+'_greedy','wb') as f:
+                          +'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
+                        str(args.greed_style),'wb') as f:
                     pk.dump(reward_storage,f)
                 #+'_extra'
                 #str(fig_no)+
                 with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'battery'\
-                          +'test_large'+'_'+str(args.g_discount)+'_greedy','wb') as f:
+                          +'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
+                        str(args.greed_style),'wb') as f:
                     pk.dump(battery_storage,f)
                 #str(fig_no)+
                 with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'all_states'\
-                          +'test_large'+'_'+str(args.g_discount)+'_greedy','wb') as f:
+                          +'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
+                        str(args.greed_style),'wb') as f:
                     pk.dump(state_save,f)
                 
                 with open(cwd+'/data/new10'+str(args.ep_greed)+'_'+'visit_freq_large'+\
-                          '_'+str(args.g_discount)+'_greedy','wb') as f:
-                    pk.dump(freq_visits,f)            
+                          '_'+str(args.g_discount)+'_greedy_'+\
+                        str(args.greed_style),'wb') as f:
+                    pk.dump(freq_visits,f)
             
             else:
                 # save data
