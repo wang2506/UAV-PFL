@@ -69,45 +69,46 @@ acc_percents = []
 for ind,theta in enumerate(theta_vect):
     # determine obj percent diff first
     obj_temp_per = 100*np.abs(big_defaults_obj[ind][-1] - big_greed_rhos[ind][-1])   \
-        /big_defaults_obj[ind][-1]
+        /big_greed_rhos[ind][-1]
     obj_percents.append(np.round(obj_temp_per,2))
     
     
     # determine energy percent diff
     nrg_temp_per = 100*np.abs(big_defaults_energy[ind][-1] - big_greed_energy[ind][-1])   \
-        /big_defaults_energy[ind][-1]
+        /big_greed_rhos[ind][-1]
     energy_percents.append(np.round(nrg_temp_per,2))
     
     
     # determine acc percent diff
     acc_temp_per = 100*np.abs(big_defaults_acc[ind][-1] - big_greed_acc[ind][-1])   \
-        /big_defaults_acc[ind][-1]
+        /big_greed_rhos[ind][-1]
     acc_percents.append(np.round(acc_temp_per,2))
 
 
-f, axs = plt.subplots(1,1,figsize=(4,4))
+f, axs = plt.subplots(1,1,figsize=(3.5,1.7))
 # axs2 = axs.twinx() # Create another axes that shares the same x-axis as ax
 width = 0.8
 cats= 2
 x = np.arange(len(theta_vect))
 
 axs.bar(x - 0.5 * width/cats, obj_percents, width=width/cats, \
-        color='sienna',edgecolor='black',label='object function (%) diff')
+        color='darkcyan',edgecolor='black',label='Objective')#' (%)')
 axs.bar(x + 0.5 * width/cats, energy_percents, width=width/cats, \
-        color='forestgreen',edgecolor='black',label='energy (%) diff')
+        color='darkred',edgecolor='black',label='Energy')#' (%)')
 # axs.bar(x + 1 * width/cats, acc_percents, width=width/cats, \
         # color='royalblue',edgecolor='black',label='learning (%) diff')
 
-axs.set_yscale('log')
+# axs.set_yscale('log')
 # axs2.set_ylim([0,5])
 axs.set_axisbelow(True)
 axs.grid(True)
 
 
-axs.set_title('Percent of resource consumption greedy vs our method')
-axs.legend()
-axs.set_ylabel('Percent difference (%)')
-axs.set_xlabel(r'1 - $\theta$')
+# axs.set_title('Performance of our method vs greedy method',\
+              # fontsize=9) #'Percent of resource consumption greedy vs our method')
+axs.legend(fontsize=8)
+axs.set_ylabel('Percent Decrease (%)',fontsize=8)
+axs.set_xlabel(r'1 - $\theta$',fontsize=8)
 
 from copy import deepcopy
 
@@ -119,6 +120,9 @@ axs.set_xticks(list(range(len(theta_vect))))
 # axs.set_xticklabels(theta_vect_mpl)
 axs.set_xticklabels(theta_vect)
 # axs2.legend()
+
+axs.tick_params(axis='both', which='major', labelsize=8)
+# axs.tick_params(axis='both', which='minor', labelsize=8)
 
 import os
 cwd = os.getcwd()

@@ -103,7 +103,7 @@ init_acc = 10.5
 init_loss = 2.302232319
 
 data_source = 'mnist'
-data_source = 'fmnist'
+# data_source = 'fmnist'
 
 nn_style = 'CNN'
 # nn_style = 'MLP'
@@ -247,33 +247,63 @@ for i in range(len(ratio_vec)): #3
     full_fl_loss_ratios[i][0].insert(0,init_loss)
     full_pfl_loss_ratios[i][0].insert(0,init_loss)
     
+    # if i == 0:        
+    #     ax2[ind].plot(temp_indexes,full_fl_loss_ratios[i][0],\
+    #         label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='forestgreen',linestyle='solid')
+    #     ax2[ind].plot(temp_indexes,full_pfl_loss_ratios[i][0],\
+    #         label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='darkblue',linestyle='solid')        
+    # elif i == 1:
+    #     ax2[ind].plot(temp_indexes,full_fl_loss_ratios[i][0],\
+    #         label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 2$',\
+    #         color='forestgreen',linestyle='dashed')
+    #     ax2[ind].plot(temp_indexes,full_pfl_loss_ratios[i][0],\
+    #         label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 2$',\
+    #         color='darkblue',linestyle='dashed')   
+    # elif i ==2:
+    #     ax2[ind].plot(temp_indexes,full_fl_loss_ratios[i][0],\
+    #         label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 4$',\
+    #         color='forestgreen',linestyle='dotted')
+    #     ax2[ind].plot(temp_indexes,full_pfl_loss_ratios[i][0],\
+    #         label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 4$',\
+    #         color='darkblue',linestyle='dotted')
+    # else: 
+    #     ax2[ind].plot(temp_indexes,full_fl_loss_ratios[i][0],\
+    #         label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 8$',\
+    #         color='forestgreen',linestyle='dashdot')
+    #     ax2[ind].plot(temp_indexes,full_pfl_loss_ratios[i][0],\
+    #         label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 8$',\
+    #         color='darkblue',linestyle='dashdot')
+
+
     if i == 0:        
         ax2[ind].plot(temp_indexes,full_fl_loss_ratios[i][0],\
-            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='H-FL '+r'$\tau^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='forestgreen',linestyle='solid')
         ax2[ind].plot(temp_indexes,full_pfl_loss_ratios[i][0],\
-            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='HN-PFL '+r'$\tau^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='darkblue',linestyle='solid')        
     elif i == 1:
         ax2[ind].plot(temp_indexes,full_fl_loss_ratios[i][0],\
-            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 2$',\
+            label='H-FL '+r'$\tau^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 2$',\
             color='forestgreen',linestyle='dashed')
         ax2[ind].plot(temp_indexes,full_pfl_loss_ratios[i][0],\
-            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 2$',\
+            label='HN-PFL '+r'$\tau^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 2$',\
             color='darkblue',linestyle='dashed')   
     elif i ==2:
         ax2[ind].plot(temp_indexes,full_fl_loss_ratios[i][0],\
-            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 4$',\
+            label='H-FL '+r'$\tau^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 4$',\
             color='forestgreen',linestyle='dotted')
         ax2[ind].plot(temp_indexes,full_pfl_loss_ratios[i][0],\
-            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 4$',\
+            label='HN-PFL '+r'$\tau^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 4$',\
             color='darkblue',linestyle='dotted')
     else: 
         ax2[ind].plot(temp_indexes,full_fl_loss_ratios[i][0],\
-            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 8$',\
+            label='H-FL '+r'$\tau^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 8$',\
             color='forestgreen',linestyle='dashdot')
         ax2[ind].plot(temp_indexes,full_pfl_loss_ratios[i][0],\
-            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 8$',\
+            label='HN-PFL '+r'$\tau^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 8$',\
             color='darkblue',linestyle='dashdot')
 
 ax2[ind].set_title(data_source.upper()+' loss global')
@@ -302,33 +332,62 @@ for i in range(len(ratio_vec)):
     full_fl_ratios[i][0].insert(0,init_acc)
     full_pfl_ratios[i][0].insert(0,init_acc)
     
+    # if i == 0:
+    #     ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
+    #         label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='forestgreen',linestyle='solid')#,marker='x')
+    #     ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
+    #         label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='darkblue',linestyle='solid')#,marker='x')
+    # elif i == 1:
+    #     ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
+    #         label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 2$',\
+    #         color='forestgreen',linestyle='dashed')#,marker='x')
+    #     ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
+    #         label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 2$',\
+    #         color='darkblue',linestyle='dashed')#,marker='x')
+    # elif i == 2:
+    #     ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
+    #         label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 4$',\
+    #         color='forestgreen',linestyle='dotted')#,marker='x')
+    #     ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
+    #         label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 4$',\
+    #         color='darkblue',linestyle='dotted')#,marker='x')
+    # else:
+    #     ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
+    #         label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 8$',\
+    #         color='forestgreen',linestyle='dashdot')#,marker='x')
+    #     ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
+    #         label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 8$',\
+    #         color='darkblue',linestyle='dashdot')#,marker='x')
+
     if i == 0:
         ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
-            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='H-FL '+r'$\tau^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='forestgreen',linestyle='solid')#,marker='x')
         ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
-            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='HN-PFL '+r'$\tau^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='darkblue',linestyle='solid')#,marker='x')
     elif i == 1:
         ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
-            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 2$',\
+            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 2$',\
             color='forestgreen',linestyle='dashed')#,marker='x')
         ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
-            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 2$',\
+            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 2$',\
             color='darkblue',linestyle='dashed')#,marker='x')
     elif i == 2:
         ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
-            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 4$',\
+            label='H-FL '+r'$\tau^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 4$',\
             color='forestgreen',linestyle='dotted')#,marker='x')
         ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
-            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 4$',\
+            label='HN-PFL '+r'$\tau^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 4$',\
             color='darkblue',linestyle='dotted')#,marker='x')
     else:
         ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
-            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 8$',\
+            label='H-FL '+r'$\tau^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 8$',\
             color='forestgreen',linestyle='dashdot')#,marker='x')
         ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
-            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 8$',\
+            label='HN-PFL '+r'$\tau^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 8$',\
             color='darkblue',linestyle='dashdot')#,marker='x')
 
 
@@ -350,6 +409,7 @@ ax2[0].add_artist(leg1)
 plt.subplots_adjust(top=0.8,wspace=0.15,hspace=0.15)
 
 # plt.savefig(cwd+'/ml_plots/mild_'+data_source+'_ovr_swarms.pdf',bbox_inches='tight')
+# plt.savefig(cwd+'/ml_plots/mild_'+data_source+'_ovr_swarms_temp.pdf',bbox_inches='tight')
 
 
 # %% plot 3 ratio plots with taus2 = 1
@@ -369,7 +429,7 @@ init_acc = 10.5
 init_loss = 2.302232319
 
 data_source = 'mnist'
-data_source = 'fmnist'
+# data_source = 'fmnist'
 
 nn_style = 'CNN'
 # nn_style = 'MLP'
@@ -513,33 +573,62 @@ for i in range(len(ratio_vec)): #3
     full_fl_loss_ratios[i][0].insert(0,init_loss)
     full_pfl_loss_ratios[i][0].insert(0,init_loss)
     
+    # if i == 0:        
+    #     ax2[ind].plot(temp_indexes,full_fl_loss_ratios[i][0],\
+    #         label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='forestgreen',linestyle='solid')
+    #     ax2[ind].plot(temp_indexes,full_pfl_loss_ratios[i][0],\
+    #         label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='darkblue',linestyle='solid')        
+    # elif i == 1:
+    #     ax2[ind].plot(temp_indexes,full_fl_loss_ratios[i][0],\
+    #         label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 2$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='forestgreen',linestyle='dashed')
+    #     ax2[ind].plot(temp_indexes,full_pfl_loss_ratios[i][0],\
+    #         label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 2$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='darkblue',linestyle='dashed')   
+    # elif i ==2:
+    #     ax2[ind].plot(temp_indexes,full_fl_loss_ratios[i][0],\
+    #         label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 4$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='forestgreen',linestyle='dotted')
+    #     ax2[ind].plot(temp_indexes,full_pfl_loss_ratios[i][0],\
+    #         label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 4$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='darkblue',linestyle='dotted')
+    # else: 
+    #     ax2[ind].plot(temp_indexes,full_fl_loss_ratios[i][0],\
+    #         label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 8$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='forestgreen',linestyle='dashdot')
+    #     ax2[ind].plot(temp_indexes,full_pfl_loss_ratios[i][0],\
+    #         label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 8$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='darkblue',linestyle='dashdot')
+
     if i == 0:        
         ax2[ind].plot(temp_indexes,full_fl_loss_ratios[i][0],\
-            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='H-FL '+r'$\tau^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='forestgreen',linestyle='solid')
         ax2[ind].plot(temp_indexes,full_pfl_loss_ratios[i][0],\
-            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='HN-PFL '+r'$\tau^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='darkblue',linestyle='solid')        
     elif i == 1:
         ax2[ind].plot(temp_indexes,full_fl_loss_ratios[i][0],\
-            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 2$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='H-FL '+r'$\tau^{\mathsf{L}} = 2$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='forestgreen',linestyle='dashed')
         ax2[ind].plot(temp_indexes,full_pfl_loss_ratios[i][0],\
-            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 2$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='HN-PFL '+r'$\tau^{\mathsf{L}} = 2$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='darkblue',linestyle='dashed')   
     elif i ==2:
         ax2[ind].plot(temp_indexes,full_fl_loss_ratios[i][0],\
-            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 4$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='H-FL '+r'$\tau^{\mathsf{L}} = 4$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='forestgreen',linestyle='dotted')
         ax2[ind].plot(temp_indexes,full_pfl_loss_ratios[i][0],\
-            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 4$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='HN-PFL '+r'$\tau^{\mathsf{L}} = 4$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='darkblue',linestyle='dotted')
     else: 
         ax2[ind].plot(temp_indexes,full_fl_loss_ratios[i][0],\
-            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 8$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='H-FL '+r'$\tau^{\mathsf{L}} = 8$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='forestgreen',linestyle='dashdot')
         ax2[ind].plot(temp_indexes,full_pfl_loss_ratios[i][0],\
-            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 8$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='HN-PFL '+r'$\tau^{\mathsf{L}} = 8$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='darkblue',linestyle='dashdot')
 
 ax2[ind].set_title(data_source.upper()+' loss global')
@@ -568,35 +657,63 @@ for i in range(len(ratio_vec)):
     full_fl_ratios[i][0].insert(0,init_acc)
     full_pfl_ratios[i][0].insert(0,init_acc)
     
+    # if i == 0:
+    #     ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
+    #         label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='forestgreen',linestyle='solid')#,marker='x')
+    #     ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
+    #         label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='darkblue',linestyle='solid')#,marker='x')
+    # elif i == 1:
+    #     ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
+    #         label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 2$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='forestgreen',linestyle='dashed')#,marker='x')
+    #     ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
+    #         label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 2$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='darkblue',linestyle='dashed')#,marker='x')
+    # elif i == 2:
+    #     ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
+    #         label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 4$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='forestgreen',linestyle='dotted')#,marker='x')
+    #     ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
+    #         label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 4$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='darkblue',linestyle='dotted')#,marker='x')
+    # else:
+    #     ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
+    #         label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 8$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='forestgreen',linestyle='dashdot')#,marker='x')
+    #     ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
+    #         label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 8$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+    #         color='darkblue',linestyle='dashdot')#,marker='x')
+
     if i == 0:
         ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
-            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='H-FL '+r'$\tau^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='forestgreen',linestyle='solid')#,marker='x')
         ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
-            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 1$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='HN-PFL '+r'$\tau^{\mathsf{L}} = 1$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='darkblue',linestyle='solid')#,marker='x')
     elif i == 1:
         ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
-            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 2$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='H-FL '+r'$\tau^{\mathsf{L}} = 2$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='forestgreen',linestyle='dashed')#,marker='x')
         ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
-            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 2$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='HN-PFL '+r'$\tau^{\mathsf{L}} = 2$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='darkblue',linestyle='dashed')#,marker='x')
     elif i == 2:
         ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
-            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 4$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='H-FL '+r'$\tau^{\mathsf{L}} = 4$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='forestgreen',linestyle='dotted')#,marker='x')
         ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
-            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 4$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='HN-PFL '+r'$\tau^{\mathsf{L}} = 4$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='darkblue',linestyle='dotted')#,marker='x')
     else:
         ax2[ind].plot(temp_indexes,full_fl_ratios[i][0],\
-            label='H-FL '+r'$\tau_{s}^{\mathsf{L}} = 8$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='H-FL '+r'$\tau^{\mathsf{L}} = 8$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='forestgreen',linestyle='dashdot')#,marker='x')
         ax2[ind].plot(temp_indexes,full_pfl_ratios[i][0],\
-            label='HN-PFL '+r'$\tau_{s}^{\mathsf{L}} = 8$ '+ r'$\tau_{s}^{\mathsf{G}} = 1$',\
+            label='HN-PFL '+r'$\tau^{\mathsf{L}} = 8$ '+ r'$\tau^{\mathsf{G}} = 1$',\
             color='darkblue',linestyle='dashdot')#,marker='x')
-
 
 ax2[ind].set_title(data_source.upper()+' Performance Accuracy Global')
 ax2[ind].set_ylabel('Accuracy (%)')
@@ -616,7 +733,7 @@ ax2[0].add_artist(leg1)
 plt.subplots_adjust(top=0.8,wspace=0.15,hspace=0.15)
 
 # plt.savefig(cwd+'/ml_plots/mild_'+data_source+'_ovr_global.pdf',bbox_inches='tight')
-
+# plt.savefig(cwd+'/ml_plots/mild_'+data_source+'_ovr_global_temp.pdf',bbox_inches='tight')
 
 
 # total_fl_ratios = []

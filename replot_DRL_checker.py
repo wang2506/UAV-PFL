@@ -36,33 +36,33 @@ for ep_start in [0.7]:#[0.6,0.8]:
         
         if ep_start == 0.6:
             if gamma == 0.6:
-                ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ =' + str(gamma)\
+                ax1[0].plot(data_fixer,label=r'$\gamma$ =' + str(gamma)\
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted')
             elif gamma == 0.7:
-                ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ = '+str(gamma) \
+                ax1[0].plot(data_fixer,label=r'$\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', color = 'forestgreen')
             else:
-                ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ = '+str(gamma) \
+                ax1[0].plot(data_fixer,label=r'$\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', color = 'darkblue')
         elif ep_start == 0.7:
             if gamma == 0.6:
-                ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ =' +str(gamma)\
+                ax1[0].plot(data_fixer,label=r'$\gamma$ =' +str(gamma)\
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted')
             elif gamma == 0.7:
-                ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ = '+str(gamma) \
+                ax1[0].plot(data_fixer,label=r'$\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', color = 'forestgreen')
             else:
-                ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ = '+str(gamma) \
+                ax1[0].plot(data_fixer,label=r'$\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', color = 'darkblue')
         else:
             if gamma == 0.6:
-                ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ =' +str(gamma)\
+                ax1[0].plot(data_fixer,label=r'$\gamma$ =' +str(gamma)\
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot')
             elif gamma == 0.7:
-                ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ = '+str(gamma) \
+                ax1[0].plot(data_fixer,label=r'$\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot',color = 'forestgreen')
             else:
-                ax1[0].plot(data_fixer[:10000],label=r'$\gamma$ = '+str(gamma) \
+                ax1[0].plot(data_fixer,label=r'$\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot',color = 'darkblue')
 
 ax1[0].set_title(r'Moving Average 2000 Epochs')
@@ -92,33 +92,33 @@ for ep_start in [0.7]:#[0.6,0.8]:
     
         if ep_start == 0.6:
             if gamma == 0.6:
-                ax1[1].plot(data_b2[:10000],label=r'$\gamma$ =' + str(gamma)\
+                ax1[1].plot(data_b2,label=r'$\gamma$ =' + str(gamma)\
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted')
             elif gamma == 0.7:
-                ax1[1].plot(data_b2[:10000],label=r'$\gamma$ = '+str(gamma) \
+                ax1[1].plot(data_b2,label=r'$\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', color = 'forestgreen')
             else:
-                ax1[1].plot(data_b2[:10000],label=r'$\gamma$ = '+str(gamma) \
+                ax1[1].plot(data_b2,label=r'$\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', color = 'darkblue')
         elif ep_start == 0.7:
             if gamma == 0.6:
-                ax1[1].plot(data_b2[:10000],label=r'$\gamma$ =' + str(gamma)\
+                ax1[1].plot(data_b2,label=r'$\gamma$ =' + str(gamma)\
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted')
             elif gamma == 0.7:
-                ax1[1].plot(data_b2[:10000],label=r'$\gamma$ = '+str(gamma) \
+                ax1[1].plot(data_b2,label=r'$\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', color = 'forestgreen')
             else:
-                ax1[1].plot(data_b2[:10000],label=r'$\gamma$ = '+str(gamma) \
+                ax1[1].plot(data_b2,label=r'$\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', color = 'darkblue')
         else:
             if gamma == 0.6:
-                ax1[1].plot(data_b2[:10000],label=r'$\gamma$ =' + str(gamma)\
+                ax1[1].plot(data_b2,label=r'$\gamma$ =' + str(gamma)\
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot')
             elif gamma == 0.7:
-                ax1[1].plot(data_b2[:10000],label=r'$\gamma$ = '+str(gamma) \
+                ax1[1].plot(data_b2,label=r'$\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot',color = 'forestgreen')
             else:
-                ax1[1].plot(data_b2[:10000],label=r'$\gamma$ = '+str(gamma) \
+                ax1[1].plot(data_b2,label=r'$\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot',color = 'darkblue')    
     
     
@@ -232,20 +232,21 @@ for ep_start in [0.7]:#[0.6,0.8]:
         # setup double axes
         cats = 4 #cats = categories
         plt.figure(3)
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(1,1,figsize=(4,2))
         rects_init = ax.bar(x - 1.5*width/cats, init_freq, width=width/cats, \
-            label='initial',edgecolor='black',color='goldenrod')
+            label='Initial 1k',edgecolor='black',color='goldenrod')
         rects_mid1 = ax.bar(x - 0.5*width/cats, mid_freq, width=width/cats, \
-            label='middle',edgecolor='black',color='forestgreen')
+            label='Middle 3k',edgecolor='black',color='forestgreen')
         rects_mid2 = ax.bar(x + 0.5*width/cats, mid_freq2, width=width/cats, \
-            label='middle 2',edgecolor='black',color='royalblue')
+            label='Middle 6k',edgecolor='black',color='royalblue')
         rects_final = ax.bar(x + 1.5*width/cats, final_freq, width=width/cats, \
-            label='final',edgecolor='black',color='darkmagenta')
+            label='Final 10k',edgecolor='black',color='darkmagenta')
 
-        plt.title('Hist frequences with recharge stations')
+        # plt.title('Hist frequences with recharge stations')
         ax.set_axisbelow(True)
         ax.grid(True)
-        ax.set_ylabel('frequency over the last 1000 epochs')
+        ax.set_ylabel('Visit Frequency',fontsize=9)
+        ax.legend(fontsize=4)
         
         loc = mpl.ticker.MultipleLocator(base=1.0)
         ax.xaxis.set_major_locator(loc)
@@ -253,74 +254,94 @@ for ep_start in [0.7]:#[0.6,0.8]:
         ax_ticks = ['C '+str(i) for i in range(9)]
         ax_ticks += ['R '+str(i+1) for i in range(2)]
         ax.set_xticklabels(ax_ticks) #this thing always drops the index 0 for some reason
+        ax.tick_params(axis='both', which='major', labelsize=9)
         
+        
+        h,l = ax.get_legend_handles_labels()
+        kw = dict(ncol=4,loc = 'lower center',frameon=False)
+        # kw2 = dict(ncol=3,loc = 'lower center',frameon=False)
+        #(x, y, width, height)
+        leg1 = ax.legend(h[:],l[:],bbox_to_anchor=(-0.2,1.03,1.3,0.2),\
+                        mode='expand',fontsize=9,**kw)
+        # leg2 = ax1[0].legend(h[0::2],l[0::2],bbox_to_anchor=(0.1,1.11,1.8,0.2),\
+                                # mode='expand',fontsize='large',**kw)
+        ax.add_artist(leg1)
+
+
         plt.savefig(cwd+'/drl_plots/freq_recharge.pdf',dpi=1000, bbox_inches='tight')
         
-        # setup double axes
-        plt.figure(4)
-        fig,ax = plt.subplots()
-        # 2 recharge stations
-        y = np.arange(len(final_freq[:8]))
-        rects_init = ax.bar(y - 1.5*width/cats, init_freq[:8], width=width/cats, \
-            label='initial',edgecolor='black',color='goldenrod')
-        rects_mid1 = ax.bar(y - 0.5*width/cats, mid_freq[:8], width=width/cats, \
-            label='middle',edgecolor='black',color='forestgreen')
-        rects_mid2 = ax.bar(y + 0.5*width/cats, mid_freq2[:8], width=width/cats, \
-            label='middle 2',edgecolor='black',color='royalblue')
-        rects_final = ax.bar(y + 1.5*width/cats, final_freq[:8], width=width/cats, \
-            label='final',edgecolor='black',color='darkmagenta')
+        # # setup double axes
+        # plt.figure(4)
+        # fig,ax = plt.subplots()
+        # # 2 recharge stations
+        # y = np.arange(len(final_freq[:8]))
+        # rects_init = ax.bar(y - 1.5*width/cats, init_freq[:8], width=width/cats, \
+        #     label='initial',edgecolor='black',color='goldenrod')
+        # rects_mid1 = ax.bar(y - 0.5*width/cats, mid_freq[:8], width=width/cats, \
+        #     label='middle',edgecolor='black',color='forestgreen')
+        # rects_mid2 = ax.bar(y + 0.5*width/cats, mid_freq2[:8], width=width/cats, \
+        #     label='middle 2',edgecolor='black',color='royalblue')
+        # rects_final = ax.bar(y + 1.5*width/cats, final_freq[:8], width=width/cats, \
+        #     label='final',edgecolor='black',color='darkmagenta')
         
-        plt.title('hist frequencies without recharge stations')
+        # plt.title('hist frequencies without recharge stations')
 
-        ax.set_axisbelow(True)
-        ax.grid(True)
-        ax.set_ylabel('frequency over the last 1000 epochs')
+        # ax.set_axisbelow(True)
+        # ax.grid(True)
+        # ax.set_ylabel('frequency over the last 1000 epochs')
 
-        loc = mpl.ticker.MultipleLocator(base=1.0)
-        ax.xaxis.set_major_locator(loc)
+        # loc = mpl.ticker.MultipleLocator(base=1.0)
+        # ax.xaxis.set_major_locator(loc)
         
-        ax_ticks = ['C '+str(i) for i in range(9)]
-        # ax_ticks += ['R '+str(i+1) for i in range(2)]
-        ax.set_xticklabels(ax_ticks) #this thing always drops the index 0 for some reason
+        # ax_ticks = ['C '+str(i) for i in range(9)]
+        # # ax_ticks += ['R '+str(i+1) for i in range(2)]
+        # ax.set_xticklabels(ax_ticks) #this thing always drops the index 0 for some reason
 
-        # plt.savefig(cwd+'/drl_plots/freq_no_recharge.pdf',dpi=1000, bbox_inches='tight')
+        # # plt.savefig(cwd+'/drl_plots/freq_no_recharge.pdf',dpi=1000, bbox_inches='tight')
 
 
 # %% plotting the greedy DRL
 
-for ep_start in [0.7]:#[0.6,0.8]:
-    for gamma in [0.7]:#[0.7,0.8]:
-        with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'\
-                  +str(gamma)+'_greedy','rb') as f:
-            g_reward = pickle.load(f)
+# for ep_start in [0.7]:#[0.6,0.8]:
+#     for gamma in [0.7]:#[0.7,0.8]:
+#         for g_ind,greed_style in enumerate([0,1]):
+            
+#             with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'\
+#                       +str(gamma)+'_greedy_'+str(greed_style),'rb') as f:
+#                 g_reward = pickle.load(f)
+    
+#             with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'\
+#                       +str(gamma)+'_greedy_'+str(greed_style),'rb') as f:
+#                 g_bat = pickle.load(f)
 
-        with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'\
-                  +str(gamma)+'_greedy','rb') as f:
-            g_bat = pickle.load(f)
 
+#             # fig,ax_g = plt.subplots(1,2,figsize=(10,4))
+#             g_reward2 = moving_average(g_reward,1000)
+#             g_bat2 = [mean(i) for i in g_bat]
+#             g_bat2 = moving_average(g_bat2,1000)            
+            
+#             if greed_style == 0:
+#                 ax1[0].plot(g_reward2,label='greedy graph',color='chocolate')
 
-        # fig,ax_g = plt.subplots(1,2,figsize=(10,4))
-        g_reward2 = moving_average(g_reward,1000)
-        ax1[0].plot(g_reward2,label='greedy',color='chocolate')
+#                 ax1[1].plot(g_bat2,label='greedy graph',color='chocolate')
+#             elif greed_style == 1:
+#                 ax1[0].plot(g_reward2,label='greedy dist',color='magenta')
+
+#                 ax1[1].plot(g_bat2,label='greedy dist',color='magenta')                
         
-        
-        g_bat2 = [mean(i) for i in g_bat]
-        g_bat2 = moving_average(g_bat2,1000)
-        ax1[1].plot(g_bat2,label='greedy',color='chocolate')
-        
-        # plt.savefig(cwd+'/drl_plots/freq_no_recharge.pdf',dpi=1000, bbox_inches='tight')
+#         # plt.savefig(cwd+'/drl_plots/freq_no_recharge.pdf',dpi=1000, bbox_inches='tight')
 
-h,l = ax1[0].get_legend_handles_labels()
-kw = dict(ncol=4,loc = 'lower center',frameon=False)
-# kw2 = dict(ncol=3,loc = 'lower center',frameon=False)
-#(x, y, width, height)
-leg1 = ax1[0].legend(h[:],l[:],bbox_to_anchor=(0.0,1.03,2,0.2),\
-                mode='expand',fontsize='large',**kw)
-# leg2 = ax1[0].legend(h[0::2],l[0::2],bbox_to_anchor=(0.1,1.11,1.8,0.2),\
-                        # mode='expand',fontsize='large',**kw)
-ax1[0].add_artist(leg1)
+# h,l = ax1[0].get_legend_handles_labels()
+# kw = dict(ncol=5,loc = 'lower center',frameon=False)
+# # kw2 = dict(ncol=3,loc = 'lower center',frameon=False)
+# #(x, y, width, height)
+# leg1 = ax1[0].legend(h[:],l[:],bbox_to_anchor=(-0.15,1.03,2.5,0.2),\
+#                 mode='expand',fontsize='large',**kw)
+# # leg2 = ax1[0].legend(h[0::2],l[0::2],bbox_to_anchor=(0.1,1.11,1.8,0.2),\
+#                         # mode='expand',fontsize='large',**kw)
+# ax1[0].add_artist(leg1)
 
-
+# # f1.savefig(cwd+'/drl_plots/drl_ovr_comp.pdf',dpi=1000, bbox_inches='tight')
 
 
 
