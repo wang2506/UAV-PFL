@@ -1109,27 +1109,55 @@ for e in range(episodes):
             
             # TODO : not really a todo, just a quick scroller
             if args.greed_base == True:
-                # save data
-                with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'reward'\
-                          +'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
-                        str(args.greed_style),'wb') as f:
-                    pk.dump(reward_storage,f)
-                #+'_extra'
-                #str(fig_no)+
-                with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'battery'\
-                          +'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
-                        str(args.greed_style),'wb') as f:
-                    pk.dump(battery_storage,f)
-                #str(fig_no)+
-                with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'all_states'\
-                          +'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
-                        str(args.greed_style),'wb') as f:
-                    pk.dump(state_save,f)
-                
-                with open(cwd+'/data/new10'+str(args.ep_greed)+'_'+'visit_freq_large'+\
-                          '_'+str(args.g_discount)+'_greedy_'+\
-                        str(args.greed_style),'wb') as f:
-                    pk.dump(freq_visits,f)
+                if args.greed_style == 2:
+                    # save data
+                    with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'reward'\
+                              +'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
+                            str(args.greed_style)+'_rng_thresh_'+ str(args.rng_thresh),\
+                            'wb') as f:
+                        pk.dump(reward_storage,f)
+                    #+'_extra'
+                    #str(fig_no)+
+                    with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'battery'\
+                              +'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
+                            str(args.greed_style)+'_rng_thresh_'+ str(args.rng_thresh),\
+                            'wb') as f:
+                        pk.dump(battery_storage,f)
+                    #str(fig_no)+
+                    with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'all_states'\
+                              +'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
+                            str(args.greed_style)+'_rng_thresh_'+ str(args.rng_thresh),\
+                            'wb') as f:
+                        pk.dump(state_save,f)
+                    
+                    with open(cwd+'/data/new10'+str(args.ep_greed)+'_'+'visit_freq_large'+\
+                              '_'+str(args.g_discount)+'_greedy_'+\
+                            str(args.greed_style)+'_rng_thresh_'+ str(args.rng_thresh),\
+                            'wb') as f:
+                        pk.dump(freq_visits,f)
+                    
+                else:
+                    # save data
+                    with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'reward'\
+                              +'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
+                            str(args.greed_style),'wb') as f:
+                        pk.dump(reward_storage,f)
+                    #+'_extra'
+                    #str(fig_no)+
+                    with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'battery'\
+                              +'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
+                            str(args.greed_style),'wb') as f:
+                        pk.dump(battery_storage,f)
+                    #str(fig_no)+
+                    with open(cwd+'/data/new10'+'_'+str(args.ep_greed)+'_'+'all_states'\
+                              +'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
+                            str(args.greed_style),'wb') as f:
+                        pk.dump(state_save,f)
+                    
+                    with open(cwd+'/data/new10'+str(args.ep_greed)+'_'+'visit_freq_large'+\
+                              '_'+str(args.g_discount)+'_greedy_'+\
+                            str(args.greed_style),'wb') as f:
+                        pk.dump(freq_visits,f)
             
             else:
                 # save data
