@@ -15,6 +15,9 @@ from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 
 mpl.style.use('default')
 mpl.rc('font',family='Times New Roman')
+# mpl.rc('text', usetex=True)
+# mpl.rcParams['text.latex.preamble']=[r"\usepackage{amsmath}"]
+
 csfont = {'fontname':'Times New Roman'}
 markersize = dict(markersize=2)
 
@@ -306,28 +309,28 @@ x_locs = np.arange(len(thetas))
 # for i in range(categories):
 axs[0].bar(x_locs,rho_avgs,color='forestgreen',edgecolor='black')
 # ax1.bar()
-axs[0].set_title(r'(a) Avg. Device to UAV Offloading Ratio $\rho$')
+axs[0].set_title(r'(a)',y=-0.3)
 axs[0].set_xlabel(r'$1-\theta$')
-axs[0].set_ylabel('Value')
+axs[0].set_ylabel(r'Avg. Device to UAV Offloading Ratio ($\rho$)')
 # axs[0].set_xticks(thetas )
 # axs[0].grid(True)
 
 axs[1].bar(x_locs,varrho_avgs,color='royalblue',edgecolor='black')
-axs[1].set_title(r'(b) Avg. Coordinator Transfer Ratio $\varrho$')
+axs[1].set_title(r'(b)',y=-0.3)
 axs[1].set_xlabel(r'$1-\theta$')
-axs[1].set_ylabel('Value')
+axs[1].set_ylabel(r' Avg. Coordinator Transfer Ratio ($\varrho$)')
 # axs[1].set_xticks(thetas )
 # axs[1].grid(True)
 
 axs[2].bar(x_locs,freqs_avgs,color='darkblue',edgecolor='black')
-axs[2].set_title('(c) Avg. Worker CPU Frequencies')
+axs[2].set_title('(c) Avg. Worker CPU Frequencies',y=-0.3)
 axs[2].set_xlabel(r'$1-\theta$')
 axs[2].set_ylabel('Frequency')
 # axs[2].set_xticks(thetas )
 # axs[2].grid(True)
 
 axs[3].bar(x_locs,data_raw_avgs,color='sienna',edgecolor='black')
-axs[3].set_title('(d) Avg. of Total Processed Data')
+axs[3].set_title('(d) Avg. of Total Processed Data',y=-0.3)
 axs[3].set_xlabel(r'$1-\theta$')
 axs[3].set_ylabel('Processed Data')
 # axs[3].set_xticks(thetas )
@@ -348,7 +351,7 @@ for i in range(4):
 # axs[0].set_xticklabels(ax_ticks)
 # axs[1].set_xticklabels(ax_ticks) 
 # 14 clusters of bars
-plt.savefig(cwd+'/geo_optim_chars/optimizer.pdf',dpi=1000,bbox_inches='tight')
+# plt.savefig(cwd+'/geo_optim_chars/optimizer.pdf',dpi=1000,bbox_inches='tight')
 # axs.bar(x_locs)
 
 # rects1 = axs[0].bar(x_locs - 2.5*width/categories,branch_track1,width/categories,\

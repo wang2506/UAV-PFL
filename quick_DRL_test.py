@@ -79,7 +79,9 @@ parser.add_argument('--DQN_update_period',type=int,default=20,\
 parser.add_argument('--greed_base',type=bool,default=False,\
                     help='greedy baseline calculation')
 parser.add_argument('--greed_style',type=int,default=0,\
-                    help='0: graph greed, 1: min dist')
+                    help='0: graph greed, 1: min dist, 2: rng min dist')
+parser.add_argument('--rng_thresh',type=float,default=0.5,\
+                    help='rng min dist threshold')
 
 # hard coded perviously, need to backtrack to get this automated
 # parser.add_argument('--dynamic_drift',type=bool,default=False,\
@@ -386,7 +388,68 @@ class DQN:
                     action_indexes = as_ts[0]
                 else:
                     action_indexes = as_ts[0][np.random.randint(0,len(as_ts[0]))]
-                    
+            
+            elif args.greed_style == 2: # rng minimum distance
+                pos_temp = action_space[prev_action_ind]
+                pos_temp2 = list(pos_temp[1])
+                pos_temp_new = np.zeros_like(pos_temp2)-1
+                
+                # look at energy, if energy falls below min_thresh (8440)
+                # go recharge
+                nrg_temp = state[-16:-13]
+                for ind_nrg,nrg_temp_inst in enumerate(nrg_temp):
+                    if nrg_temp_inst < 8440:
+                        if min_md_pt_recharge[pos_temp2[ind_nrg]] \
+                            not in pos_temp_new:
+                            pos_temp_new[ind_nrg] = \
+                                min_md_pt_recharge[pos_temp2[ind_nrg]]
+                            pos_temp2[ind_nrg] = \
+                                min_md_pt_recharge[pos_temp2[ind_nrg]]
+                        else: #you take whatever is available
+                            if 7 not in pos_temp_new:
+                                pos_temp_new[ind_nrg] = 7
+                                pos_temp2[ind_nrg] = 7
+                            elif 8 not in pos_temp_new:
+                                pos_temp_new[ind_nrg] = 8
+                                pos_temp2[ind_nrg] = 8
+                            else:
+                                pos_temp_new[ind_nrg] = 9
+                                pos_temp2[ind_nrg] = 9
+                    else:
+                        # travel to nearest distance cluster
+                        # scaled by a random factor
+                        if np.random.rand() < args.rng_thresh:
+                            if min_md_pt_clusters[pos_temp2[ind_nrg]] \
+                                not in pos_temp_new:
+                                pos_temp_new[ind_nrg] = \
+                                    min_md_pt_clusters[pos_temp2[ind_nrg]]
+                                pos_temp2[ind_nrg] = \
+                                    min_md_pt_clusters[pos_temp2[ind_nrg]]
+                            else: # you take a random one
+                                tt_cluster = np.random.randint(0,8)
+                                while tt_cluster in pos_temp_new:
+                                    tt_cluster = np.random.randint(0,8)
+                                pos_temp_new[ind_nrg] = tt_cluster
+                                pos_temp2[ind_nrg] = tt_cluster
+                        else: #decide at random - branching/heuristic min distance
+                            tt_cluster = np.random.randint(0,8)
+                            while tt_cluster in pos_temp_new:
+                                tt_cluster = np.random.randint(0,8)
+                            pos_temp_new[ind_nrg] = tt_cluster
+                            pos_temp2[ind_nrg] = tt_cluster
+                            
+                # choose temporal traits randomly
+                # so, find all sets that match pos_temp2
+                # ast = action space temp
+                ast = np.array([list(atemp[1]) for atemp in action_space])
+                as_ts = np.where((pos_temp2[0] == ast[:,0]) \
+                    & (pos_temp2[1] == ast[:,1]) & (pos_temp2[2] == ast[:,2]))   
+                
+                if len(as_ts[0]) == 0:
+                    action_indexes = as_ts[0]
+                else:
+                    action_indexes = as_ts[0][np.random.randint(0,len(as_ts[0]))]
+                
             else:
                 raise Exception("That option isn't available")
         

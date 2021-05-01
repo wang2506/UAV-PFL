@@ -116,6 +116,10 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     dist_uav_uav_max = 100 #1000 # make 100 m
     dist_uav_uav_min = 50 #100 # 50 m
     
+    dist_uav_uav_varrho_emph = np.ones(workers+coordinators)
+    dist_uav_uav_varrho_emph[0:workers] = 100
+    dist_uav_uav_varrho_emph[workers:] = 20
+    
     dist_uav_leader_max = 20 #1000 
     dist_uav_leader_min = 10 #100
     
@@ -126,6 +130,7 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
         for j in range(workers + coordinators):
             dist_qj = dist_device_uav_min + (dist_device_uav_max-dist_device_uav_min) \
                 *np.random.rand() # randomly determined
+            
             theta_qj = 180/np.pi * np.arcsin(device_uav_altitude_diff / dist_qj )
             
             prob_los = 1/(1+ psi_tx * np.exp(-beta_tx*(theta_qj-psi_tx)) )
@@ -140,8 +145,10 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     coord_tx_rates = np.zeros(shape=(coordinators,workers))
     for h in range(coordinators):
         for j in range(workers):
-            dist_hj = dist_uav_uav_min + (dist_uav_uav_max-dist_uav_uav_min) \
-                * np.random.rand() #randomly determined
+            # dist_hj = dist_uav_uav_min + (dist_uav_uav_max-dist_uav_uav_min) \
+            #     * np.random.rand() #randomly determined
+            # TODO : note, the above was commented in order to emphasize varrho diffs
+            dist_hj = dist_uav_uav_varrho_emph[h+j]            
             
             la2a_hj = eta_los * (mu_tx * dist_hj)**path_loss_alpha 
             
@@ -999,26 +1006,26 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     # print(plot_acc)
     # plt.title('gradient result - iter: ' + str(i))
 
-    ## store the plot_obj/energy/acc
-    cwd = os.getcwd()
-    with open(cwd+'/geo_optim_chars/greed/default_'+str(theta)+'_obj','wb') as f:
-        pk.dump(plot_obj,f)
+    # ## store the plot_obj/energy/acc
+    # cwd = os.getcwd()
+    # with open(cwd+'/geo_optim_chars/greed/default_'+str(theta)+'_obj','wb') as f:
+    #     pk.dump(plot_obj,f)
 
-    with open(cwd+'/geo_optim_chars/greed/default_'+str(theta)+'_energy','wb') as f:
-        pk.dump(plot_energy,f)
+    # with open(cwd+'/geo_optim_chars/greed/default_'+str(theta)+'_energy','wb') as f:
+    #     pk.dump(plot_energy,f)
 
-    with open(cwd+'/geo_optim_chars/greed/default_'+str(theta)+'_acc','wb') as f:
-        pk.dump(plot_acc,f)        
+    # with open(cwd+'/geo_optim_chars/greed/default_'+str(theta)+'_acc','wb') as f:
+    #     pk.dump(plot_acc,f)
         
     # ## store the data
     # cwd = os.getcwd()
-    # with open(cwd+'/geo_optim_chars/'+str(theta)+'rho','wb') as f:
+    # with open(cwd+'/geo_optim_chars/varrho_test_'+str(theta)+'rho','wb') as f:
     #     pk.dump(rho[1].value,f)
     
-    # with open(cwd+'/geo_optim_chars/'+str(theta)+'varrho','wb') as f:
+    # with open(cwd+'/geo_optim_chars/varrho_test_'+str(theta)+'varrho','wb') as f:
     #     pk.dump(varrho[1].value,f)
     
-    # with open(cwd+'/geo_optim_chars/'+str(theta)+'alphas','wb') as f:
+    # with open(cwd+'/geo_optim_chars/varrho_test_'+str(theta)+'alphas','wb') as f:
     #     pk.dump(alphas[1].value,f)
     
     # # worker freqs and D_j
@@ -1030,10 +1037,10 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     # for l in D_j[1]:
     #     D_j2.append(l.value)
     
-    # with open(cwd+'/geo_optim_chars/'+str(theta)+'worker_freq','wb') as f:
+    # with open(cwd+'/geo_optim_chars/varrho_test_'+str(theta)+'worker_freq','wb') as f:
     #     pk.dump(worker_freq2,f)
 
-    # with open(cwd+'/geo_optim_chars/'+str(theta)+'D_j','wb') as f:
+    # with open(cwd+'/geo_optim_chars/varrho_test_'+str(theta)+'D_j','wb') as f:
     #     pk.dump(D_j2,f)
 
 

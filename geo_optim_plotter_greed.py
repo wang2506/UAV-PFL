@@ -92,9 +92,9 @@ cats= 2
 x = np.arange(len(theta_vect))
 
 axs.bar(x - 0.5 * width/cats, obj_percents, width=width/cats, \
-        color='darkcyan',edgecolor='black',label='Objective')#' (%)')
+        color='darkcyan',edgecolor='black',label='Objective Function')#' (%)')
 axs.bar(x + 0.5 * width/cats, energy_percents, width=width/cats, \
-        color='darkred',edgecolor='black',label='Energy')#' (%)')
+        color='darkred',edgecolor='black',label='Energy Consumption')#' (%)')
 # axs.bar(x + 1 * width/cats, acc_percents, width=width/cats, \
         # color='royalblue',edgecolor='black',label='learning (%) diff')
 
