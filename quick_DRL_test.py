@@ -345,7 +345,7 @@ class DQN:
                 # go recharge
                 nrg_temp = state[-16:-13]
                 for ind_nrg,nrg_temp_inst in enumerate(nrg_temp):
-                    if nrg_temp_inst < 8440:
+                    if nrg_temp_inst < 12660: #8440: #this needs margin
                         if min_md_pt_recharge[pos_temp2[ind_nrg]] \
                             not in pos_temp_new:
                             pos_temp_new[ind_nrg] = \
@@ -398,7 +398,7 @@ class DQN:
                 # go recharge
                 nrg_temp = state[-16:-13]
                 for ind_nrg,nrg_temp_inst in enumerate(nrg_temp):
-                    if nrg_temp_inst < 8440:
+                    if nrg_temp_inst < 12660: #8440: #this needs margin
                         if min_md_pt_recharge[pos_temp2[ind_nrg]] \
                             not in pos_temp_new:
                             pos_temp_new[ind_nrg] = \
