@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import os
 import matplotlib as mpl
 from statistics import median,mean
+import matplotlib.patches as patches
 
 # %% moving average function
 
@@ -24,7 +25,7 @@ ep_start = 0.6
 # gamma = 0.8 #gamma = 0.7 by default
 plt.figure(1)
 
-f1,ax1 = plt.subplots(1,2,figsize=(10,4))
+f1,ax1 = plt.subplots(1,2,figsize=(9.6,4)) #10,4
 
 for ep_start in [0.7]:#[0.6,0.8]:
     for gamma in [0.6,0.7]:#[0.7,0.8]:
@@ -37,45 +38,45 @@ for ep_start in [0.7]:#[0.6,0.8]:
         
         if ep_start == 0.6:
             if gamma == 0.6:
-                ax1[0].plot(data_fixer,label=r'$\gamma$ =' + str(gamma)\
+                ax1[0].plot(data_fixer,label=r'DRL: $\gamma$ =' + str(gamma)\
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted',\
                         linewidth=lwd,color = 'darkgreen')
             elif gamma == 0.7:
-                ax1[0].plot(data_fixer,label=r'$\gamma$ = '+str(gamma) \
+                ax1[0].plot(data_fixer,label=r'DRL: $\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', \
                         color = 'magenta',linewidth=lwd)
             else:
-                ax1[0].plot(data_fixer,label=r'$\gamma$ = '+str(gamma) \
+                ax1[0].plot(data_fixer,label=r'DRL: $\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', \
                         color = 'darkgreen',linewidth=lwd)
         elif ep_start == 0.7:
             if gamma == 0.6:
-                ax1[0].plot(data_fixer,label=r'$\gamma$ =' +str(gamma)\
+                ax1[0].plot(data_fixer,label=r'DRL: $\gamma$ =' +str(gamma)\
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted',\
                         linewidth=lwd,color = 'darkgreen')
             elif gamma == 0.7:
-                ax1[0].plot(data_fixer,label=r'$\gamma$ = '+str(gamma) \
+                ax1[0].plot(data_fixer,label=r'DRL: $\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', \
                         color = 'magenta',linewidth=lwd)
             else:
-                ax1[0].plot(data_fixer,label=r'$\gamma$ = '+str(gamma) \
+                ax1[0].plot(data_fixer,label=r'DRL: $\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', \
                         color = 'darkgreen',linewidth=lwd)
         else:
             if gamma == 0.6:
-                ax1[0].plot(data_fixer,label=r'$\gamma$ =' +str(gamma)\
+                ax1[0].plot(data_fixer,label=r'DRL: $\gamma$ =' +str(gamma)\
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot',\
                         linewidth=lwd,color = 'darkgreen')
             elif gamma == 0.7:
-                ax1[0].plot(data_fixer,label=r'$\gamma$ = '+str(gamma) \
+                ax1[0].plot(data_fixer,label=r'DRL: $\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot', \
                         color = 'magenta',linewidth=lwd)
             else:
-                ax1[0].plot(data_fixer,label=r'$\gamma$ = '+str(gamma) \
+                ax1[0].plot(data_fixer,label=r'DRL: $\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot', \
                         color = 'darkgreen',linewidth=lwd)
 
-ax1[0].set_title(r'a) Reward Over Time',fontsize=15,y=-0.24)
+ax1[0].set_title(r'a)',fontsize=15,y=-0.24) # Reward Over Time
 ax1[0].grid(True)
 ax1[0].set_xlabel('Epoch',fontsize=13)
 ax1[0].set_ylabel('Reward',fontsize=13)
@@ -104,46 +105,46 @@ for ep_start in [0.7]:#[0.6,0.8]:
     
         if ep_start == 0.6:
             if gamma == 0.6:
-                ax1[1].plot(data_b2,label=r'$\gamma$ =' + str(gamma)\
+                ax1[1].plot(data_b2,label=r'DRL: $\gamma$ =' + str(gamma)\
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted',\
                         linewidth=lwd,color = 'darkgreen')
             elif gamma == 0.7:
-                ax1[1].plot(data_b2,label=r'$\gamma$ = '+str(gamma) \
+                ax1[1].plot(data_b2,label=r'DRL: $\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', \
                         color = 'magenta',linewidth=lwd)
             else:
-                ax1[1].plot(data_b2,label=r'$\gamma$ = '+str(gamma) \
+                ax1[1].plot(data_b2,label=r'DRL: $\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', \
                         color = 'darkblue',linewidth=lwd)
         elif ep_start == 0.7:
             if gamma == 0.6:
-                ax1[1].plot(data_b2,label=r'$\gamma$ =' + str(gamma)\
+                ax1[1].plot(data_b2,label=r'DRL: $\gamma$ =' + str(gamma)\
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted',\
                         linewidth=lwd,color = 'darkgreen')
             elif gamma == 0.7:
-                ax1[1].plot(data_b2,label=r'$\gamma$ = '+str(gamma) \
+                ax1[1].plot(data_b2,label=r'DRL: $\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', \
                         color = 'magenta',linewidth=lwd)
             else:
-                ax1[1].plot(data_b2,label=r'$\gamma$ = '+str(gamma) \
+                ax1[1].plot(data_b2,label=r'DRL: $\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', \
                         color = 'darkblue',linewidth=lwd)
         else:
             if gamma == 0.6:
-                ax1[1].plot(data_b2,label=r'$\gamma$ =' + str(gamma)\
+                ax1[1].plot(data_b2,label=r'DRL: $\gamma$ =' + str(gamma)\
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot',\
                         linewidth=lwd,color = 'darkgreen')
             elif gamma == 0.7:
-                ax1[1].plot(data_b2,label=r'$\gamma$ = '+str(gamma) \
+                ax1[1].plot(data_b2,label=r'DRL: $\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot', \
                         color = 'magenta',linewidth=lwd)
             else:
-                ax1[1].plot(data_b2,label=r'$\gamma$ = '+str(gamma) \
+                ax1[1].plot(data_b2,label=r'DRL: $\gamma$ = '+str(gamma) \
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot', \
                         color = 'darkblue',linewidth=lwd)    
     
     
-ax1[1].set_title('b) Battery Over Time',fontsize=15,y=-0.24)
+ax1[1].set_title('b)',fontsize=15,y=-0.24) # Battery Over Time',fontsize=15,y=-0.24)
 ax1[1].grid(True)
 ax1[1].set_xlabel('Epoch',fontsize=13)
 ax1[1].set_ylabel('Average Battery Level (kJ)',fontsize=13)
@@ -266,14 +267,14 @@ for ep_start in [0.7]:#[0.6,0.8]:
         # plt.title('Hist frequences with recharge stations')
         ax.set_axisbelow(True)
         ax.grid(True)
-        ax.set_ylabel('Visit Frequency',fontsize=11)
+        ax.set_ylabel('Visit Rate (Freq/1k Epochs)',fontsize=11) #visit frequency
         ax.legend(fontsize=4)
         
         loc = mpl.ticker.MultipleLocator(base=1.0)
         ax.xaxis.set_major_locator(loc)
         
-        ax_ticks = ['C '+str(i) for i in range(9)]
-        ax_ticks += ['R '+str(i+1) for i in range(2)]
+        ax_ticks = ['C:'+str(i) for i in range(9)]
+        ax_ticks += ['R:'+str(i+1) for i in range(2)]
         ax.set_xticklabels(ax_ticks) #this thing always drops the index 0 for some reason
         ax.tick_params(axis='both', which='major', labelsize=10)
         
@@ -288,7 +289,18 @@ for ep_start in [0.7]:#[0.6,0.8]:
                                 # mode='expand',fontsize='large',**kw)
         ax.add_artist(leg1)
 
-
+        rect = patches.Rectangle((1.54,0),0.94,600,linewidth=1.5,edgecolor='red',facecolor='none')
+        rect2 = patches.Rectangle((2.54,0),0.94,300,linewidth=1.5,edgecolor='black',facecolor='none')
+        
+        ax.add_patch(rect)
+        ax.add_patch(rect2)
+        
+        # ax.text(0.5,620,'Max ',fontsize=9)
+        # ax.text(5.5,620,'Min Model Drift',fontsize=9)
+        ax.text(1.2,620,'Max MD', fontsize=9)
+        ax.text(2.55,320,'Min MD',fontsize=9)
+        
+        
         plt.savefig(cwd+'/drl_plots/freq_recharge.pdf',dpi=1000, bbox_inches='tight')
         
         # # setup double axes
@@ -325,16 +337,24 @@ for ep_start in [0.7]:#[0.6,0.8]:
 
 for ep_start in [0.7]:#[0.6,0.8]:
     for gamma in [0.7]:#[0.7,0.8]:
-        for g_ind,greed_style in enumerate([0,1]):
+        for g_ind,greed_style in enumerate([0,1,2]):
+            if greed_style != 2:
             
-            with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'\
-                      +str(gamma)+'_greedy_'+str(greed_style),'rb') as f:
-                g_reward = pickle.load(f)
-    
-            with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'\
-                      +str(gamma)+'_greedy_'+str(greed_style),'rb') as f:
-                g_bat = pickle.load(f)
-
+                with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'\
+                          +str(gamma)+'_greedy_'+str(greed_style),'rb') as f:
+                    g_reward = pickle.load(f)
+        
+                with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'\
+                          +str(gamma)+'_greedy_'+str(greed_style),'rb') as f:
+                    g_bat = pickle.load(f)
+            else:
+                with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'\
+                          +str(gamma)+'_greedy_'+str(greed_style)+'_rng_thresh_0.2','rb') as f:
+                    g_reward = pickle.load(f)
+        
+                with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'\
+                          +str(gamma)+'_greedy_'+str(greed_style)+'_rng_thresh_0.2','rb') as f:
+                    g_bat = pickle.load(f)
 
             # fig,ax_g = plt.subplots(1,2,figsize=(10,4))
             g_reward2 = moving_average(g_reward,1000)
@@ -342,18 +362,25 @@ for ep_start in [0.7]:#[0.6,0.8]:
             g_bat2 = moving_average(g_bat2,1000)            
             
             if greed_style == 0:
-                ax1[0].plot(g_reward2,label='Sequential Heuristic',color='chocolate',\
-                    linewidth = lwd)
+                ax1[0].plot(g_reward2,label='S.H.',color='saddlebrown',\
+                    linewidth = lwd) #Sequential Heuristic
 
-                ax1[1].plot(g_bat2,label='Sequential Heuristic',color='chocolate',\
-                    linewidth = lwd)
+                ax1[1].plot(g_bat2,label='S.H.',color='saddlebrown',\
+                    linewidth = lwd) #Sequential Heuristic
+                    
             elif greed_style == 1:
-                ax1[0].plot(g_reward2,label='Minimum Distance',color='slategrey',\
-                    linewidth = lwd)
+                ax1[0].plot(g_reward2,label='G.M.D.',color='slategrey',\
+                    linewidth = lwd) #Greedy Minimum Distance
 
-                ax1[1].plot(g_bat2,label='Minimum Distance',color='slategrey',\
+                ax1[1].plot(g_bat2,label='G.M.D.',color='slategrey',\
                     linewidth = lwd)
-        
+            else:
+                ax1[0].plot(g_reward2,label='T.M.D.',color='darkorange',\
+                    linewidth = lwd) # T.M.D. - threshold minimum distance
+
+                ax1[1].plot(g_bat2,label='T.M.D.',color='darkorange',\
+                    linewidth = lwd) # T.M.D.
+                
         # plt.savefig(cwd+'/drl_plots/freq_no_recharge.pdf',dpi=1000, bbox_inches='tight')
 
 h,l = ax1[0].get_legend_handles_labels()
@@ -361,13 +388,14 @@ kw = dict(ncol=5,loc = 'lower center',frameon=False)
 # kw2 = dict(ncol=3,loc = 'lower center',frameon=False)
 #(x, y, width, height)
 leg1 = ax1[0].legend(h[:],l[:],bbox_to_anchor=(-0.15,1.03,2.5,0.2),\
-                mode='expand',fontsize=12,**kw)
+                mode='expand',fontsize=14,**kw)
 # leg2 = ax1[0].legend(h[0::2],l[0::2],bbox_to_anchor=(0.1,1.11,1.8,0.2),\
                         # mode='expand',fontsize='large',**kw)
 ax1[0].add_artist(leg1)
 # ax1[1].set_yticklabels(['36','36','38','40','42','44','46'])
 # ax1[1].set_yticklabels(['25','27.5','30','32.5','35','37.5','40','42.5','45','47.5'])
-ax1[1].set_yticklabels(['25','30','35','40','45'])
+# ax1[1].set_yticklabels(['25','30','35','40','45'])
+ax1[1].set_yticklabels(['27.5','30','32.5','35','37.5','40','42.5','45','47.5'])
 
 ax1[0].tick_params(axis='both', which='major', labelsize=13)
 ax1[1].tick_params(axis='both', which='major', labelsize=13)

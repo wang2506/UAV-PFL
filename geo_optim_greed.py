@@ -21,7 +21,6 @@ import sys
 #### this is the cvxpy optimization file
 ## for lists - first element must be nonzero for dgp to accept
 ## also, cp.sum, sum, np.sum the underlying wrapper starts with a 0 then +=
-np.random.seed(1)
 start = time.time()
 
 sys.setrecursionlimit(5000)
@@ -51,7 +50,7 @@ theta_vec = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 for theta in theta_vec: #[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     # %% objective function test
     # T_s = 20
-    
+    np.random.seed(1)
     K_s1 = 2 #1
     K_s2 = 2#5
     tau_s1 = 2
@@ -174,7 +173,7 @@ for theta in theta_vec: #[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     freq_min = 10e6 #0.5*1e9
     freq_max = 2.3*1e9
     worker_freq = {i:[cp.Variable(pos=True) for i in range(workers)] for i in range(K_s1)}
-    capacitance = 2e-28 #2e-28 #2e-16 #2e-28 #10*1e-12
+    capacitance = 2e-28 #2e-16 #2e-28 #10*1e-12
     
     rho = {i:cp.Variable(shape=(devices,coordinators+workers),pos=True) for i in range(K_s1)}
     varrho = {i:cp.Variable(shape=(coordinators,workers),pos=True) for i in range(K_s1)}
@@ -351,14 +350,23 @@ for theta in theta_vec: #[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     
         # offloading vars
         ## greedy method 1 - max out device to uav data offloading
+        ## TODO: label
         for j in range(devices):
             for k in range(coordinators+workers):
-                constraints.append(rho[i][j,k] <= 1)
+                # if k >= workers:
+                    # constraints.append(rho[i][j,k] <= 1)
+                    # constraints.append(rho[i][j,k] >= 0.2)
+                # else:
+                    # constraints.append(rho[i][j,k] <= 1)
+                    # constraints.append(rho[i][j,k] >= 1/workers)
                 # constraints.append(rho[i][j,k] >= 1e-10)
                 ## this constraint is key for that greedy method
                 constraints.append(rho[i][j,k] >= 1/(coordinators+workers))
-                
-            constraints.append(cp.sum(rho[i][j,:]) <= 1.05)
+            
+                constraints.append(rho[i][j,k] <= 1)
+                # constraints.append(rho[i][j,k] >= 0.9)            
+            
+            constraints.append(cp.sum(rho[i][j,:]) <= 1)
             # equality constraint throws error
             # constraints.append(cp.sum(rho[i][j,:]) >= 0.59)
             # constraints.append(cp.sum(rho[i][j,:]) <= 1.51)
@@ -366,7 +374,7 @@ for theta in theta_vec: #[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
         for j in range(coordinators):
             for k in range(workers):
                 constraints.append(varrho[i][j,k] <= 1)
-                constraints.append(varrho[i][j,k] >= 1e-10)
+                constraints.append(varrho[i][j,k] >= 1/(coordinators+workers)) #1e-10)
     
             constraints.append(cp.sum(varrho[i][j,:]) <= 1)
         
@@ -407,6 +415,7 @@ for theta in theta_vec: #[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
         # for h in range(coordinators):
         #     constraints.append(D_j[i][workers+h] <= B_j_coord[i][h])
         
+        # 20,000
         eng_bat_j = 20000 * np.ones(shape=workers)
         eng_bat_h = 20000 * np.ones(shape=coordinators)
         eng_thresh_j = 20 * np.ones(shape=workers)
@@ -782,14 +791,13 @@ for theta in theta_vec: #[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
             # learning combine
             # theta = 0.3
             
-            true_objective = (1-theta)*(eng_p_obj + eng_tx_u_obj + eng_tx_q + sum(eng_tx_w) \
-                + eng_tx_l) + \
+            true_objective = (1-theta)*(eng_p_obj + eng_tx_u_obj + eng_tx_q) + \
                 theta* (grad_fu_scale*(delta_diff_sigma + mu_F**2 * upsilon) \
                 + 3 * eta_2**2 * mu_F * gamma_u_F / (eta_2/2 - 6 * eta_2**2 * mu_F/2) \
                 + mismatch)
             #     #delta_i/delta_u
             # + sum(eng_f_j) + sum(eng_f_h) + eng_f_l 
-            
+            # + sum(eng_tx_w) + eng_tx_l) 
             
             # true_objective = (1-theta)*(eng_p_obj + eng_tx_u_obj + eng_tx_q + sum(eng_tx_w) \
             #     + eng_tx_l + sum(eng_f_j) + sum(eng_f_h) + eng_f_l )
@@ -821,10 +829,10 @@ for theta in theta_vec: #[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
             # plot_obj.append(np.round(prob.value,5))
             plot_obj.append(prob.value)
             
-            temp_energy = (eng_p_obj + eng_tx_u_obj + eng_tx_q + sum(eng_tx_w) \
-                + eng_tx_l).value
+            temp_energy = (eng_p_obj + eng_tx_u_obj + eng_tx_q).value
             # + sum(eng_f_j) + sum(eng_f_h) + eng_f_l
-                
+            #+ sum(eng_tx_w) + eng_tx_l    
+            
             # plot_energy.append(np.round(temp_energy,5))
             plot_energy.append(temp_energy)
             

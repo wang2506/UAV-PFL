@@ -21,7 +21,8 @@ import sys
 #### this is the cvxpy optimization file
 ## for lists - first element must be nonzero for dgp to accept
 ## also, cp.sum, sum, np.sum the underlying wrapper starts with a 0 then +=
-np.random.seed(1)
+seed = 17 #1,3,5,;6,7,8,;10,13, 16; 17
+np.random.seed(seed)
 start = time.time()
 
 sys.setrecursionlimit(5000)
@@ -51,7 +52,7 @@ theta_vec = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     # %% objective function test
     # T_s = 20
-    np.random.seed(1) # prevents randomization from messing up energies
+    np.random.seed(seed) # prevents randomization from messing up energies
     K_s1 = 2 #1
     K_s2 = 2#5
     tau_s1 = 2
@@ -181,7 +182,7 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     freq_min = 10e6 #0.5*1e9
     freq_max = 2.3*1e9
     worker_freq = {i:[cp.Variable(pos=True) for i in range(workers)] for i in range(K_s1)}
-    capacitance = 2e-28 #2e-28 #2e-16 #2e-28 #10*1e-12
+    capacitance = 2e-28 #2e-16 #2e-28 #10*1e-12
     
     rho = {i:cp.Variable(shape=(devices,coordinators+workers),pos=True) for i in range(K_s1)}
     varrho = {i:cp.Variable(shape=(coordinators,workers),pos=True) for i in range(K_s1)}
@@ -412,6 +413,7 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
         # for h in range(coordinators):
         #     constraints.append(D_j[i][workers+h] <= B_j_coord[i][h])
         
+        # 20,000
         eng_bat_j = 20000 * np.ones(shape=workers)
         eng_bat_h = 20000 * np.ones(shape=coordinators)
         eng_thresh_j = 20 * np.ones(shape=workers)
@@ -787,13 +789,13 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
             # learning combine
             # theta = 0.3
             
-            true_objective = (1-theta)*(eng_p_obj + eng_tx_u_obj + eng_tx_q + sum(eng_tx_w) \
-                + eng_tx_l) + \
+            true_objective = (1-theta)*(eng_p_obj + eng_tx_u_obj + eng_tx_q) + \
                 theta* (grad_fu_scale*(delta_diff_sigma + mu_F**2 * upsilon) \
                 + 3 * eta_2**2 * mu_F * gamma_u_F / (eta_2/2 - 6 * eta_2**2 * mu_F/2) \
                 + mismatch)
             # + sum(eng_f_j) + sum(eng_f_h) + eng_f_l 
             #     #delta_i/delta_u
+            # + sum(eng_tx_w) \ + eng_tx_l
             
             # true_objective = (1-theta)*(eng_p_obj + eng_tx_u_obj + eng_tx_q + sum(eng_tx_w) \
             #     + eng_tx_l + sum(eng_f_j) + sum(eng_f_h) + eng_f_l )
@@ -825,9 +827,10 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
             # plot_obj.append(np.round(prob.value,5))
             plot_obj.append(prob.value)
             
-            temp_energy = (eng_p_obj + eng_tx_u_obj + eng_tx_q + sum(eng_tx_w) \
-                + eng_tx_l).value
+            temp_energy = (eng_p_obj + eng_tx_u_obj + eng_tx_q).value
             # + sum(eng_f_j) + sum(eng_f_h) + eng_f_l
+            # + sum(eng_tx_w)  + eng_tx_l
+            
             
             # plot_energy.append(np.round(temp_energy,5))
             plot_energy.append(temp_energy)
@@ -1006,42 +1009,51 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     # print(plot_acc)
     # plt.title('gradient result - iter: ' + str(i))
 
-    # ## store the plot_obj/energy/acc
-    # cwd = os.getcwd()
-    # with open(cwd+'/geo_optim_chars/greed/default_'+str(theta)+'_obj','wb') as f:
-    #     pk.dump(plot_obj,f)
+    ## store the plot_obj/energy/acc
+    cwd = os.getcwd()
+    subfolder = 'avg' #'greed'
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/seed_'+str(seed)+\
+              '_default_'+str(theta)+'_obj','wb') as f:
+        pk.dump(plot_obj,f)
 
-    # with open(cwd+'/geo_optim_chars/greed/default_'+str(theta)+'_energy','wb') as f:
-    #     pk.dump(plot_energy,f)
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/seed_'+str(seed)+\
+              'default_'+str(theta)+'_energy','wb') as f:
+        pk.dump(plot_energy,f)
 
-    # with open(cwd+'/geo_optim_chars/greed/default_'+str(theta)+'_acc','wb') as f:
-    #     pk.dump(plot_acc,f)
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/seed_'+str(seed)+\
+              'default_'+str(theta)+'_acc','wb') as f:
+        pk.dump(plot_acc,f)
         
     # ## store the data
     # cwd = os.getcwd()
-    # with open(cwd+'/geo_optim_chars/varrho_test_'+str(theta)+'rho','wb') as f:
-    #     pk.dump(rho[1].value,f)
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/seed_'+str(seed)+\
+              '_'+str(theta)+'rho','wb') as f:
+        pk.dump(rho[1].value,f)
     
-    # with open(cwd+'/geo_optim_chars/varrho_test_'+str(theta)+'varrho','wb') as f:
-    #     pk.dump(varrho[1].value,f)
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/seed_'+str(seed)+\
+              '_'+str(theta)+'varrho','wb') as f:
+        pk.dump(varrho[1].value,f)
     
-    # with open(cwd+'/geo_optim_chars/varrho_test_'+str(theta)+'alphas','wb') as f:
-    #     pk.dump(alphas[1].value,f)
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/seed_'+str(seed)+\
+              '_'+str(theta)+'alphas','wb') as f:
+        pk.dump(alphas[1].value,f)
     
-    # # worker freqs and D_j
-    # worker_freq2 = []
-    # for l in worker_freq[1]:
-    #     worker_freq2.append(l.value)
+    # worker freqs and D_j
+    worker_freq2 = []
+    for l in worker_freq[1]:
+        worker_freq2.append(l.value)
     
-    # D_j2 = []
-    # for l in D_j[1]:
-    #     D_j2.append(l.value)
+    D_j2 = []
+    for l in D_j[1]:
+        D_j2.append(l.value)
     
-    # with open(cwd+'/geo_optim_chars/varrho_test_'+str(theta)+'worker_freq','wb') as f:
-    #     pk.dump(worker_freq2,f)
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/seed_'+str(seed)+\
+              '_'+str(theta)+'worker_freq','wb') as f:
+        pk.dump(worker_freq2,f)
 
-    # with open(cwd+'/geo_optim_chars/varrho_test_'+str(theta)+'D_j','wb') as f:
-    #     pk.dump(D_j2,f)
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/seed_'+str(seed)+\
+              '_'+str(theta)+'D_j','wb') as f:
+        pk.dump(D_j2,f)
 
 
 # %% saving

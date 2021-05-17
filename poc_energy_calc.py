@@ -13,7 +13,7 @@ from copy import deepcopy
 # %% HFL and HNPFL parser
 settings = ml_parser()
 settings.swarms = 4 # we actually set --swarms to be 4, so change here 
-settings.data_style = 'fmnist'
+# settings.data_style = 'fmnist'
 
 # %% init settings
 np.random.seed(1)
@@ -248,11 +248,12 @@ global_agg = 1
 
 if settings.data_style == 'mnist':
     # acc thresh = 60%
-    s_hnpfl = np.array([4, 6, 12, 20])*energy_iter
-    s_hfl = np.array([8, 12, 21, 30])*energy_iter
+    # s_hfl means fixed s, vary tau_G
+    s_hnpfl = np.array([4, 7, 14, 31])*energy_iter
+    s_hfl = np.array([8, 14, 25, 34])*energy_iter
     
-    g_hnpfl = np.array([4, 6, 14, 26])*energy_iter
-    g_hfl = np.array([8, 12, 22, 30])*energy_iter
+    g_hnpfl = np.array([4, 8, 14, 25])*energy_iter
+    g_hfl = np.array([8, 16, 26, 32])*energy_iter
     
 else:
     # acc thresh = 45%

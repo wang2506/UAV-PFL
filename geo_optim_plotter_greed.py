@@ -61,7 +61,6 @@ for theta in theta_vect:
 # x is theta; y is bar - percentage diff
 # 3 bar clumped per x index
 
-
 obj_percents = []
 energy_percents = []
 acc_percents = []
@@ -75,13 +74,12 @@ for ind,theta in enumerate(theta_vect):
     
     # determine energy percent diff
     nrg_temp_per = 100*np.abs(big_defaults_energy[ind][-1] - big_greed_energy[ind][-1])   \
-        /big_greed_rhos[ind][-1]
+        /big_greed_energy[ind][-1]
     energy_percents.append(np.round(nrg_temp_per,2))
-    
     
     # determine acc percent diff
     acc_temp_per = 100*np.abs(big_defaults_acc[ind][-1] - big_greed_acc[ind][-1])   \
-        /big_greed_rhos[ind][-1]
+        /big_greed_acc[ind][-1]
     acc_percents.append(np.round(acc_temp_per,2))
 
 
@@ -108,7 +106,7 @@ axs.grid(True)
               # fontsize=9) #'Percent of resource consumption greedy vs our method')
 axs.legend(fontsize=8)
 axs.set_ylabel('Percent Decrease (%)',fontsize=8)
-axs.set_xlabel(r'1 - $\theta$',fontsize=8)
+axs.set_xlabel(r'ML Performance Weight (1 - $\theta$)',fontsize=8)
 
 from copy import deepcopy
 
@@ -126,7 +124,7 @@ axs.tick_params(axis='both', which='major', labelsize=8)
 
 import os
 cwd = os.getcwd()
-plt.savefig(cwd+'/geo_optim_chars/greed1_percent_diff.pdf',dpi=1000,bbox_inches='tight')
+# plt.savefig(cwd+'/geo_optim_chars/greed1_percent_diff.pdf',dpi=1000,bbox_inches='tight')
 
 
 
