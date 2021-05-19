@@ -62,21 +62,23 @@ subfolder = 'avg' #'greed'
 for theta in thetas:
     for seed in master_seeds:
         
-        with open(cwd+'/geo_optim_chars/'+str(theta)+'rho','rb') as f:
+        with open(cwd+'/geo_optim_chars/avg/seed_'+str(seed)+'_'+str(theta)+'rho','rb') as f:
             rho_all[seed].append(pk.load(f))
     
-        with open(cwd+'/geo_optim_chars/'+str(theta)+'varrho','rb') as f:
+        with open(cwd+'/geo_optim_chars/avg/seed_'+str(seed)+'_'+str(theta)+'varrho','rb') as f:
             varrho_all[seed].append(pk.load(f))
             
-        with open(cwd+'/geo_optim_chars/'+str(theta)+'alphas','rb') as f:
+        with open(cwd+'/geo_optim_chars/avg/seed_'+str(seed)+'_'+str(theta)+'alphas','rb') as f:
             alphas_all[seed].append(pk.load(f))
     
-        with open(cwd+'/geo_optim_chars/'+str(theta)+'D_j','rb') as f:
+        with open(cwd+'/geo_optim_chars/avg/seed_'+str(seed)+'_'+str(theta)+'D_j','rb') as f:
             data_raw[seed].append(pk.load(f))
     
-        with open(cwd+'/geo_optim_chars/'+str(theta)+'worker_freq','rb') as f:
+        with open(cwd+'/geo_optim_chars/avg/seed_'+str(seed)+'_'+str(theta)+'worker_freq','rb') as f:
             worker_freqs_all[seed].append(pk.load(f))
-
+        
+        # print(worker_freqs_all)
+        # input('yadda')
 
 # %% take avgs
 rho_avgs = {i:[np.mean(j) for j in rho_all[i]] for i in master_seeds}
