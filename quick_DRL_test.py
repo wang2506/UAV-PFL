@@ -25,7 +25,7 @@ import tensorflow as tf
 
 import time
 
-seed = 1
+seed = 2 #1
 np.random.seed(seed)
 random.seed(seed)
 rng = np.random.default_rng(seed=seed)
