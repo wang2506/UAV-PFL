@@ -84,6 +84,9 @@ parser.add_argument('--greed_style',type=int,default=0,\
 parser.add_argument('--rng_thresh',type=float,default=0.2,\
                     help='rng min dist threshold')
 
+parser.add_argument('--dynamic',type=bool,default=False,\
+                    help='Dynamic model drifts')
+    
 # hard coded perviously, need to backtrack to get this automated
 # parser.add_argument('--dynamic_drift',type=bool,default=False,\
                     # help='dynamic model drift')
