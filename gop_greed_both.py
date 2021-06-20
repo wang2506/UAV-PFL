@@ -130,8 +130,9 @@ axs.grid(True)
 
 # axs.set_title('Percent of resource consumption greedy (max freq) vs our method')
 axs.legend(fontsize=8)
-axs.set_ylabel('Percentage Decrease (%)',fontsize=8)
-axs.set_xlabel(r'ML Performance Weight (1 - $\theta$)',fontsize=8)
+axs.set_ylabel('Percentage Decrease (%)',fontsize=10)
+# axs.set_xlabel(r'ML Performance Weight (1 - $\theta$)',fontsize=8)
+axs.set_xlabel(r'Learning Objective Weight ($\theta$)',fontsize=10)
 
 from copy import deepcopy
 
@@ -144,7 +145,7 @@ axs.set_xticks(list(range(len(theta_vect))))
 axs.set_xticklabels(theta_vect)
 # axs2.legend()
 
-axs.tick_params(axis='both', which='major', labelsize=8)
+axs.tick_params(axis='both', which='major', labelsize=9)
 
 
 h,l = axs.get_legend_handles_labels()
@@ -160,5 +161,5 @@ axs.add_artist(leg1)
 
 import os
 cwd = os.getcwd()
-plt.savefig(cwd+'/geo_optim_chars/greed1_percent_diff.pdf',dpi=1000,bbox_inches='tight')
-
+plt.savefig(cwd+'/geo_optim_chars/greed1_percent_diff_chris.pdf',dpi=1000,bbox_inches='tight')
+# plt.savefig(cwd+'/geo_optim_chars/greed1_percent_diff.pdf',dpi=1000,bbox_inches='tight')

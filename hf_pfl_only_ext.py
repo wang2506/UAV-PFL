@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Nov 10 11:31:43 2020
-
 @author: henry
 """
 import numpy as np
@@ -34,7 +33,7 @@ np.random.seed(init_seed)
 torch.manual_seed(init_seed)
 
 if settings.comp == 'gpu':
-    device = torch.device('cuda:1')
+    device = torch.device('cuda:2')
 else:
     device = torch.device('cpu')
 
@@ -124,7 +123,7 @@ for save_type in [settings.iid_style]:
     if save_type == 'extreme': #lpc = labels_per_cluster
         lpc = [1 for i in range(settings.swarms)] #static qty of labels per node
     elif save_type == 'mild':
-        lpc = [np.random.randint(2,3) for i in range(settings.swarms)] #static qty of labels per node
+        lpc = [np.random.randint(3,4) for i in range(settings.swarms)] #static qty of labels per node
     else:
         lpc = [10 for i in range(settings.swarms)]
     
@@ -155,7 +154,14 @@ for save_type in [settings.iid_style]:
     # %% populating data for nodes/swarms
     
     # data per device and total data per swarm
-    avg_qty = 1000 #int(len(dataset_train)/sum(nodes_per_cluster)) # 650
+    # avg_qty = 1000 #int(len(dataset_train)/sum(nodes_per_cluster)) # 650
+    if save_type == 'extreme':
+        avg_qty = 1000
+    else:
+        if settings.data_style == 'mnist':
+            avg_qty = 2500 #3 swarms
+        elif settings.data_style == 'fmnist':
+            avg_qty = 3500 #3k data was ok
     
     def pop_data_qty(data_holder,data_qty,nodes_per_swarm=nodes_per_swarm):
         counter = 0
@@ -214,9 +220,14 @@ for save_type in [settings.iid_style]:
                             node_train_sets[j],nodes_per_swarm)
             
     else:
-        node_train_sets = {i: [] for i in range(sum(nodes_per_swarm))}
-        node_train_sets = pop_nts(ls,data_qty,\
-                        node_train_sets,nodes_per_swarm)
+        # node_train_sets = {i: [] for i in range(sum(nodes_per_swarm))}
+        # node_train_sets = pop_nts(ls,data_qty,\
+        #                 node_train_sets,nodes_per_swarm)#,debug=True)
+        node_train_sets = {j:{i:[] for i in range(sum(nodes_per_swarm))} \
+                for j in range(total_time)}
+        for j in range(total_time):
+            node_train_sets[j] = pop_nts(ls,data_qty,\
+                            node_train_sets[j],nodes_per_swarm)#,debug=True)
     
     # # saving the data
     # cwd = os.getcwd()
@@ -257,14 +268,12 @@ for save_type in [settings.iid_style]:
     
         try:
             with open(cwd+'/data/CNN_new_w','rb') as f:
-                default_w = pickle.load(f)        
-            global_net.load_state_dict(default_w)
+                default_w = pickle.load(f)
         except:
             default_w = deepcopy(global_net.state_dict())
-        
-        # lr,lr2 = 1e-3,1e-2 #CNN #works for bs = 30
-        lr,lr2 = 1e-3, 1e-3
-        # del_acc
+            
+        lr,lr2 = 1e-3,1e-2 #CNN
+        lr,lr2 = 1e-3, 1e-2
         # debug lr-rates
         # lr = 2*1e-4
         # lr2 = 1e-2
@@ -273,8 +282,8 @@ for save_type in [settings.iid_style]:
     global_net.train()
     
     # %% running for all time
-    #batch_size = 30 #12 #evenly divisible by 3
-    batch_size = 30 #12
+    # batch_size = 30 #12 #evenly divisible by 3
+    batch_size = 12 #12
     
     # determine ratio inits 
     if settings.ratio_dynamic == False:
@@ -285,7 +294,7 @@ for save_type in [settings.iid_style]:
         global_period = settings.rd_val
     
     ## main loop for ratio variance ##
-    for ratio in [1,2,4]:#,6,8,10]:
+    for ratio in [2,4,8]:#,6,8,10]:
         # ratio dynamics
         if settings.ratio == 'global': #global dynamic, swarm varied
              global_period = swarm_period * ratio
@@ -304,21 +313,9 @@ for save_type in [settings.iid_style]:
             HF_hn_pfl_swarm_models = [CNN(nchannels,nclasses).to(device) for i in range(settings.swarms)]   
             # print(default_w['fc2.bias'])            
         
-        # assign a model for every single worker and swarm
-        if settings.nn_style =='MLP':
-            fl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(settings.swarms)]
-            worker_models = [MLP(d_in,d_h,d_out).to(device) for i in range(sum(nodes_per_swarm))]
-        else:
-            fl_swarm_models = [CNN(nchannels,nclasses).to(device) for i in range(settings.swarms)]   
-            worker_models = [CNN(nchannels,nclasses).to(device) for i in range(sum(nodes_per_swarm))]
-        
-        for i in fl_swarm_models:
+        for i in HF_hn_pfl_swarm_models:
             i.load_state_dict(default_w)
-            i.train()
-        
-        for i in worker_models:
-            i.load_state_dict(default_w)
-            i.train()
+            i.train()   
         
         
         def run_one_iter(loc_models,online=settings.online,nps=nodes_per_swarm,\
@@ -332,11 +329,11 @@ for save_type in [settings.iid_style]:
                         if settings.online == False:
                             local_obj = LocalUpdate(device,bs=batch_size,lr=lr,\
                                 epochs=ep_len,dataset=dataset_train,\
-                                indexes=node_train_sets[uav_counter])
+                                indexes=nts[uav_counter])
                         else:
                             local_obj = LocalUpdate(device,bs=batch_size,lr=lr,\
                                 epochs=ep_len,dataset=dataset_train,\
-                                indexes=node_train_sets[uav_counter])
+                                indexes=nts[uav_counter])
                                 
                         # _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
                         _,w,loss = local_obj.train(net=loc_models[ind_i].to(device))
@@ -347,14 +344,14 @@ for save_type in [settings.iid_style]:
                         if settings.online == False:
                             local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr1=lr,\
                                 lr2=lr2,epochs=ep_len,dataset=dataset_train,\
-                                indexes=node_train_sets[uav_counter])
+                                indexes=nts[uav_counter])
                         else:
                             local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr1=lr,\
                                 lr2=lr2,epochs=ep_len,dataset=dataset_train,\
-                                indexes=node_train_sets[uav_counter])
+                                indexes=nts[uav_counter])
                                 
                         # _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
-                        _,w,loss = local_obj.train(net=loc_models[ind_i].to(device))
+                        _,w,loss = local_obj.train(net=deepcopy(loc_models[ind_i]).to(device))
                         
                         swarm_w[ind_i].append(w)
                         uav_counter += 1
@@ -363,10 +360,7 @@ for save_type in [settings.iid_style]:
         
         def sw_agg(loc_models,temp_swarm_w,swarm_period=swarm_period,\
             global_period=global_period,data_qty=data_qty,\
-            online=settings.online,nps=nodes_per_swarm, nts=node_train_sets):
-            
-            ## determine worker data_lens
-            worker_datas = [len(i) for i in list(nts.values())]
+            online=settings.online,nps=nodes_per_swarm):                    
             
             ## run FL swarm-wide aggregation only
             if settings.online == False:
@@ -381,22 +375,17 @@ for save_type in [settings.iid_style]:
             w_swarms = []
                 
             for ind_i,val_i in enumerate(nps):
-                # t2_static_qty = temp_qty[:val_i]
-                # del temp_qty[:val_i]
+                t2_static_qty = temp_qty[:val_i]
+                del temp_qty[:val_i]
                 
-                # t3_static_qty = [i*swarm_period for i in t2_static_qty]
+                t3_static_qty = [i*swarm_period for i in t2_static_qty]
                 
-                # w_avg_swarm = FedAvg2(temp_swarm_w[ind_i],t3_static_qty)
+                w_avg_swarm = FedAvg2(temp_swarm_w[ind_i],t3_static_qty)
     
-                t2_static_qty = worker_datas[:val_i]
-                del worker_datas[:val_i]
-                
-                w_avg_swarm = FedAvg2(temp_swarm_w[ind_i],t2_static_qty)
-                
                 loc_models[ind_i].load_state_dict(w_avg_swarm)
                 loc_models[ind_i].train()
-            
-                t_swarm_total_qty.append(sum(t2_static_qty))
+                
+                t_swarm_total_qty.append(sum(t3_static_qty))
                 w_swarms.append(w_avg_swarm)
             
             return loc_models, w_swarms, t_swarm_total_qty
@@ -405,7 +394,18 @@ for save_type in [settings.iid_style]:
         ### Hierarchical-FL procedure 
         ### 1. create object for each node/device
         ### 2. after \tau1 = swarm_period iterations, aggregate cluster-wise (weighed)
-        ### 3. after \tau2 = global_period swarm-wide aggregations, aggregate globally (weighted again)        
+        ### 3. after \tau2 = global_period swarm-wide aggregations, aggregate globally (weighted again)
+        print('initial accuracy measurement')
+        global_net.load_state_dict(default_w)
+        global_net.eval()
+        init_acc, init_loss = \
+            test_img2(global_net,dataset_test,\
+            bs=batch_size,indexes=all_test_indexes,device=device)
+        print(init_acc)
+        print('initial loss measurement')
+        print(init_loss)
+        
+        
         for t in range(int(total_time/swarm_period)):
             # swarm_w = {i:[] for i in range(settings.swarms)}
             # data_processed = {i:0 for i in range(swarms)}
@@ -413,7 +413,10 @@ for save_type in [settings.iid_style]:
             print('iteration:{}'.format(t))
             print('HN-HF-PFL begins here')
             
-            swarm_w = run_one_iter(HF_hn_pfl_swarm_models,ep_len=swarm_period) #one local training iter
+            # swarm_w = run_one_iter(HF_hn_pfl_swarm_models,ep_len=swarm_period) #one local training iter
+            swarm_w = run_one_iter(HF_hn_pfl_swarm_models,ep_len=swarm_period,\
+                    nts = node_train_sets[t]) #one local training iter
+            
             
             # for i in HF_hn_pfl_swarm_models:
             #     print(i.state_dict()['fc2.bias'])
@@ -422,13 +425,6 @@ for save_type in [settings.iid_style]:
             ## run FL swarm-wide aggregation only
             HF_hn_pfl_swarm_models,agg_w_swarms,agg_t_swarms = \
                 sw_agg(HF_hn_pfl_swarm_models,swarm_w)
-        
-            # propagate to local models
-            uav_counter = 0
-            for ind,val in enumerate(nodes_per_swarm):
-                for w_no in range(val):
-                    worker_models[uav_counter].load_state_dict(fl_swarm_models[ind].state_dict())
-                    uav_counter += 1        
         
             if (t+1) % (global_period) == 0: # global agg
                 # # swarm-wide agg
@@ -444,35 +440,17 @@ for save_type in [settings.iid_style]:
                     i.load_state_dict(w_global)
                     i.train()        
         
-                for i in worker_models:
-                    i.load_state_dict(w_global)
-                    i.train()
                 
-                global_net.load_state_dict(w_global)        
-        
-        
             ## evaluate model performance
             if ((t+1) % (global_period) == 0):
                 # HF_hn_pfl_acc_temp, total_loss_temp = 0, 0
                 
-                HF_hn_pfl_acc_temp_all, total_loss_temp_all = 0, 0
+                # HF_hn_pfl_acc_temp_all, total_loss_temp_all = 0, 0
                 
-                # uav_counter = 0
                 # for i,ii in enumerate(HF_hn_pfl_swarm_models):
                 #     ii.eval()
-                #     # temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
-                #     #         indexes=swarm_test_sets[i],device=device)
-                    
-                #     swarm_dataset_indexes = []
-                #     for j in range(uav_counter,uav_counter+nodes_per_swarm[i]): 
-                #         swarm_dataset_indexes += node_train_sets[j]
-                #         uav_counter += 1                    
-                    
-                #     temp_acc, loss = test_img2(ii,dataset_train,bs=batch_size,\
-                #             indexes=swarm_dataset_indexes,device=device)                         
-                    
-                #     HF_hn_pfl_acc_temp_all += temp_acc/len(HF_hn_pfl_swarm_models)
-                #     total_loss_temp_all += loss/len(HF_hn_pfl_swarm_models)
+                #     temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
+                #             indexes=swarm_test_sets[i],device=device)
                     
                     # temp_acc_full, loss_full = test_img2(ii,dataset_test,\
                     #         bs=batch_size,indexes=all_test_indexes,device=device)
@@ -480,17 +458,19 @@ for save_type in [settings.iid_style]:
                     # HF_hn_pfl_acc_temp += temp_acc/len(HF_hn_pfl_swarm_models)
                     # total_loss_temp += loss/len(HF_hn_pfl_swarm_models) #swarms
                     
+                    # HF_hn_pfl_acc_temp_all += temp_acc/len(HF_hn_pfl_swarm_models)
+                    # total_loss_temp_all += loss/len(HF_hn_pfl_swarm_models) #swarms
+                    
                     # HF_hn_pfl_acc_temp_all += temp_acc_full * static_data_per_swarm[i] \
                     #     / sum(static_data_per_swarm)
                     # total_loss_temp_all += loss_full * static_data_per_swarm[i] \
                     #     / sum(static_data_per_swarm)
                 
-                # selection of any of the models is fine 
+                # # selection of any of the models is fine 
                 HF_hn_pfl_acc_temp_all, total_loss_temp_all = \
-                    test_img2(global_net,dataset_test,\
+                    test_img2(HF_hn_pfl_swarm_models[0],dataset_test,\
                     bs=batch_size,indexes=all_test_indexes,device=device)
-                #HF_hn_pfl_swarm_models[0]
-                #global_net
+                
                 
                 # HF_hn_pfl_acc.append(HF_hn_pfl_acc_temp)
                 # total_loss.append(total_loss_temp)
@@ -504,52 +484,55 @@ for save_type in [settings.iid_style]:
                 # print(total_loss)
         
         
-                # ## calculate localized accuracy prior to aggregations
-                # ## personalized model performance 
-                # HF_hn_pfl_acc_temp = 0
-                # total_loss_temp = 0
+                ## calculate localized accuracy prior to aggregations
+                ## personalized model performance 
+                HF_hn_pfl_acc_temp = 0
+                total_loss_temp = 0
                 
-                # temp_pfl_swarm_models = deepcopy(HF_hn_pfl_swarm_models)
+                temp_pfl_swarm_models = deepcopy(HF_hn_pfl_swarm_models)
                 # temp_swarm_w = run_one_iter(temp_pfl_swarm_models,meta=True)
+                temp_swarm_w = run_one_iter(temp_pfl_swarm_models,ep_len=1,\
+                    nts = node_train_sets[t]) #one local training iter                
                 
-                # # perform a sw_agg
-                # temp_pfl_swarm_models,agg_w_swarms,agg_t_swarms = \
-                #     sw_agg(temp_pfl_swarm_models,temp_swarm_w)
                 
-                # for i,ii in enumerate(temp_pfl_swarm_models):
-                #     ii.eval()
-                #     temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
-                #             indexes=swarm_test_sets[i],device=device)
+                # perform a sw_agg
+                temp_pfl_swarm_models,agg_w_swarms,agg_t_swarms = \
+                    sw_agg(temp_pfl_swarm_models,temp_swarm_w)
+                
+                for i,ii in enumerate(temp_pfl_swarm_models):
+                    ii.eval()
+                    temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
+                            indexes=swarm_test_sets[i],device=device)
                     
-                #     HF_hn_pfl_acc_temp += temp_acc/len(HF_hn_pfl_swarm_models)
-                #     total_loss_temp += loss/len(HF_hn_pfl_swarm_models) #swarms
+                    HF_hn_pfl_acc_temp += temp_acc/len(HF_hn_pfl_swarm_models)
+                    total_loss_temp += loss/len(HF_hn_pfl_swarm_models) #swarms
         
-                # HF_hn_pfl_acc.append(HF_hn_pfl_acc_temp)
-                # total_loss.append(total_loss_temp)
-                # print('personalized meta metric')
-                # print(HF_hn_pfl_acc[-1])
+                HF_hn_pfl_acc.append(HF_hn_pfl_acc_temp)
+                total_loss.append(total_loss_temp)
+                print('personalized meta metric')
+                print(HF_hn_pfl_acc[-1])
         
         # saving results
         cwd = os.getcwd()
         
         # streamline later this if-else is unneeded, but its 2 am rn
         # if settings.iid_style == 'extreme':
-        # with open(cwd+'/data/hn_pfl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
-        #     settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
-        #     '_'+settings.nn_style+'_debug','wb') as f:
-        #     pickle.dump(HF_hn_pfl_acc,f)
+        with open(cwd+'/data/3hn_pfl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
+            settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
+            '_'+settings.nn_style+'_debug','wb') as f:
+            pickle.dump(HF_hn_pfl_acc,f)
             
-        # with open(cwd+'/data/hn_pfl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
-        #     settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
-        #     '_'+settings.nn_style+'_debug','wb') as f:
-        #     pickle.dump(total_loss,f)
+        with open(cwd+'/data/3hn_pfl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
+            settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
+            '_'+settings.nn_style+'_debug','wb') as f:
+            pickle.dump(total_loss,f)
         
-        with open(cwd+'/data/full_hn_pfl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
+        with open(cwd+'/data/3full_hn_pfl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
             '_'+settings.nn_style+'_debug','wb') as f:
             pickle.dump(HF_hn_pfl_acc_full,f)
         
-        with open(cwd+'/data/full_hn_pfl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
+        with open(cwd+'/data/3full_hn_pfl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
             '_'+settings.nn_style+'_debug','wb') as f:
             pickle.dump(total_loss_full,f)
@@ -701,6 +684,3 @@ for save_type in [settings.iid_style]:
         
                 #     HF_hn_pfl_swarm_models[ind_i].load_state_dict(w_avg_swarm)
                 #     HF_hn_pfl_swarm_models[ind_i].train()
-
-
-

@@ -10,6 +10,13 @@ import matplotlib as mpl
 from statistics import median,mean
 import matplotlib.patches as patches
 
+mpl.style.use('default')
+mpl.rc('font',family='Times New Roman')
+# mpl.rc('text', usetex=True)
+# mpl.rcParams['text.latex.preamble']=[r"\usepackage{amsmath}"]
+
+csfont = {'fontname':'Times New Roman'}
+
 # %% moving average function
 
 def moving_average(x, w):
@@ -25,7 +32,7 @@ ep_start = 0.6
 # gamma = 0.8 #gamma = 0.7 by default
 plt.figure(1)
 
-f1,ax1 = plt.subplots(1,2,figsize=(9.6,4)) #10,4
+f1,ax1 = plt.subplots(1,2,figsize=(10,4))#(9.6,4)) #10,4
 
 for ep_start in [0.7]:#[0.6,0.8]:
     for gamma in [0.6,0.7]:#[0.7,0.8]:
@@ -76,10 +83,11 @@ for ep_start in [0.7]:#[0.6,0.8]:
                     + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot', \
                         color = 'darkgreen',linewidth=lwd)
 
-ax1[0].set_title(r'a)',fontsize=15,y=-0.24) # Reward Over Time
+# ax1[0].set_title(r'a)',fontsize=20,y=-0.32) # Reward Over Time
+ax1[0].set_title(r'(a)',fontsize=20,y=-0.34) # Reward Over Time
 ax1[0].grid(True)
-ax1[0].set_xlabel('Epoch',fontsize=13)
-ax1[0].set_ylabel('Reward',fontsize=13)
+ax1[0].set_xlabel('Epoch',fontsize=20)
+ax1[0].set_ylabel('Reward',fontsize=20)
 # ax1[0].legend()
 
 # plt.xlabel('10th iterations instance')
@@ -144,10 +152,11 @@ for ep_start in [0.7]:#[0.6,0.8]:
                         color = 'darkblue',linewidth=lwd)    
     
     
-ax1[1].set_title('b)',fontsize=15,y=-0.24) # Battery Over Time',fontsize=15,y=-0.24)
+# ax1[1].set_title('b)',fontsize=20,y=-0.32) # Battery Over Time',fontsize=15,y=-0.24)
+ax1[1].set_title('(b)',fontsize=20,y=-0.34) # Battery Over Time',fontsize=15,y=-0.24)
 ax1[1].grid(True)
-ax1[1].set_xlabel('Epoch',fontsize=13)
-ax1[1].set_ylabel('Average Battery Level (kJ)',fontsize=13)
+ax1[1].set_xlabel('Epoch',fontsize=20)
+ax1[1].set_ylabel('Avg Battery Level (kJ)',fontsize=20)
 
 # ax1[1].legend()
 
@@ -301,7 +310,7 @@ for ep_start in [0.7]:#[0.6,0.8]:
         ax.text(2.55,320,'Min MD',fontsize=9)
         
         
-        plt.savefig(cwd+'/drl_plots/freq_recharge.pdf',dpi=1000, bbox_inches='tight')
+        # plt.savefig(cwd+'/drl_plots/freq_recharge.pdf',dpi=1000, bbox_inches='tight')
         
         # # setup double axes
         # plt.figure(4)
@@ -362,6 +371,7 @@ for ep_start in [0.7]:#[0.6,0.8]:
             g_bat2 = moving_average(g_bat2,1000)            
             
             if greed_style == 0:
+                # print('temp')
                 ax1[0].plot(g_reward2,label='S.H.',color='saddlebrown',\
                     linewidth = lwd) #Sequential Heuristic
 
@@ -387,21 +397,23 @@ h,l = ax1[0].get_legend_handles_labels()
 kw = dict(ncol=5,loc = 'lower center',frameon=False)
 # kw2 = dict(ncol=3,loc = 'lower center',frameon=False)
 #(x, y, width, height)
-leg1 = ax1[0].legend(h[:],l[:],bbox_to_anchor=(-0.15,1.03,2.5,0.2),\
-                mode='expand',fontsize=14,**kw)
+leg1 = ax1[0].legend(h[:],l[:],bbox_to_anchor=(-0.25,1.03,2.5,0.2),\
+                mode='expand',fontsize=18,**kw)
 # leg2 = ax1[0].legend(h[0::2],l[0::2],bbox_to_anchor=(0.1,1.11,1.8,0.2),\
                         # mode='expand',fontsize='large',**kw)
 ax1[0].add_artist(leg1)
 # ax1[1].set_yticklabels(['36','36','38','40','42','44','46'])
 # ax1[1].set_yticklabels(['25','27.5','30','32.5','35','37.5','40','42.5','45','47.5'])
 # ax1[1].set_yticklabels(['25','30','35','40','45'])
-ax1[1].set_yticklabels(['27.5','30','32.5','35','37.5','40','42.5','45','47.5'])
+# ax1[1].set_yticklabels(['27.5','30','32.5','35','37.5','40','42.5','45','47.5'])
+ax1[1].set_yticklabels(['25','30','35','40','45'])
+f1.tight_layout()
 
-ax1[0].tick_params(axis='both', which='major', labelsize=13)
-ax1[1].tick_params(axis='both', which='major', labelsize=13)
+ax1[0].tick_params(axis='both', which='major', labelsize=18)
+ax1[1].tick_params(axis='both', which='major', labelsize=18)
 
-f1.savefig(cwd+'/drl_plots/drl_ovr_comp.pdf',dpi=1000, bbox_inches='tight')
-
+# f1.savefig(cwd+'/drl_plots/drl_ovr_comp.pdf',dpi=1000, bbox_inches='tight')
+# f1.savefig(cwd+'/drl_plots/chris_drl_ovr_comp.pdf',dpi=1000, bbox_inches='tight')
 
 
 
