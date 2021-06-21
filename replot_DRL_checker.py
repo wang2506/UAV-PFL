@@ -29,7 +29,8 @@ lwd = 2
 # with open(cwd+'/data/'+str(0)+'_30_ep_CNN','rb') as f:
 #     data = pickle.load(f)
 ep_start = 0.6
-seed = 2
+# seed = 2
+seed = 1
 # gamma = 0.8 #gamma = 0.7 by default
 plt.figure(1)
 
