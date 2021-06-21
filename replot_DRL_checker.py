@@ -29,16 +29,23 @@ lwd = 2
 # with open(cwd+'/data/'+str(0)+'_30_ep_CNN','rb') as f:
 #     data = pickle.load(f)
 ep_start = 0.6
+seed = 2
 # gamma = 0.8 #gamma = 0.7 by default
 plt.figure(1)
 
-f1,ax1 = plt.subplots(1,2,figsize=(10,4))#(9.6,4)) #10,4
+# f1,ax1 = plt.subplots(1,2,figsize=(10,4))#(9.6,4)) #10,4
+f1,ax1 = plt.subplots(1,3,figsize=(12,4))
 
 for ep_start in [0.7]:#[0.6,0.8]:
     for gamma in [0.6,0.7]:#[0.7,0.8]:
         
-        with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'+str(gamma)\
-            +'_dynamic','rb') as f:
+        # with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'+str(gamma)\
+        #     +'_dynamic','rb') as f:
+        #     data = pickle.load(f)
+    
+        with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(ep_start)+'_'+'reward'\
+                +'test_large'+'_'+str(gamma), \
+                'rb') as f:
             data = pickle.load(f)
     
         data_fixer = moving_average(data,1000)
@@ -104,8 +111,13 @@ ax1[0].set_ylabel('Reward',fontsize=20)
 
 for ep_start in [0.7]:#[0.6,0.8]:
     for gamma in [0.6,0.7]:#[0.7,0.8]:
-        with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'+str(gamma)\
-                  +'_dynamic','rb') as f:
+        # with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'+str(gamma)\
+        #           +'_dynamic','rb') as f:
+        #     data_b = pickle.load(f)
+        
+        with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(ep_start)\
+                +'_batterytest_large_'+str(gamma), \
+                'rb') as f:
             data_b = pickle.load(f)
         
         data_b2 = [mean(i) for i in data_b]
@@ -235,6 +247,65 @@ ax1[1].set_ylabel('Avg Battery Level (kJ)',fontsize=20)
 # plt.plot(median_data)
 # plt.title('median')
 
+for ep_start in [0.7]:#[0.6,0.8]:
+    for gamma in [0.6,0.7]:#[0.7,0.8]:
+        # with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'+str(gamma)\
+        #           +'_dynamic','rb') as f:
+        #     data_b = pickle.load(f)
+        with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(ep_start)\
+                +'_ml_reward_onlytest_large_'+str(gamma), \
+                'rb') as f:
+            data_ml = pickle.load(f)
+        
+        # data_ml2 = [mean(i) for i in data_ml]
+        data_ml2 = moving_average(data_ml,1000)
+    
+        if ep_start == 0.6:
+            if gamma == 0.6:
+                ax1[2].plot(data_ml2,label=r'DRL: $\gamma$ =' + str(gamma)\
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted',\
+                        linewidth=lwd,color = 'darkgreen')
+            elif gamma == 0.7:
+                ax1[2].plot(data_ml2,label=r'DRL: $\gamma$ = '+str(gamma) \
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', \
+                        color = 'magenta',linewidth=lwd)
+            else:
+                ax1[2].plot(data_ml2,label=r'DRL: $\gamma$ = '+str(gamma) \
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='solid', \
+                        color = 'darkblue',linewidth=lwd)
+        elif ep_start == 0.7:
+            if gamma == 0.6:
+                ax1[2].plot(data_ml2,label=r'DRL: $\gamma$ =' + str(gamma)\
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dotted',\
+                        linewidth=lwd,color = 'darkgreen')
+            elif gamma == 0.7:
+                ax1[2].plot(data_ml2,label=r'DRL: $\gamma$ = '+str(gamma) \
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', \
+                        color = 'magenta',linewidth=lwd)
+            else:
+                ax1[2].plot(data_ml2,label=r'DRL: $\gamma$ = '+str(gamma) \
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dashed', \
+                        color = 'darkblue',linewidth=lwd)
+        else:
+            if gamma == 0.6:
+                ax1[2].plot(data_ml2,label=r'DRL: $\gamma$ =' + str(gamma)\
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot',\
+                        linewidth=lwd,color = 'darkgreen')
+            elif gamma == 0.7:
+                ax1[2].plot(data_ml2,label=r'DRL: $\gamma$ = '+str(gamma) \
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot', \
+                        color = 'magenta',linewidth=lwd)
+            else:
+                ax1[2].plot(data_ml2,label=r'DRL: $\gamma$ = '+str(gamma) \
+                    + r' $\epsilon$ = ' + str(ep_start),linestyle='dashdot', \
+                        color = 'darkblue',linewidth=lwd)    
+
+# ax1[1].set_title('b)',fontsize=20,y=-0.32) # Battery Over Time',fontsize=15,y=-0.24)
+ax1[2].set_title('(c)',fontsize=20,y=-0.34) # Battery Over Time',fontsize=15,y=-0.24)
+ax1[2].grid(True)
+ax1[2].set_xlabel('Epoch',fontsize=20)
+ax1[2].set_ylabel('Avg ML Performance',fontsize=20)
+
 # %% replot the paper
 
 
@@ -349,21 +420,44 @@ for ep_start in [0.7]:#[0.6,0.8]:
         for g_ind,greed_style in enumerate([0,1,2]):
             if greed_style != 2:
             
-                with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'\
-                          +str(gamma)+'_greedy_'+str(greed_style),'rb') as f:
-                    g_reward = pickle.load(f)
+                # with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'\
+                #           +str(gamma)+'_greedy_'+str(greed_style),'rb') as f:
+                #     g_reward = pickle.load(f)
         
-                with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'\
-                          +str(gamma)+'_greedy_'+str(greed_style),'rb') as f:
-                    g_bat = pickle.load(f)
+                # with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'\
+                #           +str(gamma)+'_greedy_'+str(greed_style),'rb') as f:
+                #     g_bat = pickle.load(f)
+                
+                with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(ep_start) \
+                        +'_rewardtest_large_'+'_'+str(gamma) \
+                        +'_greedy_'+str(greed_style), \
+                        'rb') as f:
+                    g_reward = pickle.load(f)
+                with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(ep_start) \
+                        +'_batterytest_large_'+'_'+str(gamma) \
+                        +'_greedy_'+str(greed_style), \
+                        'rb') as f:
+                    g_bat = pickle.load(f)                    
+                
             else:
-                with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'\
-                          +str(gamma)+'_greedy_'+str(greed_style)+'_rng_thresh_0.2','rb') as f:
-                    g_reward = pickle.load(f)
+                # with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'\
+                #           +str(gamma)+'_greedy_'+str(greed_style)+'_rng_thresh_0.2','rb') as f:
+                #     g_reward = pickle.load(f)
         
-                with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'\
-                          +str(gamma)+'_greedy_'+str(greed_style)+'_rng_thresh_0.2','rb') as f:
-                    g_bat = pickle.load(f)
+                # with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'\
+                #           +str(gamma)+'_greedy_'+str(greed_style)+'_rng_thresh_0.2','rb') as f:
+                #     g_bat = pickle.load(f)
+
+                with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(ep_start) \
+                        +'_rewardtest_large_'+'_'+str(gamma) \
+                        +'_greedy_'+str(greed_style)+'_rng_thresh_0.2', \
+                        'rb') as f:
+                    g_reward = pickle.load(f)
+                with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(ep_start) \
+                        +'_batterytest_large_'+'_'+str(gamma) \
+                        +'_greedy_'+str(greed_style)+'_rng_thresh_0.2', \
+                        'rb') as f:
+                    g_bat = pickle.load(f)                 
 
             # fig,ax_g = plt.subplots(1,2,figsize=(10,4))
             g_reward2 = moving_average(g_reward,1000)
