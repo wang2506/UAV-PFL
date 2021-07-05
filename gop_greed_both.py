@@ -41,33 +41,34 @@ big_greed_acc2 = []
 
 for theta in theta_vect:
     # defaults
-    with open(cwd+'/geo_optim_chars/greed/default_'+str(theta)+'_obj','rb') as f:
+    with open(cwd+'/geo_optim_chars/greed/tau_adjust_default_'+str(theta)+'_obj','rb') as f:
         big_defaults_obj.append(pk.load(f))
 
-    with open(cwd+'/geo_optim_chars/greed/default_'+str(theta)+'_energy','rb') as f:
+    with open(cwd+'/geo_optim_chars/greed/tau_adjust_default_'+str(theta)+'_energy','rb') as f:
         big_defaults_energy.append(pk.load(f))
 
-    with open(cwd+'/geo_optim_chars/greed/default_'+str(theta)+'_acc','rb') as f:
+    with open(cwd+'/geo_optim_chars/greed/tau_adjust_default_'+str(theta)+'_acc','rb') as f:
         big_defaults_acc.append(pk.load(f))
 
     # greed rhos
-    with open(cwd+'/geo_optim_chars/greed/rho_max_'+str(theta)+'_obj','rb') as f:
+    # tau_adjusted_
+    with open(cwd+'/geo_optim_chars/greed/tau_adjusted_rho_max_'+str(theta)+'_obj','rb') as f:
         big_greed_rhos.append(pk.load(f))
 
-    with open(cwd+'/geo_optim_chars/greed/rho_max_'+str(theta)+'_energy','rb') as f:
+    with open(cwd+'/geo_optim_chars/greed/tau_adjusted_rho_max_'+str(theta)+'_energy','rb') as f:
         big_greed_energy.append(pk.load(f))
 
-    with open(cwd+'/geo_optim_chars/greed/rho_max_'+str(theta)+'_acc','rb') as f:
+    with open(cwd+'/geo_optim_chars/greed/tau_adjusted_rho_max_'+str(theta)+'_acc','rb') as f:
         big_greed_acc.append(pk.load(f))
 
     # greed alphas
-    with open(cwd+'/geo_optim_chars/greed/alphas_'+str(theta)+'_obj','rb') as f:
+    with open(cwd+'/geo_optim_chars/greed/tau_adjusted_alphas_'+str(theta)+'_obj','rb') as f:
         big_greed_rhos2.append(pk.load(f))
 
-    with open(cwd+'/geo_optim_chars/greed/alphas_'+str(theta)+'_energy','rb') as f:
+    with open(cwd+'/geo_optim_chars/greed/tau_adjusted_alphas_'+str(theta)+'_energy','rb') as f:
         big_greed_energy2.append(pk.load(f))
 
-    with open(cwd+'/geo_optim_chars/greed/alphas_'+str(theta)+'_acc','rb') as f:
+    with open(cwd+'/geo_optim_chars/greed/tau_adjusted_alphas_'+str(theta)+'_acc','rb') as f:
         big_greed_acc2.append(pk.load(f))
 
 
@@ -130,9 +131,9 @@ axs.grid(True)
 
 # axs.set_title('Percent of resource consumption greedy (max freq) vs our method')
 axs.legend(fontsize=8)
-axs.set_ylabel('Percentage Decrease (%)',fontsize=10)
-# axs.set_xlabel(r'ML Performance Weight (1 - $\theta$)',fontsize=8)
-axs.set_xlabel(r'Learning Objective Weight ($\theta$)',fontsize=10)
+axs.set_ylabel('Percentage Decrease (%)',fontsize=9)
+axs.set_xlabel(r'ML Performance Weight (1 - $\theta$)',fontsize=9)
+# axs.set_xlabel(r'Learning Objective Weight ($\theta$)',fontsize=10) #for chris proposal
 
 from copy import deepcopy
 
@@ -158,8 +159,7 @@ leg2 = axs.legend(h[0::2],l[0::2],bbox_to_anchor=(-0.2,1.13,1.3,0.2),\
                         mode='expand',fontsize=9,**kw)
 axs.add_artist(leg1)
 
-
 import os
 cwd = os.getcwd()
-plt.savefig(cwd+'/geo_optim_chars/greed1_percent_diff_chris.pdf',dpi=1000,bbox_inches='tight')
+plt.savefig(cwd+'/geo_optim_chars/greed1_percent_diff_test.pdf',dpi=1000,bbox_inches='tight')
 # plt.savefig(cwd+'/geo_optim_chars/greed1_percent_diff.pdf',dpi=1000,bbox_inches='tight')

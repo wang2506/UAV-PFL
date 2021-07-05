@@ -276,7 +276,7 @@ for theta in theta_vec: #[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
         for j in range(workers):
             eng_p[j] += 0.5*capacitance*worker_c[j]*D_j[i][j]* \
                 (cp.sum(alphas[i][j,:])) * cp.power(worker_freq[i][j],2) #*cp.power(worker_freq[i][j],2)
-            eng_p_obj += eng_p[j]
+            eng_p_obj += tau_s1*eng_p[j]
             
         # calculate tx energy by UAVs
         eng_tx_u = (1e-10 * np.ones(shape=coordinators)).tolist()
@@ -385,7 +385,7 @@ for theta in theta_vec: #[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
         
         # implementing zeta constraint
         for j in range(workers):    
-            zeta_p[j] = worker_c[j] * (cp.sum(alphas[i][j,:])) * D_j[i][j] / worker_freq[i][j]
+            zeta_p[j] = tau_s1*worker_c[j] * (cp.sum(alphas[i][j,:])) * D_j[i][j] / worker_freq[i][j]
             zeta_g_j[j] = 1e-10 #img_to_bits
             
             for q in range(devices):
@@ -942,7 +942,7 @@ for theta in theta_vec: #[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     for j in range(workers):
         eng_p2[j] += 0.5*capacitance*worker_c[j]*test_init_rho*devices*D_q[i][j]* \
             temp_alpha_est * 0.5e6**2 #*cp.power(worker_freq[i][j],2)
-        eng_p_obj2 += eng_p2[j]
+        eng_p_obj2 += tau_s1*eng_p2[j]
     
     
     eng_tx_u_obj2 = 0
@@ -1012,13 +1012,13 @@ for theta in theta_vec: #[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
 
     ## store the plot_obj/energy/acc
     cwd = os.getcwd()
-    with open(cwd+'/geo_optim_chars/greed/rho_max_'+str(theta)+'_obj','wb') as f:
+    with open(cwd+'/geo_optim_chars/greed/tau_adjusted_rho_max_'+str(theta)+'_obj','wb') as f:
         pk.dump(plot_obj,f)
 
-    with open(cwd+'/geo_optim_chars/greed/rho_max_'+str(theta)+'_energy','wb') as f:
+    with open(cwd+'/geo_optim_chars/greed/tau_adjusted_rho_max_'+str(theta)+'_energy','wb') as f:
         pk.dump(plot_energy,f)
 
-    with open(cwd+'/geo_optim_chars/greed/rho_max_'+str(theta)+'_acc','wb') as f:
+    with open(cwd+'/geo_optim_chars/greed/tau_adjusted_rho_max_'+str(theta)+'_acc','wb') as f:
         pk.dump(plot_acc,f)     
         
     # ## store the data

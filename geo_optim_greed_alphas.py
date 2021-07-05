@@ -148,9 +148,10 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     coord_tx_rates = np.zeros(shape=(coordinators,workers))
     for h in range(coordinators):
         for j in range(workers):
-            dist_hj = dist_uav_uav_min + (dist_uav_uav_max-dist_uav_uav_min) \
-                * np.random.rand() #randomly determined       
+            # dist_hj = dist_uav_uav_min + (dist_uav_uav_max-dist_uav_uav_min) \
+            #     * np.random.rand() #randomly determined       
             
+            dist_hj = dist_uav_uav_varrho_emph[h+j]            
             la2a_hj = eta_los * (mu_tx * dist_hj)**path_loss_alpha 
             
             coord_tx_rates[h,j] = univ_bandwidth* \
@@ -285,7 +286,7 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
         for j in range(workers):
             eng_p[j] += 0.5*capacitance*worker_c[j]*D_j[i][j]* \
                 (cp.sum(alphas[i][j,:])) * cp.power(worker_freq[i][j],2) #*cp.power(worker_freq[i][j],2)
-            eng_p_obj += eng_p[j]
+            eng_p_obj += tau_s1*eng_p[j]
             
         # calculate tx energy by UAVs
         eng_tx_u = (1e-10 * np.ones(shape=coordinators)).tolist()
@@ -351,7 +352,7 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
                 ## TODO: Greedy alphas here
                 # constraints.append(alphas[i][j,k] >= 1e-10)#1e-10)
                 # constraints.append(alphas[i][j,k] <= 1)
-                constraints.append(alphas[i][j,k] >= 0.9)
+                constraints.append(alphas[i][j,k] >= 0.995)
                 constraints.append(alphas[i][j,k] <= 1)
     
         # freqs
@@ -365,10 +366,10 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
             for k in range(coordinators+workers):
                 ## TODO: joint greedy
                 constraints.append(rho[i][j,k] <= 1)
-                constraints.append(rho[i][j,k] >= 1e-10)
+                # constraints.append(rho[i][j,k] >= 1e-10)
                 # constraints.append(rho[i][j,k] >= 0.99)
                 
-                # constraints.append(rho[i][j,k] >= 1/(coordinators+workers))
+                constraints.append(rho[i][j,k] >= 1/(coordinators+workers))
                 
             # constraints.append(cp.sum(rho[i][j,:]) <= 1.05)#1)
             constraints.append(cp.sum(rho[i][j,:]) <= 1)
@@ -377,7 +378,8 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
             for k in range(workers):
                 constraints.append(varrho[i][j,k] <= 1)
                 # constraints.append(varrho[i][j,k] >= 1/(coordinators+workers))#1e-10)
-                constraints.append(varrho[i][j,k] >= 1e-10)
+                constraints.append(varrho[i][j,k] >= 1/(workers))
+                # constraints.append(varrho[i][j,k] >= 1e-10)
                 
             constraints.append(cp.sum(varrho[i][j,:]) <= 1)
         
@@ -388,7 +390,7 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
         
         # implementing zeta constraint
         for j in range(workers):    
-            zeta_p[j] = worker_c[j] * (cp.sum(alphas[i][j,:])) * D_j[i][j] / worker_freq[i][j]
+            zeta_p[j] = tau_s1*worker_c[j] * (cp.sum(alphas[i][j,:])) * D_j[i][j] / worker_freq[i][j]
             zeta_g_j[j] = 1e-10 #img_to_bits
             
             for q in range(devices):
@@ -461,10 +463,12 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     
     # calc objective fxn value with initial estimate numbers
     # eng_p_prior = 0.01*0.5*capacitance*()
-    alpha_ind_init = 0.995#0.9
+    alpha_ind_init = 0.999#0.9
     
-    test_init_rho = 0.05
-    test_init_varrho = 0.1
+    # test_init_rho = 0.05
+    # test_init_varrho = 0.1
+    test_init_rho = 1/(coordinators+workers)
+    test_init_varrho = 1/workers
     
     sigma_c_H,sigma_c_G = 50, 50 #50, 50
     B_cluster = 500
@@ -944,7 +948,7 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     for j in range(workers):
         eng_p2[j] += 0.5*capacitance*worker_c[j]*test_init_rho*devices*D_q[i][j]* \
             temp_alpha_est * 0.5e6**2 #*cp.power(worker_freq[i][j],2)
-        eng_p_obj2 += eng_p2[j]
+        eng_p_obj2 += tau_s1*eng_p2[j]
     
     
     eng_tx_u_obj2 = 0
@@ -1012,13 +1016,13 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
 
     ## store the plot_obj/energy/acc
     cwd = os.getcwd()
-    with open(cwd+'/geo_optim_chars/greed/single_alphas_'+str(theta)+'_obj','wb') as f:
+    with open(cwd+'/geo_optim_chars/greed/tau_adjusted_alphas_'+str(theta)+'_obj','wb') as f:
         pk.dump(plot_obj,f)
 
-    with open(cwd+'/geo_optim_chars/greed/single_alphas_'+str(theta)+'_energy','wb') as f:
+    with open(cwd+'/geo_optim_chars/greed/tau_adjusted_alphas_'+str(theta)+'_energy','wb') as f:
         pk.dump(plot_energy,f)
 
-    with open(cwd+'/geo_optim_chars/greed/single_alphas_'+str(theta)+'_acc','wb') as f:
+    with open(cwd+'/geo_optim_chars/greed/tau_adjusted_alphas_'+str(theta)+'_acc','wb') as f:
         pk.dump(plot_acc,f)
         
     # ## store the data

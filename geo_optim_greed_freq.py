@@ -49,9 +49,9 @@ ax3.grid(True)
 plot_counter = 0
 theta_vec = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 for theta in theta_vec: #[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
+    np.random.seed(1)    
     # %% objective function test
     # T_s = 20
-    
     K_s1 = 2 #1
     K_s2 = 2#5
     tau_s1 = 2
@@ -999,13 +999,13 @@ for theta in theta_vec: #[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
 
     ## store the plot_obj/energy/acc
     cwd = os.getcwd()
-    with open(cwd+'/geo_optim_chars/greed/freq_max_'+str(theta)+'_obj','wb') as f:
+    with open(cwd+'/geo_optim_chars/greed/tau_adjusted_freq_max_'+str(theta)+'_obj','wb') as f:
         pk.dump(plot_obj,f)
 
-    with open(cwd+'/geo_optim_chars/greed/freq_max_'+str(theta)+'_energy','wb') as f:
+    with open(cwd+'/geo_optim_chars/greed/tau_adjusted_freq_max_'+str(theta)+'_energy','wb') as f:
         pk.dump(plot_energy,f)
 
-    with open(cwd+'/geo_optim_chars/greed/freq_max_'+str(theta)+'_acc','wb') as f:
+    with open(cwd+'/geo_optim_chars/greed/tau_adjusted_freq_max_'+str(theta)+'_acc','wb') as f:
         pk.dump(plot_acc,f)     
         
     # ## store the data
