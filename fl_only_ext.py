@@ -335,6 +335,7 @@ for save_type in [settings.iid_style]:
                         local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=ep_len,\
                                 dataset=dataset_train,indexes=nts[uav_counter])
                     else:
+                        print(t)
                         local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=ep_len,\
                                 dataset=dataset_train,indexes=nts[t][uav_counter])
                     
@@ -460,7 +461,7 @@ for save_type in [settings.iid_style]:
                 temp_worker_models = deepcopy(worker_models)
                 # temp_swarm_w = run_one_iter(temp_worker_models)
                 temp_swarm_w = run_one_iter(temp_worker_models,ep_len=1,\
-                    nts = node_train_sets[t]) #one local training iter
+                    nts = node_train_sets)#[t]) #one local training iter
                 
                 # perform a sw_agg
                 temp_fl_swarm_models,agg_w_swarms,agg_t_swarms = \
