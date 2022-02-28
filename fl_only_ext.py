@@ -337,16 +337,13 @@ for save_type in [settings.iid_style]:
                     else:
                         local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=ep_len,\
                                 dataset=dataset_train,indexes=nts[t][uav_counter])
-                            
-                    # _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
-                    # _,w,loss = local_obj.train(net=deepcopy(loc_models[ind_i]).to(device))
+                    
                     _,w,loss = local_obj.train(net=loc_models[uav_counter].to(device))
                     
                     swarm_w[ind_i].append(w)
                     uav_counter += 1
             
             return swarm_w
-        
         
         def sw_agg(loc_models,temp_swarm_w,swarm_period=swarm_period,\
             global_period=global_period,data_qty=data_qty,\
@@ -405,7 +402,7 @@ for save_type in [settings.iid_style]:
             print('hierarchical FL begins here')
             # swarm_w = run_one_iter(worker_models,ep_len=swarm_period)
             swarm_w = run_one_iter(worker_models,ep_len=swarm_period,\
-                    nts = node_train_sets[t]) #one local training iter
+                    nts = node_train_sets)#[t]) #one local training iter
             
             # for i in fl_swarm_models:
             #     print(i.state_dict()['fc2.bias'])
@@ -485,25 +482,26 @@ for save_type in [settings.iid_style]:
         # saving results
         cwd = os.getcwd()
         
-        # streamline later this if-else is unneeded, but its 2 am rn
-        # if settings.iid_style == 'extreme':
-        with open(cwd+'/data/3fl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
+        with open(cwd+'/hfl_data/'+settings.nn_style.upper()+\
+            '/acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
-            '_'+settings.nn_style+'_debug','wb') as f:
+            '_swarms_'+str(settings.swarms),'wb') as f:
             pickle.dump(fl_acc,f)
     
-        with open(cwd+'/data/3fl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
+        with open(cwd+'/hfl_data/'+settings.nn_style.upper()+\
+            '/loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
-            '_'+settings.nn_style+'_debug','wb') as f:
+            '_swarms_'+str(settings.swarms),'wb') as f:
             pickle.dump(total_loss,f)
         
-        with open(cwd+'/data/3full_fl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
+        with open(cwd+'/hfl_data/'+settings.nn_style.upper()+\
+            '/full_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
-            '_'+settings.nn_style+'_debug','wb') as f:
+            '_swarms_'+str(settings.swarms),'wb') as f:
             pickle.dump(fl_acc_full,f)
     
-        with open(cwd+'/data/3full_fl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
+        with open(cwd+'/hfl_data/'+settings.nn_style.upper()+\
+            '/full_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
-            '_'+settings.nn_style+'_debug','wb') as f:
+            '_swarms_'+str(settings.swarms),'wb') as f:
             pickle.dump(total_loss_full,f)
-            
