@@ -363,7 +363,7 @@ for save_type in [settings.iid_style]:
             
             t_swarm_total_qty = []
             w_swarms = []
-                
+            
             for ind_i,val_i in enumerate(nps):
     
                 t2_static_qty = worker_datas[:val_i]
@@ -436,11 +436,12 @@ for save_type in [settings.iid_style]:
                 global_net.load_state_dict(w_global)
                 
             ## evaluate model performance - post aggregations (i.e., globalized acc)
-            if ((t+1) % (global_period) == 0):
+            if (t+1) % (global_period) == 0:
 
-                fl_acc_temp_all, total_loss_temp_all = test_img2(fl_swarm_models[0],dataset_test,\
+                # fl_acc_temp_all, total_loss_temp_all = test_img2(fl_swarm_models[0],dataset_test,\
+                #         bs=batch_size,indexes=all_test_indexes,device=device)
+                fl_acc_temp_all, total_loss_temp_all = test_img2(global_net,dataset_test,\
                         bs=batch_size,indexes=all_test_indexes,device=device)
-
                 fl_acc_full.append(fl_acc_temp_all)
                 total_loss_full.append(total_loss_temp_all)
                 
