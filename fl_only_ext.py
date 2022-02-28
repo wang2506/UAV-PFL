@@ -335,7 +335,6 @@ for save_type in [settings.iid_style]:
                         local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=ep_len,\
                                 dataset=dataset_train,indexes=nts[uav_counter])
                     else:
-                        print(t)
                         local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=ep_len,\
                                 dataset=dataset_train,indexes=nts[t][uav_counter])
                     
