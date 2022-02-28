@@ -61,7 +61,7 @@ for ratio in [0.5,1,1.5,2,2.5]:
     plt.xlabel('global aggregation cycle number')
     plt.ylabel('accuracy (%)')
     plt.legend()
-    plt.savefig('noniid_perf_'+str(ratio)+'.png',dpi=500)
+    # plt.savefig('noniid_perf_'+str(ratio)+'.png',dpi=500)
     
     
     

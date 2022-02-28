@@ -49,6 +49,7 @@ ax3.grid(True)
 # 0.4
 plot_counter = 0
 theta_vec = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+# theta_vec = [0.7,0.9]
 for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     # %% objective function test
     # T_s = 20
@@ -100,8 +101,8 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     
     # constants
     carrier_freq = 2 * 1e9
-    noise_db = 1e-13 #-130 dB, we convert to watts
-    univ_bandwidth = 10*1e6 #MHz
+    noise_db = 4e-21 #-174 dBm/Hz, we convert to watts
+    univ_bandwidth = 2e6 #MHz #10 MHz
     mu_tx = 4*np.pi * carrier_freq/(3*1e8)
     eta_los = 2 #3db 
     eta_nlos = 200 #23db
@@ -606,7 +607,7 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
                             
                         # sig_powers_check += denom_prev/D_j_prev
                         
-                            
+                        
                     for h in range(coordinators):
                         varrho_hj = test_init_varrho
                         
@@ -784,7 +785,6 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
             for j in range(workers):
                 mismatch_scale = cp.sum(alphas[i][j,:]) * D_j[i][j] /delta_u_approx
                 mismatch += mismatch_scale * mismatch_j[j] 
-        
             
             # learning combine
             # theta = 0.3
@@ -965,7 +965,6 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     const_energies += eng_p_obj2 + eng_tx_u_obj2 + eng_tx_q2
     
     
-    
     # calc initial point
     plot_energy.append(const_energies)
     plot_energy = np.roll(plot_energy,1)
@@ -1012,15 +1011,15 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     ## store the plot_obj/energy/acc
     cwd = os.getcwd()
     subfolder = 'avg' #'greed'
-    with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust_seed_'+str(seed)+\
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/147_tau_adjust_seed_'+str(seed)+\
               '_default_'+str(theta)+'_obj','wb') as f:
         pk.dump(plot_obj,f)
 
-    with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust_seed_'+str(seed)+\
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/147_tau_adjust_seed_'+str(seed)+\
               'default_'+str(theta)+'_energy','wb') as f:
         pk.dump(plot_energy,f)
 
-    with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust_seed_'+str(seed)+\
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/147_tau_adjust_seed_'+str(seed)+\
               'default_'+str(theta)+'_acc','wb') as f:
         pk.dump(plot_acc,f)    
     
@@ -1036,18 +1035,18 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     # with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust+\
     #           '_default_'+str(theta)+'_acc','wb') as f:
     #     pk.dump(plot_acc,f)    
-        
+    
     # ## store the data
     # cwd = os.getcwd()
-    with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust_seed_'+str(seed)+\
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/147_tau_adjust_seed_'+str(seed)+\
               '_'+str(theta)+'rho','wb') as f:
         pk.dump(rho[1].value,f)
     
-    with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust_seed_'+str(seed)+\
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/147_tau_adjust_seed_'+str(seed)+\
               '_'+str(theta)+'varrho','wb') as f:
         pk.dump(varrho[1].value,f)
     
-    with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust_seed_'+str(seed)+\
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/147_tau_adjust_seed_'+str(seed)+\
               '_'+str(theta)+'alphas','wb') as f:
         pk.dump(alphas[1].value,f)
     
@@ -1064,11 +1063,11 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     #           '_'+str(theta)+'worker_freq','wb') as f:
     #     pk.dump(worker_freq2,f)
 
-    with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust_seed_'+str(seed)+\
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/147_tau_adjust_seed_'+str(seed)+\
               '_'+str(theta)+'worker_freq','wb') as f:
         pk.dump(worker_freq2,f)
 
-    with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust_seed_'+str(seed)+\
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/147_tau_adjust_seed_'+str(seed)+\
               '_'+str(theta)+'D_j','wb') as f:
         pk.dump(D_j2,f)
 

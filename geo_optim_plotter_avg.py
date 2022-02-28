@@ -31,8 +31,8 @@ width = 0.7
 thetas = [0.01, 0.1, 0.2, 0.3,0.4,0.5,0.6,0.7, 0.8, 0.9] #,0.95]
 categories = len(thetas)-1
 
-master_seeds = [1,3,5,6,7,8,10,13,16,17]
-# master_seeds = [1,17]
+# master_seeds = [1,3,5,6,7,8,10,13,16,17]
+master_seeds = [1]#,17]
 
 # rho, varrho, alphas, frequencies, 14 instances
 # avg rho workers; avg rho coords
@@ -66,19 +66,19 @@ for theta in thetas:
         # with open(cwd+'/geo_optim_chars/avg/seed_'+str(seed)+'_'+str(theta)+'rho','rb') as f:
         #     rho_all[seed].append(pk.load(f))
         
-        with open(cwd+'/geo_optim_chars/avg/tau_adjust_seed_'+str(seed)+'_'+str(theta)+'rho','rb') as f:
+        with open(cwd+'/geo_optim_chars/avg/147_tau_adjust_seed_'+str(seed)+'_'+str(theta)+'rho','rb') as f:
             rho_all[seed].append(pk.load(f))    
     
-        with open(cwd+'/geo_optim_chars/avg/tau_adjust_seed_'+str(seed)+'_'+str(theta)+'varrho','rb') as f:
+        with open(cwd+'/geo_optim_chars/avg/147_tau_adjust_seed_'+str(seed)+'_'+str(theta)+'varrho','rb') as f:
             varrho_all[seed].append(pk.load(f))
             
-        with open(cwd+'/geo_optim_chars/avg/tau_adjust_seed_'+str(seed)+'_'+str(theta)+'alphas','rb') as f:
+        with open(cwd+'/geo_optim_chars/avg/147_tau_adjust_seed_'+str(seed)+'_'+str(theta)+'alphas','rb') as f:
             alphas_all[seed].append(pk.load(f))
     
-        with open(cwd+'/geo_optim_chars/avg/tau_adjust_seed_'+str(seed)+'_'+str(theta)+'D_j','rb') as f:
+        with open(cwd+'/geo_optim_chars/avg/147_tau_adjust_seed_'+str(seed)+'_'+str(theta)+'D_j','rb') as f:
             data_raw[seed].append(pk.load(f))
     
-        with open(cwd+'/geo_optim_chars/avg/tau_adjust_seed_'+str(seed)+'_'+str(theta)+'worker_freq','rb') as f:
+        with open(cwd+'/geo_optim_chars/avg/147_tau_adjust_seed_'+str(seed)+'_'+str(theta)+'worker_freq','rb') as f:
             worker_freqs_all[seed].append(pk.load(f))
         
         # print(worker_freqs_all)
@@ -166,7 +166,7 @@ for i in range(4):
 # axs[1].set_xticklabels(ax_ticks) 
 # 14 clusters of bars
 
-plt.savefig(cwd+'/geo_optim_chars/optimizer_avgs2.pdf',dpi=1000,bbox_inches='tight')
+# plt.savefig(cwd+'/geo_optim_chars/optimizer_avgs2.pdf',dpi=1000,bbox_inches='tight')
 # axs.bar(x_locs)
 
 # rects1 = axs[0].bar(x_locs - 2.5*width/categories,branch_track1,width/categories,\

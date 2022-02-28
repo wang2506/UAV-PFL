@@ -31,11 +31,22 @@ def ml_parser():
     parser.add_argument('--rd_val',type=int,default=2,\
                         help='non-unitary ratio value')
     
-    parser.add_argument('--comp',type=str,default='cpu',\
-                        choices=['gpu','cpu'],\
-                        help='gpu or cpu')
     
     parser.add_argument('--swarms',type=int,default=10,\
-                        help='swarms')
+                        help='swarms') #4 or 10
+    parser.add_argument('--l_nps',type=int,default=2,\
+                        help='min nodes per swarm')
+    parser.add_argument('--h_nps',type=int,default=4,\
+                        help='max nodes per swarm')        
+        
+    parser.add_argument('--time',type=int,default=40)
+    parser.add_argument('--comp',type=str,default='cpu',\
+                        choices=['gpu','cpu'],\
+                        help='gpu or cpu')        
+    parser.add_argument('--gpu_num',type=int,default=0,\
+                        help='gpu_num')
+    
+    parser.add_argument('--seed',type=int,default=1)
+        
     args = parser.parse_args()
     return args

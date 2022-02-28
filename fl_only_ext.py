@@ -29,13 +29,13 @@ settings = ml_parser()
 
 # %% import neural network data
 # seed declarations
-init_seed = 1
+init_seed = settings.seed
 random.seed(init_seed)
 np.random.seed(init_seed)
 torch.manual_seed(init_seed)
 
 if settings.comp == 'gpu':
-    device = torch.device('cuda:2')
+    device = torch.device('cuda:'+str(settings.gpu_num))
 else:
     device = torch.device('cpu')
 
@@ -61,12 +61,13 @@ for index, (pixels,label) in enumerate(dataset_train):
     
 test = {i: [] for i in range(10)} 
 for index, (pixels,label) in enumerate(dataset_test):
-    test[label].append(index)    
+    test[label].append(index)
 
 # %% filtering continued (the previous chunk is slow)
 # assign datasets to nodes
-total_time = 40#120
-nodes_per_swarm = [np.random.randint(2,4) for i in range(settings.swarms)]
+total_time = settings.time #40#120
+nodes_per_swarm = [np.random.randint(settings.l_nps,settings.h_nps) \
+                   for i in range(settings.swarms)]
 
 # labels_per_node assignment function
 def pop_labels(temp_lpn,temp_ls,max_labels=10,flag=True):
@@ -91,7 +92,7 @@ def pop_labels(temp_lpn,temp_ls,max_labels=10,flag=True):
             if len(starting_list) != 0:
                 if j > len(starting_list):
                     tts = deepcopy(starting_list)
-                    diff = j -len(starting_list)
+                    diff = j - len(starting_list)
                     
                     starting_list = list(range(max_labels))
                     
@@ -221,7 +222,6 @@ for save_type in [settings.iid_style]:
         for j in range(total_time):
             node_train_sets[j] = pop_nts(ls[j],data_qty[j],\
                             node_train_sets[j],nodes_per_swarm)#,debug=True)
-            
     else: #TODO
         # node_train_sets = {i: [] for i in range(sum(nodes_per_swarm))}
         # node_train_sets = pop_nts(ls,data_qty,\
@@ -368,12 +368,6 @@ for save_type in [settings.iid_style]:
             w_swarms = []
                 
             for ind_i,val_i in enumerate(nps):
-                # t2_static_qty = temp_qty[:val_i]
-                # del temp_qty[:val_i]
-                
-                # t3_static_qty = [i*swarm_period for i in t2_static_qty]
-                
-                # w_avg_swarm = FedAvg2(temp_swarm_w[ind_i],t3_static_qty)
     
                 t2_static_qty = worker_datas[:val_i]
                 del worker_datas[:val_i]
@@ -402,7 +396,6 @@ for save_type in [settings.iid_style]:
         print(init_acc)
         print('initial loss measurement')
         print(init_loss)
-        
         
         for t in range(int(total_time/swarm_period)):
             # swarm_w = {i:[] for i in range(settings.swarms)}
@@ -447,42 +440,10 @@ for save_type in [settings.iid_style]:
                 
             ## evaluate model performance - post aggregations (i.e., globalized acc)
             if ((t+1) % (global_period) == 0):
-                # fl_acc_temp, total_loss_temp = 0, 0
-                
-                # fl_acc_temp_all, total_loss_temp_all = 0, 0
-                
-                # uav_counter = 0
-                # for i,ii in enumerate(fl_swarm_models):
-                #     ii.eval()
-                #     temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
-                #             indexes=swarm_test_sets[i],device=device)
-                    # swarm_dataset_indexes = []
-                    # for j in range(uav_counter,uav_counter+nodes_per_swarm[i]): 
-                    #     swarm_dataset_indexes += node_train_sets[j]
-                    #     uav_counter += 1
-                
-                #     temp_acc, loss = test_img2(ii,dataset_train,bs=batch_size,\
-                #             indexes=swarm_dataset_indexes,device=device)                    
-                    
-                #     # fl_acc_temp += temp_acc/len(fl_swarm_models)
-                #     # total_loss_temp += loss/len(fl_swarm_models) #swarms
-                    
-                    # fl_acc_temp_all += temp_acc/len(fl_swarm_models)
-                    # total_loss_temp_all += loss/len(fl_swarm_models)
-                
-                # # select any of the swarm_models
-                # fl_acc_temp_all, total_loss_temp_all = test_img2(global_net,dataset_test,\
-                #         bs=batch_size,indexes=all_test_indexes,device=device)
-                
+
                 fl_acc_temp_all, total_loss_temp_all = test_img2(fl_swarm_models[0],dataset_test,\
                         bs=batch_size,indexes=all_test_indexes,device=device)
-                
-                # fl_acc_temp_all, total_loss_temp_all = test_img2(fl_swarm_models[0],dataset_train,\
-                #         bs=batch_size,indexes=range(len(dataset_train)),device=device)
-                
-                # fl_acc.append(fl_acc_temp)
-                # total_loss.append(total_loss_temp)
-                
+
                 fl_acc_full.append(fl_acc_temp_all)
                 total_loss_full.append(total_loss_temp_all)
                 
@@ -490,7 +451,6 @@ for save_type in [settings.iid_style]:
                 print('global metric')
                 print(fl_acc_full[-1])
                 # print(total_loss)
-
 
                 ## calculate localized accuracy prior to aggregations
                 ## personalized model performance 
@@ -547,150 +507,3 @@ for save_type in [settings.iid_style]:
             '_'+settings.nn_style+'_debug','wb') as f:
             pickle.dump(total_loss_full,f)
             
-        # elif settings.iid_style == 'mild':
-        #     with open(cwd+'/data/fl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
-        #         settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
-        #         '_'+settings.nn_style+'_debug','wb') as f:
-        #         pickle.dump(fl_acc,f)
-        
-        #     with open(cwd+'/data/fl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
-        #         settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
-        #         '_'+settings.nn_style+'_debug','wb') as f:
-        #         pickle.dump(total_loss,f)
-        # # else:
-        #     with open(cwd+'/data/fl_acc_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
-        #               +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
-        #         pickle.dump(fl_acc,f)
-        
-        #     with open(cwd+'/data/fl_loss_'+save_type+'_'+str(ratio)+'_'+str(data_source)\
-        #               +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
-        #         pickle.dump(total_loss,f)
-        
-# %% graveyard
-
-        # ### calculate optim variables    
-        # swarm_w_prev = default_w # used to calc optim variables
-        # comp_w = swarm_w[0] # arbitrary
-        
-        # ## B_j, need magnitude
-        # mag_B_j = 0
-        # for i in default_w.keys():
-        #     mag_B_j += torch.norm(1/lr*default_w[i] - 1/lr*comp_w[i])
-            
-        #     grad_diffs[0].append(1/lr*default_w[i] - 1/lr*comp_w[i])
-        #     grad_diffs[1].append(1/lr*default_w[i] - 1/lr*swarm_w[1][i])
-            
-        # print(mag_B_j)
-        # mu_j = 0
-        # mu_j_grad = 0
-        # mu_j_params = 0
-        # for i in default_w.keys():
-        #     mu_j_grad += torch.norm(1/lr * comp_w[i] - 1/lr * swarm_w[1][i])
-        #     mu_j_params += torch.norm(comp_w[ )
-        
-    
-        # B_j = [i - swarm_w] 
-
-
-#### HN-PFL procedure 
-### 1. create object for each node/device
-### 2. after \tau1 = swarm_period iterations, aggregate cluster-wise (weighed)
-### 3. after \tau2 = global_period swarm-wide aggregations, aggregate globally (unweighted)
-
-# print('HN-PFL begins here')
-
-# uav_counter = 0
-# for ind_i,val_i in enumerate(nodes_per_cluster):
-#     for j in range(val_i): # each uav in i
-#         local_obj = LocalUpdate_PFL(device,bs=10,lr=lr,epochs=swarm_period,\
-#                 dataset=dataset_train,indexes=static_nts[uav_counter])
-#         _,w,loss = local_obj.train(net=deepcopy(pfl_swarm_models[ind_i]).to(device))
-        
-#         swarm_w[ind_i].append(w)
-        
-#         uav_counter += 1
-
-
-
-
-
-        # ## final instance for localized gradient descents
-        # print('final iteration - localized only')        
-        # swarm_w = {i:[] for i in range(settings.swarms)}
-        
-        # uav_counter = 0
-        # for ind_i,val_i in enumerate(nodes_per_swarm):
-        #     for j in range(val_i): # each uav in i
-        #         if settings.online == False:
-        #             local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=1,\
-        #                     dataset=dataset_train,indexes=node_train_sets[uav_counter])
-        #         else:
-        #             local_obj = LocalUpdate(device,bs=batch_size,lr=lr,epochs=1,\
-        #                     dataset=dataset_train,indexes=node_train_sets[t][uav_counter])
-                
-        #         _,w,loss = local_obj.train(net=deepcopy(fl_swarm_models[ind_i]).to(device))
-                
-        #         swarm_w[ind_i].append(w)
-                
-        #         uav_counter += 1
-        
-        # ## run FL swarm-wide aggregation only
-        # if settings.online == False:
-        #     temp_qty = deepcopy(data_qty).tolist()
-        # else:
-        #     temp_qty = 0*data_qty[t]
-        #     for t_prime in range(swarm_period*global_period):
-        #         temp_qty += data_qty[t-t_prime]
-        #     temp_qty = temp_qty.tolist()
-            
-        # for ind_i,val_i in enumerate(nodes_per_swarm):
-        #     t2_static_qty = temp_qty[:val_i]
-        #     del temp_qty[:val_i]
-            
-        #     t3_static_qty = [i*swarm_period for i in t2_static_qty]
-            
-        #     w_avg_swarm = FedAvg2(swarm_w[ind_i],t3_static_qty)
-
-        #     fl_swarm_models[ind_i].load_state_dict(w_avg_swarm)
-        #     fl_swarm_models[ind_i].train()
-        
-        # fl_acc_temp = 0
-        # total_loss_temp = 0
-        
-        # for i,ii in enumerate(fl_swarm_models):
-        #     ii.eval()
-        #     temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
-        #             indexes=swarm_test_sets[i],device=device)
-            
-        #     fl_acc_temp += temp_acc/len(fl_swarm_models)
-        #     total_loss_temp += loss/len(fl_swarm_models) #swarms
-
-        # fl_acc.append(fl_acc_temp)
-        # total_loss.append(total_loss_temp)
-
-
-
-
-
-                # # swarm-wide agg
-                # if settings.online == False:
-                #     temp_qty = deepcopy(data_qty).tolist() # TODO: readjust debug flag later
-                # else:
-                #     temp_qty = 0*data_qty[t]
-                #     for t_prime in range(swarm_period*global_period):
-                #         temp_qty += data_qty[t-t_prime]
-                #     temp_qty = temp_qty.tolist()
-                    
-                # t_swarm_total_qty = []
-                # w_swarms = []
-                
-                # for ind_i,val_i in enumerate(nodes_per_swarm):
-                #     t2_static_qty = temp_qty[:val_i]
-                #     del temp_qty[:val_i]
-                    
-                #     t3_static_qty = [i*swarm_period for i in t2_static_qty]
-
-                #     w_avg_swarm = FedAvg2(swarm_w[ind_i],t3_static_qty)
-                    
-                #     t_swarm_total_qty.append(sum(t3_static_qty))
-                #     w_swarms.append(w_avg_swarm)
