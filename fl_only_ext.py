@@ -249,9 +249,9 @@ for save_type in [settings.iid_style]:
         except:
             default_w = deepcopy(global_net.state_dict())
         
-        # lr = 1e-3 #1e-2 #CNN
-        # debug lr-rates        
-        lr = 1e-2
+        lr = 1e-3 #1e-2 #CNN
+        # debug lr-rates
+        # lr = 1e-2
         # lr = 2*1e-4
         
     print(global_net)
