@@ -32,7 +32,7 @@ def ml_parser():
                         help='non-unitary ratio value')
     
     
-    parser.add_argument('--swarms',type=int,default=10,\
+    parser.add_argument('--swarms',type=int,default=16,\
                         help='swarms') #4 or 10
     parser.add_argument('--l_nps',type=int,default=2,\
                         help='min nodes per swarm')
