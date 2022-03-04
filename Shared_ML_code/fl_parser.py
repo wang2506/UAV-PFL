@@ -20,7 +20,7 @@ def ml_parser():
                         choices=['global','swarm'],\
                         help='global or swarm-wide ratio varying')
     
-    parser.add_argument('--iid_style',type=str,default='extreme',\
+    parser.add_argument('--iid_style',type=str,default='mild',\
                         choices=['extreme','mild','iid'],\
                         help='noniid/iid styles')
     
@@ -38,9 +38,9 @@ def ml_parser():
                         help='min nodes per swarm')
     parser.add_argument('--h_nps',type=int,default=4,\
                         help='max nodes per swarm')        
-        
+    
     parser.add_argument('--time',type=int,default=40)
-    parser.add_argument('--comp',type=str,default='cpu',\
+    parser.add_argument('--comp',type=str,default='gpu',\
                         choices=['gpu','cpu'],\
                         help='gpu or cpu')        
     parser.add_argument('--gpu_num',type=int,default=0,\
@@ -49,4 +49,5 @@ def ml_parser():
     parser.add_argument('--seed',type=int,default=1)
         
     args = parser.parse_args()
+    args.online = True
     return args
