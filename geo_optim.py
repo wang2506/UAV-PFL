@@ -49,10 +49,11 @@ theta_vec = [0.01] #[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 for theta in theta_vec:
     # %% objective function test
     np.random.seed(seed) # prevents randomization from messing up energies
-    K_s1 = 2 #1
-    K_s2 = 2#5
+    T_s = 8 #200
     tau_s1 = 2
     tau_s2 = 2
+    K_s1 = int(T_s/tau_s1) #17
+    K_s2 = int(T_s/(tau_s1*tau_s2)) #5
     
     img_to_bits =  8e4 #20
     params_to_bits = 1e4 #2
@@ -62,9 +63,6 @@ for theta in theta_vec:
     workers = 2 #5 #2-4 #3-5
     coordinators = 2 #3 #2 #1-2
     devices = 10 #2  #9-12
-    #5 uavs, 10 device, 10 uavs, 15 devices, 100 iterations
-    
-    T_s = 200 #20
 
     ## powers and communication rates
     # powers
@@ -158,7 +156,6 @@ for theta in theta_vec:
     
     Omega = cp.Variable(pos=True) #unused
     
-    
     ## flight energy coeffs
     # max_speed_uav = 57 #
     min_speed_uav = 10 # km/h
@@ -179,7 +176,7 @@ for theta in theta_vec:
     kg_newton = 9.8 
     
     psi_j = (np.zeros(workers)).tolist()
-    psi_h = (np.zeros(coordinators)).tolist() #2 #11.95 #0.5 #0.25 #1 #10
+    psi_h = (np.zeros(coordinators)).tolist()
     
     for j in range(workers):
         c1 = 0.5 * air_density * (zero_lift_breakpoint +\
@@ -203,13 +200,11 @@ for theta in theta_vec:
         
         psi_h[h] = c1 * (speed**3) + c2/speed
         
-    # psi_m = c1 * (min_speed_uav**3) + c2/speed   # parameter for leader flight to nearest AP
+    psi_m = c1 * (min_speed_uav**3) + c2/speed   # parameter for leader flight to nearest AP
     psi_l = psi_j[np.random.randint(0,workers)] #+ 2*psi_m*2/tau_s2
-    
-    
-    D_q = {i:[500 for j in range(devices)]  for i in range(K_s1)}
-    
+
     # building D_j
+    D_q = {i:[500 for j in range(devices)]  for i in range(K_s1)}
     D_j = {i:[] for i in range(K_s1)}
     
     for i in range(K_s1):
@@ -218,7 +213,6 @@ for theta in theta_vec:
                 temp = [1e-10] #to satisfy log reqs
                 for k in range(devices):
                     temp.append(rho[i][k,j]*D_q[i][k])
-            
                 D_j[i].append(cp.sum(temp))
         else:
             # device offloading
@@ -226,7 +220,6 @@ for theta in theta_vec:
                 temp = [1e-10]
                 for k in range(devices): #devices to all uavs
                     temp.append(rho[i][k,j]*D_q[i][k])
-                    
                 D_j[i].append(cp.sum(temp))
             
             # coordinator offloading
@@ -236,158 +229,133 @@ for theta in theta_vec:
                     temp.append(varrho[i][k,j]*D_j[i][workers+k])
                 D_j[i][j] += cp.sum(temp)
                 
-                # for k in range(coordinators): # coordinator to workers only
-                #     temp.append(varrho[i][workers+k,j]*D_j[i][workers+k]) #*D_j[i-1][workers+k])
-    
     B_j = {i:[600 for j in range(workers)] for i in range(K_s1)} 
     B_j_coord = {i:[600 for h in range(coordinators)] for i in range(K_s1)}
     
-    # %% build objective
-    for i in range(1,K_s1):
-        print('new K_s1 iteration')
-        ## theta terms
-        # calculate the processing energy needed
-        eng_p = (1e-10 * np.ones(shape=workers)).tolist()
-        eng_p_obj = 1e-10 
-        
-        for j in range(workers):
-            eng_p[j] += 0.5*capacitance*worker_c[j]*D_j[i][j]* \
-                (cp.sum(alphas[i][j,:])) * cp.power(worker_freq[i][j],2) #*cp.power(worker_freq[i][j],2)
-            eng_p_obj += tau_s1*eng_p[j]
-            
-        # calculate tx energy by UAVs
-        eng_tx_u = (1e-10 * np.ones(shape=coordinators)).tolist()
-        eng_tx_u_obj = 1e-10 
+    # %% build optimization problem
     
+    # %% build constraints + energy terms
+    constraints = []
+    # build energy terms [first, no loop terms, then loop terms]
+    # calculate worker tx energy 
+    eng_tx_w = np.zeros(shape=workers)
+    for j in range(workers):
+        eng_tx_w[j] += K_s1*params_to_bits * uav_tx_powers[j] /worker_tx_rates[j]
+    
+    # calculate worker and coordinators flight energy
+    eng_f_j = np.zeros(workers)
+    for j in range(workers):
+        eng_f_j[j] += T_s*seconds_conversion * psi_j[j]
+    
+    eng_f_h = np.zeros(coordinators)
+    for h in range(coordinators):
+        eng_f_h[h] += T_s*seconds_conversion * psi_h[h]    
+    
+    # leader energy computation
+    eng_f_l = T_s*seconds_conversion * psi_l + 2 *K_s2 *psi_m * dist_device_uav_min
+    # TODO - check the above expression
+    bit_div_rates = []
+    for j in range(workers):
+        bit_div_rates.append(params_to_bits/leader_tx_rates[0])
+    eng_tx_l = K_s1*np.max(bit_div_rates)*leader_tx_powers[0]
+    
+    # build loop dependent energy terms
+    eng_p = (1e-10 * np.ones(shape=(K_s1,workers))).tolist()
+    eng_tx_u = (1e-10 * np.ones(shape=(K_s1,coordinators))).tolist()
+    eng_p_obj, eng_tx_u_obj, eng_tx_q = 1e-10,1e-10,1e-10
+    for i in range(K_s1):
+        # calculate the processing energy needed
+        for j in range(workers):
+            eng_p[i][j] += tau_s1*0.5*capacitance*worker_c[j]*D_j[i][j]* \
+                (cp.sum(alphas[i][j,:])) * cp.power(worker_freq[i][j],2) 
+            eng_p_obj += tau_s1*eng_p[j]
+        
+        # calculate coordinator tx energy
         for q in range(devices):
             for j in range(coordinators):
                 for k in range(workers):
-                    eng_tx_u[j] += varrho[i][j,k]*rho[i][q,workers+j]\
-                    *D_q[i][q]*uav_tx_powers[workers+j]*\
-                    img_to_bits/coord_tx_rates[j][k]
-                    
+                    eng_tx_u[i][j] += varrho[i][j,k]*rho[i][q,workers+j]\
+                        *D_q[i][q]*uav_tx_powers[workers+j]*\
+                        img_to_bits/coord_tx_rates[j][k]                
                     eng_tx_u_obj += eng_tx_u[j]
-                    
-        # calculate worker tx energy 
-        eng_tx_w = np.zeros(shape=workers)
-    
-        for j in range(workers):
-            eng_tx_w[j] += params_to_bits * uav_tx_powers[j] /worker_tx_rates[j]
-    
+        
         # calculate device tx energy
-        eng_tx_q = 1e-10 #q reps device
-    
         for j in range(devices):
             for k in range(coordinators+workers):
                 eng_tx_q += rho[i][j,k]*D_q[i][j]*device_tx_powers[j]*\
                     img_to_bits/device_tx_rates[j][k]
-    
-    
-        # calculate worker and coordinators flight energy
-        eng_f_j = np.zeros(workers)
-        eng_f_h = np.zeros(coordinators)
         
-        for j in range(workers):
-            eng_f_j[j] += seconds_conversion * psi_j[j]
-    
-        for h in range(coordinators):
-            eng_f_h[h] += seconds_conversion * psi_h[h]
-    
-        eng_f_l = seconds_conversion * psi_l
-    
-        # leader energy computation
-        eng_tx_l = 0
-    
-        for l in range(leaders):
-            # build vector 
-            bit_div_rates = []
-            for j in range(workers):
-                bit_div_rates.append(params_to_bits/leader_tx_rates[l])
-            eng_tx_l += np.max(bit_div_rates)*leader_tx_powers[l]
-        
-        ## build constraints
-        constraints = []
-    
         # alphas
         for j in range(workers):
             for k in range(3):
-                constraints.append(alphas[i][j,k] >= 1e-10)#1e-10)
+                constraints.append(alphas[i][j,k] >= 1e-10) 
                 constraints.append(alphas[i][j,k] <= 1)
-    
+
         # freqs
         for j in range(workers):
             constraints.append(worker_freq[i][j] <= freq_max)
             constraints.append(worker_freq[i][j] >= freq_min)
-    
-    
+        
         # offloading vars
         for j in range(devices):
             for k in range(coordinators+workers):
                 constraints.append(rho[i][j,k] <= 1)
                 constraints.append(rho[i][j,k] >= 1e-10)
-                # constraints.append(rho[i][j,k] >= 0.99)
-                
             constraints.append(cp.sum(rho[i][j,:]) <= 1)
-    
+        
         for j in range(coordinators):
             for k in range(workers):
                 constraints.append(varrho[i][j,k] <= 1)
                 constraints.append(varrho[i][j,k] >= 1e-10)
-    
             constraints.append(cp.sum(varrho[i][j,:]) <= 1)
-        
-        zeta_p = np.zeros(workers).tolist()
-        zeta_g_j = np.zeros(workers).tolist()
-        zeta_g_h = np.zeros(coordinators).tolist()
-        zeta_local = 5 #1000
-        
-        # implementing zeta constraint
+    
+    # Add the energy constraints into the constraints structure (also 20,000 bat)
+    eng_bat_j = 20000 * np.ones(shape=workers)
+    eng_bat_h = 20000 * np.ones(shape=coordinators)
+    eng_bat_l = 20000        
+    eng_thresh_j = 20 * np.ones(shape=workers)
+    eng_thresh_h = 20 * np.ones(shape=coordinators)
+    eng_thresh_l = 20 
+    
+    # energy limit constraints
+    for j in range(workers):
+        constraints.append(cp.sum([t_eng_p[j] for t_eng_p in eng_p]) \
+            + eng_tx_w[j] + eng_f_j[j] <= (eng_bat_j[j] - eng_thresh_j[j]) )
+
+    for h in range(coordinators):
+        constraints.append(cp.sum([t_eng_tx_u[h] for t_eng_tx_u in eng_tx_u]) +\
+            + eng_f_h[h] <= (eng_bat_h[h] - eng_thresh_h[h]) )
+    
+    constraints.append(eng_f_l  + eng_tx_l <= (eng_bat_l - eng_thresh_l))
+    
+    # build timing terms
+    zeta_p = np.zeros((K_s1,workers)).tolist()
+    zeta_g_j = np.zeros((K_s1,workers)).tolist()
+    zeta_g_h = np.zeros((K_s1,coordinators)).tolist()
+    zeta_local = 5 #1000
+    for i in range(K_s1):
         for j in range(workers):    
-            zeta_p[j] = tau_s1*worker_c[j] * (cp.sum(alphas[i][j,:])) * D_j[i][j] / worker_freq[i][j]
-            zeta_g_j[j] = 1e-10 #img_to_bits
+            zeta_p[i][j] = tau_s1*worker_c[j] * (cp.sum(alphas[i][j,:])) \
+                * D_j[i][j] / worker_freq[i][j]
             
+            zeta_g_j[i][j] = 1e-10
             for q in range(devices):
-                zeta_g_j[j] += rho[i][q,j] * D_q[i][q] * img_to_bits/device_tx_rates[q,j]
-                
-            for h in range(coordinators):
-                for q in range(devices):
-                    zeta_g_j[j] += varrho[i][h,j] * rho[i][q,workers+h] * D_q[i][q] *\
-                        img_to_bits/coord_tx_rates[h,j] 
-                    #* D_j[i][workers+h] *\
-                        #img_to_bits/coord_tx_rates[h,j] #device_tx_rates[q,workers+h] produces good results
-                        #rho[i][q,workers+h] * D_q[i][q] *
-                        
-            constraints.append(zeta_p[j] + zeta_g_j[j] <= zeta_local)
+                zeta_g_j[i][j] += rho[i][q,j] * D_q[i][q] * img_to_bits/device_tx_rates[q,j]
+            if i != 0: #takes a cycle for the data to get to coordinators
+                for h in range(coordinators):
+                    for q in range(devices):
+                        zeta_g_j[i][j] += varrho[i][h,j] * rho[i][q,workers+h] * D_q[i][q] *\
+                            img_to_bits/coord_tx_rates[h,j] 
+            
+            constraints.append(zeta_p[i][j] + zeta_g_j[i][j] <= zeta_local)
         
         for h in range(coordinators):
-            zeta_g_h[h] = 1e-10
+            zeta_g_h[i][h] = 1e-10
             for q in range(devices):
-                zeta_g_h[h] += rho[i][q,workers+h] * D_q[i][q] * \
+                zeta_g_h[i][h] += rho[i][q,workers+h] * D_q[i][q] * \
                     img_to_bits/device_tx_rates[q,workers+h]
             
-            constraints.append(zeta_g_h[h] <= zeta_local)
-        
-        # 20,000
-        eng_bat_j = 20000 * np.ones(shape=workers)
-        eng_bat_h = 20000 * np.ones(shape=coordinators)
-        eng_thresh_j = 20 * np.ones(shape=workers)
-        eng_thresh_h = 20 * np.ones(shape=coordinators)
-        
-        eng_bat_l = 20000
-        eng_thresh_l = 20 
-        
-        # energy limits 
-        for j in range(workers):
-            constraints.append(eng_p[j] + eng_tx_w[j] + eng_f_j[j] \
-                <= (eng_bat_j[j] - eng_thresh_j[j])/(K_s1) )
-    
-        for h in range(coordinators):
-            constraints.append(eng_f_h[h] + eng_tx_u[h] \
-                <= (eng_bat_h[h] - eng_thresh_h[h])/( K_s1 ) )
-        
-        # constraints.append(eng_f_l  + eng_tx_l \
-        #         <= (eng_bat_l - eng_thresh_l)/ K_s1)
-        
+            constraints.append(zeta_g_h[i][h] <= zeta_local)
     
     ## 1-theta terms
     eta_2 = 1e-4 #1e-4
@@ -401,10 +369,9 @@ for theta in theta_vec:
     ## need to approximate delta_u
     # delta_u = D_j[]
     delta_u_holder = []
-    # init_delta_u = 50 #1e-10
     
-    # max_approx_iters = 2 #5 #10 #50 #100 #100 #200 #50
-    max_approx_iters = 5
+    max_approx_iters = 2 #5 #10 #50 #100 #100 #200 #50
+    # max_approx_iters = 5
     plot_obj = []
     plot_energy = []
     plot_acc = []
@@ -419,6 +386,7 @@ for theta in theta_vec:
     sigma_c_H,sigma_c_G = 50, 50 #50, 50
     B_cluster = 500
     
+    # TODO: this is wrong!!! - the for loops should be flipped!!
     for i in range(1,K_s1):
         for t in range(max_approx_iters):
             delta_u_approx = 1
@@ -650,8 +618,7 @@ for theta in theta_vec:
                     
                     # D_j_approx doesn't consider the alpha factors, we already have the approx
                     mismatch_j[j] = (mismatch_pre_factor / D_j_approx**2 )
-    
-    
+
             # sum delta_j/delta_u
             delta_diff_sigma = 1e-10 # delta_diff = delta_diff/delta_u_approx
             for j in range(workers):
@@ -679,8 +646,6 @@ for theta in theta_vec:
                 mismatch += mismatch_scale * mismatch_j[j] 
             
             # learning combine
-            # theta = 0.3
-            
             true_objective = (1-theta)*(eng_p_obj + eng_tx_u_obj + eng_tx_q) + \
                 theta* (grad_fu_scale*(delta_diff_sigma + mu_F**2 * upsilon) \
                 + 3 * eta_2**2 * mu_F * gamma_u_F / (eta_2/2 - 6 * eta_2**2 * mu_F/2) \
@@ -727,14 +692,6 @@ for theta in theta_vec:
             #grad_fu_scale*delta_diff.value
             # plot_acc.append(np.round(temp_acc,5))
             plot_acc.append(temp_acc.value)
-            
-            # print(varrho[i].value)
-            # print(rho[i].value)
-            
-            # for j in range(workers):
-            #     print(alphas[i][j,0].value)
-            #     print(alphas[i][j,1].value)
-            #     print(alphas[i][j,2].value)
             
             
     # %% plotting    
