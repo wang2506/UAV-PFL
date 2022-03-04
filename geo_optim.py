@@ -363,7 +363,7 @@ for theta in theta_vec:
     grad_fu_scale = 1/(eta_2/2 - 6 *eta_2**2 * mu_F/2) * (3*eta_2**2 *mu_F/2 + eta_2)
     
     B, eta_1, mu = 500, 1e-3, 10 #500
-    sigma_j_H,sigma_j_G = 50, 50 ##sigma_j_H greatly affects data?
+    sigma_j_H,sigma_j_G = 50, 50
     gamma_u_F, gamma_F = 10, 10
     
     ## need to approximate delta_u
@@ -377,9 +377,7 @@ for theta in theta_vec:
     plot_acc = []
     
     # calc objective fxn value with initial estimate numbers
-    # eng_p_prior = 0.01*0.5*capacitance*()
-    alpha_ind_init = 0.9
-    
+    alpha_ind_init = 0.9    
     test_init_rho = 0.05
     test_init_varrho = 0.1
     
@@ -387,7 +385,7 @@ for theta in theta_vec:
     B_cluster = 500
     
     # TODO: this is wrong!!! - the for loops should be flipped!!
-    for i in range(1,K_s1):
+    for i in range(1,K_s1): #K_s2??
         for t in range(max_approx_iters):
             delta_u_approx = 1
             delta_u = 1e-10
@@ -398,7 +396,6 @@ for theta in theta_vec:
             
             ## varrho and D_j must be considered hereafter
             if t == 0:
-    
                 # calculate delta_u and delta_u_approx
                 for j in range(workers):
                     alpha_j1, alpha_j2, alpha_j3 = alpha_ind_init,alpha_ind_init,alpha_ind_init # 0.9,0.9,0.9
@@ -639,7 +636,7 @@ for theta in theta_vec:
             
             upsilon = upsilon_pt1 + upsilon_pt2
             
-            # mismatch calc
+            # mismatch calc (\widehat{\Xi})
             mismatch = 1e-10
             for j in range(workers):
                 mismatch_scale = cp.sum(alphas[i][j,:]) * D_j[i][j] /delta_u_approx
