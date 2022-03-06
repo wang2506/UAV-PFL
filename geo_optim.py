@@ -253,7 +253,6 @@ for theta in theta_vec:
     
     # leader energy computation
     eng_f_l = T_s*seconds_conversion * psi_l + 2 *K_s2 *psi_m * dist_device_uav_min
-    # TODO - check the above expression
     bit_div_rates = []
     for j in range(workers):
         bit_div_rates.append(params_to_bits/leader_tx_rates[0])
@@ -398,9 +397,11 @@ for theta in theta_vec:
             if t == 0:
                 # calculate delta_u and delta_u_approx
                 for j in range(workers):
-                    alpha_j1, alpha_j2, alpha_j3 = alpha_ind_init,alpha_ind_init,alpha_ind_init # 0.9,0.9,0.9
+                    alpha_j1, alpha_j2, alpha_j3 = alpha_ind_init,alpha_ind_init,alpha_ind_init
                     alpha_j = alpha_j1 + alpha_j2 + alpha_j3
                     
+                    # device to worker delta_u
+                    # def delta_u_d2w(t_alpha,trho_qj=test_init_rho,tdq=D_q[i][q],devices=devices)                    
                     for q in range(devices):
                         rho_qj, D_q_approx =  test_init_rho, D_q[i][q]  #1/(workers+coordinators),
                         
@@ -409,7 +410,9 @@ for theta in theta_vec:
                         init_q_j3.append(alpha_j3*rho_qj*D_q_approx)
                         
                         delta_u += alpha_j*rho_qj*D_q_approx
-                    
+
+                    # device to coord delta_u
+                    # def delta_u_d2c()
                     for h in range(coordinators):
                         varrho_hj = test_init_varrho #1/workers                        
                         
@@ -419,8 +422,6 @@ for theta in theta_vec:
                             init_h_j1.append(alpha_j1*varrho_hj*rho_qh*D_q_approx)
                             init_h_j2.append(alpha_j2*varrho_hj*rho_qh*D_q_approx)
                             init_h_j3.append(alpha_j3*varrho_hj*rho_qh*D_q_approx)
-                        
-                            # init_h_j1[q,h,j] = alpha_j*varrho_hj*rho_qh*D_q_approx
     
                             delta_u += alpha_j*varrho_hj*rho_qh*D_q_approx
                 
@@ -577,7 +578,6 @@ for theta in theta_vec:
                             denom_prev = D_q_approx*rho_qh*varrho_hj
                         
                             D_j_prev += denom_prev
-                    
                     
                     # calc approximation
                     for q in range(devices):
