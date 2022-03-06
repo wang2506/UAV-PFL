@@ -388,25 +388,71 @@ for theta in theta_vec:
     # TODO: this is wrong!!! - the for loops should be flipped!!
     for t in range(max_approx_iters):
         # calc weighted sigma term
-        delta_u_approx_vec = [1 for i in range(1,K_s1)]
-        delta_u_vec = [1e-10 for i in range(1,K_s1)]
+        delta_u_approx_vec = [1 for i in range(K_s1)]
+        delta_u_vec = [1e-10 for i in range(K_s1)]
         for ks2 in range(1,K_s2+1):
-            # calc delta_j = tau_s1*alpha_j(k)*D_j(k)
-            delta_j_vec = []
+            # calc delta_j_outer = tau_s1*alpha_j(k)*D_j(k)
+            # k = ks2*tau_s2
+            delta_j_outer_vec = []
+            t_ks2_ind = (ks2-1)*tau_s2
             for j in range(workers): 
                 # calc delta_j
-                delta_j_vec.append(tau_s1*cp.sum(alphas[])
+                delta_j_outer_vec.append(tau_s1*cp.sum(alphas[t_ks2_ind])*D_j[t_ks2_ind])
                 
-            #calc delta_u
+            #calc delta_u_outer
+            delta_u_approx_outer_vec = [1 for i in range(1,K_s2+1)]
+            delta_u_outer_vec = [1e-10 for i in range(1,K_s2+1)]
             
-            
-            min_ks1, max_ks1 = (ks2-1)*tau_s1, ks2*tau_s1-1 #0 starting index
+            min_ks1, max_ks1 = (ks2-1)*tau_s2, ks2*tau_s2-1 #0 starting index
             for ks1 in range(min_ks1, max_ks1):
+                sigma_j = []
                 for j in range(workers):
-                    #calc sigma 
+                    #calc sigma - first approx D_j
+                    sigma_prev, D_j_approx = 10, 1
+                    D_j_prev = 1e-10 #the total denom
+                    for q in range(devices): # previous D_j estimate
+                        D_q_approx, rho_qj = D_q[i][q], test_init_rho
+                        denom_prev = D_q_approx*rho_qj
+                        D_j_prev += denom_prev
+                    
+                    if ks1 != 0: #if 0, then not enough time for coord-2-worker tx 
+                        for h in range(coordinators):
+                            varrho_hj = test_init_varrho
+                            for q in range(devices):
+                                D_q_approx, rho_qh  = D_q[i][q], test_init_rho
+                                denom_prev = D_q_approx*varrho_hj*rho_qh
+                                D_j_prev += denom_prev
+                    
+                    # calc approximation
+                    for q in range(devices):
+                        D_q_approx, rho_qj = D_q[i][q], test_init_rho #1/(workers+coordinators)
+                        denom_prev = D_q_approx*rho_qj
+                        
+                        D_j_approx *= (rho[i][q,j] * D_q[i][q] *\
+                            D_j_prev/denom_prev)**(denom_prev/D_j_prev)
+                        
+                    for h in range(coordinators):
+                        varrho_hj = test_init_varrho
+                        
+                        for q in range(devices):
+                            D_q_approx, rho_qh  = D_q[i][q], test_init_rho #1/(workers+coordinators)
+                            denom_prev = D_q_approx*varrho_hj*rho_qh
+                        
+                            D_j_approx *= (varrho[i][h,j] * rho[i][q,workers+h] *\
+                                D_q[i][q] * D_j_prev/denom_prev) \
+                                **(denom_prev/D_j_prev)
+                    
+                    sigma_j_pre = 3*B**2*eta_1**2*sigma_j_H*alphas[i][j,0]*alphas[i][j,1]*D_j[i][j] \
+                        + 3*eta_1**2 * sigma_j_H * sigma_j_G  \
+                        *( alphas[i][j,0] + mu**2 * eta_1**2 * alphas[i][j,1]) \
+                        + 12 * sigma_j_G * alphas[i][j,2] * D_j[i][j] \
+                        *( alphas[i][j,0] + mu**2 * eta_1**2 * alphas[i][j,1] )
+                    
+                    sigma_j.append(sigma_j_pre/(cp.prod(alphas[i][j,:])*D_j_approx**2))
     
     
     
+    # %% 
     for i in range(1,K_s1): #K_s2??
         for t in range(max_approx_iters):
             delta_u_approx = 1
