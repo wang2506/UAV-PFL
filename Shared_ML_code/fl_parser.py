@@ -10,7 +10,7 @@ import argparse
 def ml_parser():
     parser = argparse.ArgumentParser()
     
-    parser.add_argument('--data_style',type=str,default='mnist',\
+    parser.add_argument('--data_style',type=str,default='fmnist',\
                         choices=['mnist','fmnist'],\
                         help='data style: mnist or fashion-mnist')
     parser.add_argument('--nn_style',type=str,default='CNN',\
