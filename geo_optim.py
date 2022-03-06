@@ -25,6 +25,7 @@ start = time.time()
 
 sys.setrecursionlimit(5000)
 
+# %% plot defns
 fig1,ax1 = plt.subplots()
 ax1.set_title('objective function - devices 10, workers 2')
 ax1.set_xlabel('posynomial approximation iteration')
@@ -43,6 +44,10 @@ ax3.set_xlabel('posynomial approximation iteration')
 ax3.set_ylabel('value')
 ax3.grid(True)
 
+# %% some fxns
+def 
+
+# %% theta change loop
 # 0.4
 plot_counter = 0
 theta_vec = [0.01] #[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
@@ -384,6 +389,18 @@ for theta in theta_vec:
     B_cluster = 500
     
     # TODO: this is wrong!!! - the for loops should be flipped!!
+    for t in range(max_approx_iters):
+        delta_u_approx_vec = [1 for i in range(1,K_s1)]
+        delta_u_vec = [1e-10 for i in range(1,K_s1)]
+        for ks2 in range(1,K_s2+1):
+            #calc delta_j
+            #calc delta_u
+            min_ks1, max_ks1 = (ks2-1)*tau_s1, ks2*tau_s1-1 #0 starting index
+            for ks1 in range(min_ks1, max_ks1):
+                
+    
+    
+    
     for i in range(1,K_s1): #K_s2??
         for t in range(max_approx_iters):
             delta_u_approx = 1
@@ -401,7 +418,6 @@ for theta in theta_vec:
                     alpha_j = alpha_j1 + alpha_j2 + alpha_j3
                     
                     # device to worker delta_u
-                    # def delta_u_d2w(t_alpha,trho_qj=test_init_rho,tdq=D_q[i][q],devices=devices)                    
                     for q in range(devices):
                         rho_qj, D_q_approx =  test_init_rho, D_q[i][q]  #1/(workers+coordinators),
                         
@@ -412,7 +428,6 @@ for theta in theta_vec:
                         delta_u += alpha_j*rho_qj*D_q_approx
 
                     # device to coord delta_u
-                    # def delta_u_d2c()
                     for h in range(coordinators):
                         varrho_hj = test_init_varrho #1/workers                        
                         
