@@ -458,7 +458,6 @@ for theta in theta_vec:
                     sigma_j.append(sigma_j_pre/(cp.prod(alphas[ks1][j,:])*D_j_approx**2))
     
     
-    
     # %% 
     for i in range(1,K_s1): #K_s2??
         for t in range(max_approx_iters):
