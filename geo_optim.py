@@ -403,31 +403,49 @@ for theta in theta_vec:
                     sigma_prev, D_j_approx = 10, 1
                     D_j_prev = 1e-10 #the total denom
                     for q in range(devices): # previous D_j estimate
-                        D_q_approx, rho_qj = D_q[ks1][q], test_init_rho
+                        if t == 0:
+                            D_q_approx, rho_qj = D_q[ks1][q], test_init_rho
+                        else:
+                            D_q_approx, rho_qj = D_q[ks1][q], rho[ks1][q,j].value
                         denom_prev = D_q_approx*rho_qj
                         D_j_prev += denom_prev
                 
                     for h in range(coordinators):
-                        varrho_hj = test_init_varrho
+                        if t == 0:
+                            varrho_hj = test_init_varrho
+                        else:
+                            varrho_hj = varrho[ks1][h,j].value
                         for q in range(devices):
-                            D_q_approx, rho_qh  = D_q[ks1][q], test_init_rho
+                            if t == 0:
+                                D_q_approx, rho_qh = D_q[ks1][q], test_init_rho
+                            else:
+                                D_q_approx, rho_qh = D_q[ks1][q], rho[ks1][q,j].value
                             denom_prev = D_q_approx*varrho_hj*rho_qh
                             D_j_prev += denom_prev
                     
-                    # calc approximation
+                    #calc approximation
                     for q in range(devices):
-                        D_q_approx, rho_qj = D_q[ks1][q], test_init_rho
+                        if t == 0:
+                            D_q_approx, rho_qj = D_q[ks1][q], test_init_rho
+                        else:
+                            D_q_approx, rho_qj = D_q[ks1][q], rho[ks1][q,j].value
                         denom_prev = D_q_approx*rho_qj
                         D_j_approx *= (rho[ks1][q,j] * D_q[ks1][q] *\
                             D_j_prev/denom_prev)**(denom_prev/D_j_prev)
                     
                     for h in range(coordinators):
-                        varrho_hj = test_init_varrho
+                        if t == 0:
+                            varrho_hj = test_init_varrho
+                        else:
+                            varrho_hj = varrho[ks1][h,j].value
                         for q in range(devices):
-                            D_q_approx, rho_qh  = D_q[ks1][q], test_init_rho 
+                            if t == 0:
+                                D_q_approx, rho_qh = D_q[ks1][q], test_init_rho
+                            else:
+                                D_q_approx, rho_qh = D_q[ks1][q], rho[ks1][q,j].value
                             denom_prev = D_q_approx*varrho_hj*rho_qh
                             D_j_approx *= (varrho[ks1][h,j] * rho[ks1][q,workers+h] *\
-                                D_q[i][q] * D_j_prev/denom_prev) \
+                                D_q[ks1][q] * D_j_prev/denom_prev) \
                                 **(denom_prev/D_j_prev)
                     
                     sigma_j_pre = 3*B**2*eta_1**2*sigma_j_H*alphas[ks1][j,0]*\
