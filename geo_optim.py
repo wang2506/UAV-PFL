@@ -437,7 +437,7 @@ for theta in theta_vec:
                         + 12 * sigma_j_G * alphas[ks1][j,2] * D_j[ks1][j] \
                         *( alphas[ks1][j,0] + mu**2 * eta_1**2 * alphas[ks1][j,1] )
                     
-                    sigma_j.append(sigma_j_pre/(cp.prod(alphas[i][j,:])*D_j_approx**2))
+                    sigma_j.append(sigma_j_pre/(cp.prod(alphas[ks1][j,:])*D_j_approx**2))
     
     
     

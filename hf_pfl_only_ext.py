@@ -270,7 +270,7 @@ for save_type in [settings.iid_style]:
         global_period = settings.rd_val
     
     ## main loop for ratio variance ##
-    for ratio in [8]: #[1,2,4,8]:
+    for ratio in [1,2,4]: #[1,2,4,8]:
         # ratio dynamics
         if settings.ratio == 'global': #global dynamic, swarm varied
              global_period = swarm_period * ratio

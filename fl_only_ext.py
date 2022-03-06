@@ -142,7 +142,7 @@ for save_type in [settings.iid_style]:
         avg_qty = 1000
     else:
         if settings.data_style == 'mnist':
-            avg_qty = 2500 #2500 #3 swarms
+            avg_qty = 1500 #2500 #3 swarms
         elif settings.data_style == 'fmnist':
             avg_qty = 3500 #3k data was ok
     
@@ -269,7 +269,7 @@ for save_type in [settings.iid_style]:
         global_period = settings.rd_val
     
     ## main loop for ratio variance ##
-    for ratio in [1,2,3,4]: #[1,2,4,8]:
+    for ratio in [1,2,4]: #[1,2,4,8]:
         # ratio dynamics
         if settings.ratio == 'global': #global dynamic, swarm varied
              global_period = swarm_period * ratio
