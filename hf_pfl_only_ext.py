@@ -340,16 +340,16 @@ for save_type in [settings.iid_style]:
             online=settings.online,nps=nodes_per_swarm, nts=node_train_sets):
             
             ## determine worker data_lens
-            worker_datas = [len(i) for i in list(nts.values())]
+            worker_datas = [len(i) for i in list(nts[t].values())]
             
             ## run FL swarm-wide aggregation only
-            if settings.online == False:
-                temp_qty = deepcopy(data_qty).tolist()
-            else:
-                temp_qty = 0*data_qty[t]
-                for t_prime in range(swarm_period*global_period):
-                    temp_qty += data_qty[t-t_prime]
-                temp_qty = temp_qty.tolist()
+            # if settings.online == False:
+            #     temp_qty = deepcopy(data_qty).tolist()
+            # else:
+            #     temp_qty = 0*data_qty[t]
+            #     for t_prime in range(swarm_period*global_period):
+            #         temp_qty += data_qty[t-t_prime]
+            #     temp_qty = temp_qty.tolist()
             
             t_swarm_total_qty = []
             w_swarms = []
