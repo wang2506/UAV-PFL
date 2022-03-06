@@ -403,30 +403,30 @@ for theta in theta_vec:
                     sigma_prev, D_j_approx = 10, 1
                     D_j_prev = 1e-10 #the total denom
                     for q in range(devices): # previous D_j estimate
-                        D_q_approx, rho_qj = D_q[i][q], test_init_rho
+                        D_q_approx, rho_qj = D_q[ks1][q], test_init_rho
                         denom_prev = D_q_approx*rho_qj
                         D_j_prev += denom_prev
                 
                     for h in range(coordinators):
                         varrho_hj = test_init_varrho
                         for q in range(devices):
-                            D_q_approx, rho_qh  = D_q[i][q], test_init_rho
+                            D_q_approx, rho_qh  = D_q[ks1][q], test_init_rho
                             denom_prev = D_q_approx*varrho_hj*rho_qh
                             D_j_prev += denom_prev
                     
                     # calc approximation
                     for q in range(devices):
-                        D_q_approx, rho_qj = D_q[i][q], test_init_rho
+                        D_q_approx, rho_qj = D_q[ks1][q], test_init_rho
                         denom_prev = D_q_approx*rho_qj
-                        D_j_approx *= (rho[i][q,j] * D_q[i][q] *\
+                        D_j_approx *= (rho[ks1][q,j] * D_q[ks1][q] *\
                             D_j_prev/denom_prev)**(denom_prev/D_j_prev)
                     
                     for h in range(coordinators):
                         varrho_hj = test_init_varrho
                         for q in range(devices):
-                            D_q_approx, rho_qh  = D_q[i][q], test_init_rho 
+                            D_q_approx, rho_qh  = D_q[ks1][q], test_init_rho 
                             denom_prev = D_q_approx*varrho_hj*rho_qh
-                            D_j_approx *= (varrho[i][h,j] * rho[i][q,workers+h] *\
+                            D_j_approx *= (varrho[ks1][h,j] * rho[ks1][q,workers+h] *\
                                 D_q[i][q] * D_j_prev/denom_prev) \
                                 **(denom_prev/D_j_prev)
                     
@@ -434,7 +434,7 @@ for theta in theta_vec:
                         alphas[ks1][j,1]*D_j[ks1][j] \
                         + 3*eta_1**2 * sigma_j_H * sigma_j_G  \
                         *( alphas[ks1][j,0] + mu**2 * eta_1**2 * alphas[ks1][j,1]) \
-                        + 12 * sigma_j_G * alphas[i][j,2] * D_j[i][j] \
+                        + 12 * sigma_j_G * alphas[ks1][j,2] * D_j[ks1][j] \
                         *( alphas[ks1][j,0] + mu**2 * eta_1**2 * alphas[ks1][j,1] )
                     
                     sigma_j.append(sigma_j_pre/(cp.prod(alphas[i][j,:])*D_j_approx**2))

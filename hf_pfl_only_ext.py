@@ -142,7 +142,7 @@ for save_type in [settings.iid_style]:
         avg_qty = 1000
     else:
         if settings.data_style == 'mnist':
-            avg_qty = 2500 #2500 #3 swarms
+            avg_qty = 1500 #2500 #3 swarms
         elif settings.data_style == 'fmnist':
             avg_qty = 3500 #3k data was ok
     
