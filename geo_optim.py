@@ -210,27 +210,20 @@ for theta in theta_vec:
     D_j = {i:[] for i in range(K_s1)}
     
     for i in range(K_s1):
-        if i == 0:
-            for j in range(coordinators+workers):
-                temp = [1e-10] #to satisfy log reqs
-                for k in range(devices):
-                    temp.append(rho[i][k,j]*D_q[i][k])
-                D_j[i].append(cp.sum(temp))
-        else:
-            # device offloading
-            for j in range(coordinators+workers):
-                temp = [1e-10]
-                for k in range(devices): #devices to all uavs
-                    temp.append(rho[i][k,j]*D_q[i][k])
-                D_j[i].append(cp.sum(temp))
-            
-            # coordinator offloading
-            for j in range(workers):
-                temp = [1e-10]
-                for k in range(coordinators):
-                    temp.append(varrho[i][k,j]*D_j[i][workers+k])
-                D_j[i][j] += cp.sum(temp)
-                
+        # device offloading
+        for j in range(coordinators+workers):
+            temp = [1e-10]
+            for k in range(devices): #devices to all uavs
+                temp.append(rho[i][k,j]*D_q[i][k])
+            D_j[i].append(cp.sum(temp))
+        
+        # coordinator offloading
+        for j in range(workers):
+            temp = [1e-10]
+            for k in range(coordinators):
+                temp.append(varrho[i][k,j]*D_j[i][workers+k])
+            D_j[i][j] += cp.sum(temp)
+        
     B_j = {i:[600 for j in range(workers)] for i in range(K_s1)} 
     B_j_coord = {i:[600 for h in range(coordinators)] for i in range(K_s1)}
     
@@ -342,12 +335,11 @@ for theta in theta_vec:
             zeta_g_j[i][j] = 1e-10
             for q in range(devices):
                 zeta_g_j[i][j] += rho[i][q,j] * D_q[i][q] * img_to_bits/device_tx_rates[q,j]
-            if i != 0: #takes a cycle for the data to get to coordinators
-                for h in range(coordinators):
-                    for q in range(devices):
-                        zeta_g_j[i][j] += varrho[i][h,j] * rho[i][q,workers+h] * D_q[i][q] *\
-                            img_to_bits/coord_tx_rates[h,j] 
-            
+            for h in range(coordinators):
+                for q in range(devices):
+                    zeta_g_j[i][j] += varrho[i][h,j] * rho[i][q,workers+h] * D_q[i][q] *\
+                        img_to_bits/coord_tx_rates[h,j] 
+        
             constraints.append(zeta_p[i][j] + zeta_g_j[i][j] <= zeta_local)
         
         for h in range(coordinators):
@@ -414,39 +406,36 @@ for theta in theta_vec:
                         D_q_approx, rho_qj = D_q[i][q], test_init_rho
                         denom_prev = D_q_approx*rho_qj
                         D_j_prev += denom_prev
-                    
-                    if ks1 != 0: #if 0, then not enough time for coord-2-worker tx 
-                        for h in range(coordinators):
-                            varrho_hj = test_init_varrho
-                            for q in range(devices):
-                                D_q_approx, rho_qh  = D_q[i][q], test_init_rho
-                                denom_prev = D_q_approx*varrho_hj*rho_qh
-                                D_j_prev += denom_prev
+                
+                    for h in range(coordinators):
+                        varrho_hj = test_init_varrho
+                        for q in range(devices):
+                            D_q_approx, rho_qh  = D_q[i][q], test_init_rho
+                            denom_prev = D_q_approx*varrho_hj*rho_qh
+                            D_j_prev += denom_prev
                     
                     # calc approximation
                     for q in range(devices):
-                        D_q_approx, rho_qj = D_q[i][q], test_init_rho #1/(workers+coordinators)
+                        D_q_approx, rho_qj = D_q[i][q], test_init_rho
                         denom_prev = D_q_approx*rho_qj
-                        
                         D_j_approx *= (rho[i][q,j] * D_q[i][q] *\
                             D_j_prev/denom_prev)**(denom_prev/D_j_prev)
-                        
+                    
                     for h in range(coordinators):
                         varrho_hj = test_init_varrho
-                        
                         for q in range(devices):
-                            D_q_approx, rho_qh  = D_q[i][q], test_init_rho #1/(workers+coordinators)
+                            D_q_approx, rho_qh  = D_q[i][q], test_init_rho 
                             denom_prev = D_q_approx*varrho_hj*rho_qh
-                        
                             D_j_approx *= (varrho[i][h,j] * rho[i][q,workers+h] *\
                                 D_q[i][q] * D_j_prev/denom_prev) \
                                 **(denom_prev/D_j_prev)
                     
-                    sigma_j_pre = 3*B**2*eta_1**2*sigma_j_H*alphas[i][j,0]*alphas[i][j,1]*D_j[i][j] \
+                    sigma_j_pre = 3*B**2*eta_1**2*sigma_j_H*alphas[ks1][j,0]*\
+                        alphas[ks1][j,1]*D_j[ks1][j] \
                         + 3*eta_1**2 * sigma_j_H * sigma_j_G  \
-                        *( alphas[i][j,0] + mu**2 * eta_1**2 * alphas[i][j,1]) \
+                        *( alphas[ks1][j,0] + mu**2 * eta_1**2 * alphas[ks1][j,1]) \
                         + 12 * sigma_j_G * alphas[i][j,2] * D_j[i][j] \
-                        *( alphas[i][j,0] + mu**2 * eta_1**2 * alphas[i][j,1] )
+                        *( alphas[ks1][j,0] + mu**2 * eta_1**2 * alphas[ks1][j,1] )
                     
                     sigma_j.append(sigma_j_pre/(cp.prod(alphas[i][j,:])*D_j_approx**2))
     
