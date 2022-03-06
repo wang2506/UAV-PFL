@@ -39,7 +39,7 @@ def ml_parser():
     parser.add_argument('--h_nps',type=int,default=4,\
                         help='max nodes per swarm')        
     
-    parser.add_argument('--time',type=int,default=48)#40)
+    parser.add_argument('--time',type=int,default=40)#40)
     parser.add_argument('--comp',type=str,default='gpu',\
                         choices=['gpu','cpu'],\
                         help='gpu or cpu')        
