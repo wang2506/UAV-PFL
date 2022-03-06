@@ -44,9 +44,6 @@ ax3.set_xlabel('posynomial approximation iteration')
 ax3.set_ylabel('value')
 ax3.grid(True)
 
-# %% some fxns
-def 
-
 # %% theta change loop
 # 0.4
 plot_counter = 0
@@ -390,14 +387,23 @@ for theta in theta_vec:
     
     # TODO: this is wrong!!! - the for loops should be flipped!!
     for t in range(max_approx_iters):
+        # calc weighted sigma term
         delta_u_approx_vec = [1 for i in range(1,K_s1)]
         delta_u_vec = [1e-10 for i in range(1,K_s1)]
         for ks2 in range(1,K_s2+1):
-            #calc delta_j
+            # calc delta_j = tau_s1*alpha_j(k)*D_j(k)
+            delta_j_vec = []
+            for j in range(workers): 
+                # calc delta_j
+                delta_j_vec.append(tau_s1*cp.sum(alphas[])
+                
             #calc delta_u
+            
+            
             min_ks1, max_ks1 = (ks2-1)*tau_s1, ks2*tau_s1-1 #0 starting index
             for ks1 in range(min_ks1, max_ks1):
-                
+                for j in range(workers):
+                    #calc sigma 
     
     
     
