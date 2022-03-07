@@ -262,7 +262,7 @@ for theta in theta_vec:
         for j in range(workers):
             eng_p[i][j] += tau_s1*0.5*capacitance*worker_c[j]*D_j[i][j]* \
                 (cp.sum(alphas[i][j,:])) * cp.power(worker_freq[i][j],2) 
-            eng_p_obj += tau_s1*eng_p[j]
+            eng_p_obj += tau_s1*eng_p[i][j]
         
         # calculate coordinator tx energy
         for q in range(devices):
@@ -270,8 +270,9 @@ for theta in theta_vec:
                 for k in range(workers):
                     eng_tx_u[i][j] += varrho[i][j,k]*rho[i][q,workers+j]\
                         *D_q[i][q]*uav_tx_powers[workers+j]*\
-                        img_to_bits/coord_tx_rates[j][k]                
-                    eng_tx_u_obj += eng_tx_u[j]
+                        img_to_bits/coord_tx_rates[j][k]
+        for j in range(coordinators):
+            eng_tx_u_obj += eng_tx_u[i][j]
         
         # calculate device tx energy
         for j in range(devices):
@@ -385,7 +386,12 @@ for theta in theta_vec:
             tdp = tdq*trho
         return tdp
     
-    
+    def c2w_denom(tt,tdq,trho,tvrho,ti_vrho=test_init_varrho,ti_rho=test_init_rho):
+    	if tt == 0:
+    		tdp = d2w_denom(tt=tt,tdq=tdq,trho=ti_rho)*ti_vrho
+    	else:
+    		tdp = d2w_denom(tt=tt,tdq=tdq,trho=trho)*tvrho
+    	return tdp
     
     
     # %% 
@@ -401,6 +407,7 @@ for theta in theta_vec:
             t_ks2_ind = (ks2-1)*tau_s2
             for j in range(workers): 
                 # calc delta_j
+                # TODO: resume here
                 delta_j_outer_vec.append(tau_s1*cp.sum(alphas[t_ks2_ind])*D_j[t_ks2_ind])
                 
             #delta_u_outer variables
@@ -420,20 +427,13 @@ for theta in theta_vec:
                         D_j_prev += denom_prev
                 
                     for h in range(coordinators):
-                        
-                        
-                        
-                        if t == 0:
-                            varrho_hj = test_init_varrho
-                        else:
-                            varrho_hj = varrho[ks1][h,j].value
                         for q in range(devices):
-                            if t == 0:
-                                D_q_approx, rho_qh = D_q[ks1][q], test_init_rho
-                            else:
-                                D_q_approx, rho_qh = D_q[ks1][q], rho[ks1][q,j].value
-                            denom_prev = D_q_approx*varrho_hj*rho_qh
+                            denom_prev = c2w_denom(tt=t,tdq=D_q[ks1][q],\
+                                    trho=rho[ks1][q,workers+h].value,\
+                                    tvrho=varrho[ks1][h,j].value)
                             D_j_prev += denom_prev
+                            
+                    input('run test')
                     
                     #calc approximation
                     for q in range(devices):
