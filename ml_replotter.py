@@ -25,7 +25,7 @@ hfl_base_loc = cwd+'/hfl_data/CNN/'
 hnpfl_base_loc = cwd+'/hnpfl_data/CNN/'
 
 data_source = 'mnist'
-# data_source = 'fmnist'
+data_source = 'fmnist'
 lwd = 2.5
 
 seed = 1 
@@ -183,31 +183,31 @@ for i in range(len(ratio_vec)): #3
     #         color='black',linestyle='dashdot',linewidth=lwd)
     if i == 0:
         ax2[ind].plot(temp_indexes,total_fl_ratios[i][0],\
-            label='H-FL '+ r'$\tau^{\mathsf{G}} = 1$',\
+            label='H-FL '+ r'$\tau^{\mathsf{G}}_s = 1$',\
             color='darkgoldenrod',linestyle='solid',linewidth=lwd)#,marker='x')
         ax2[ind].plot(temp_indexes,total_pfl_ratios[i][0],\
-            label='HN-PFL '+ r'$\tau^{\mathsf{G}} = 1$',\
+            label='HN-PFL '+ r'$\tau^{\mathsf{G}}_s = 1$',\
             color='black',linestyle='solid',linewidth=lwd)#,marker='x')
     elif i == 1:
         ax2[ind].plot(temp_indexes,total_fl_ratios[i][0],\
-            label='H-FL '+ r'$\tau^{\mathsf{G}} = 2$',\
+            label='H-FL '+ r'$\tau^{\mathsf{G}}_s = 2$',\
             color='darkgoldenrod',linestyle='dashed',linewidth=lwd)#,marker='x')
         ax2[ind].plot(temp_indexes,total_pfl_ratios[i][0],\
-            label='HN-PFL '+ r'$\tau^{\mathsf{G}} = 2$',\
+            label='HN-PFL '+ r'$\tau^{\mathsf{G}}_s = 2$',\
             color='black',linestyle='dashed',linewidth=lwd)#,marker='x')
     elif i == 2:
         ax2[ind].plot(temp_indexes,total_fl_ratios[i][0],\
-            label='H-FL '+ r'$\tau^{\mathsf{G}} = 4$',\
+            label='H-FL '+ r'$\tau^{\mathsf{G}}_s = 4$',\
             color='darkgoldenrod',linestyle='dotted',linewidth=lwd)#,marker='x')
         ax2[ind].plot(temp_indexes,total_pfl_ratios[i][0],\
-            label='HN-PFL '+ r'$\tau^{\mathsf{G}} = 4$',\
+            label='HN-PFL '+ r'$\tau^{\mathsf{G}}_s = 4$',\
             color='black',linestyle='dotted',linewidth=lwd)#,marker='x')
     else:
         ax2[ind].plot(temp_indexes,total_fl_ratios[i][0],\
-            label='H-FL '+ r'$\tau^{\mathsf{G}} = 8$',\
+            label='H-FL '+ r'$\tau^{\mathsf{G}}_s = 8$',\
             color='darkgoldenrod',linestyle='dashdot',linewidth=lwd)#,marker='x')
         ax2[ind].plot(temp_indexes,total_pfl_ratios[i][0],\
-            label='HN-PFL '+ r'$\tau^{\mathsf{G}} = 8$',\
+            label='HN-PFL '+ r'$\tau^{\mathsf{G}}_s = 8$',\
             color='black',linestyle='dashdot',linewidth=lwd)#,marker='x')
 
 
