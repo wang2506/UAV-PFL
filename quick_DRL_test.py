@@ -244,6 +244,11 @@ class DQN:
 
         return model
 
+## TODO: add https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9448143
+# this is deep recurrent NN [aug 2021 - JSAC    ]
+## add https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9605672
+# for the soft value function [jan 2022]
+
     def build_CNN(self):
         model = Sequential()
         
