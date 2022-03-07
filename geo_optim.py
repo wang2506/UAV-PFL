@@ -377,6 +377,18 @@ for theta in theta_vec:
     sigma_c_H,sigma_c_G = 50, 50 #50, 50
     B_cluster = 500
     
+    # %% some fxn defs
+    def d2w_denom(tt,tdq,trho,ti_rho=test_init_rho):
+        if tt == 0:
+            tdp = tdq*ti_rho #temp_denom_prev, temp_data_q #q is device
+        else:
+            tdp = tdq*trho
+        return tdp
+    
+    
+    
+    
+    # %% 
     # TODO: this is wrong!!! - the for loops should be flipped!!
     for t in range(max_approx_iters):
         # calc weighted sigma term
@@ -391,11 +403,12 @@ for theta in theta_vec:
                 # calc delta_j
                 delta_j_outer_vec.append(tau_s1*cp.sum(alphas[t_ks2_ind])*D_j[t_ks2_ind])
                 
-            #calc delta_u_outer
+            #delta_u_outer variables
             delta_u_approx_outer_vec = [1 for i in range(1,K_s2+1)]
             delta_u_outer_vec = [1e-10 for i in range(1,K_s2+1)]
             
             min_ks1, max_ks1 = (ks2-1)*tau_s2, ks2*tau_s2-1 #0 starting index
+            sigma_j_k = {ks1: [] for ks1 in range(min_ks1, max_ks1)}
             for ks1 in range(min_ks1, max_ks1):
                 sigma_j = []
                 for j in range(workers):
@@ -403,14 +416,13 @@ for theta in theta_vec:
                     sigma_prev, D_j_approx = 10, 1
                     D_j_prev = 1e-10 #the total denom
                     for q in range(devices): # previous D_j estimate
-                        if t == 0:
-                            D_q_approx, rho_qj = D_q[ks1][q], test_init_rho
-                        else:
-                            D_q_approx, rho_qj = D_q[ks1][q], rho[ks1][q,j].value
-                        denom_prev = D_q_approx*rho_qj
+                        denom_prev = d2w_denom(tt=t,tdq=D_q[ks1][q],trho=rho[ks1][q,j].value)
                         D_j_prev += denom_prev
                 
                     for h in range(coordinators):
+                        
+                        
+                        
                         if t == 0:
                             varrho_hj = test_init_varrho
                         else:
@@ -425,11 +437,7 @@ for theta in theta_vec:
                     
                     #calc approximation
                     for q in range(devices):
-                        if t == 0:
-                            D_q_approx, rho_qj = D_q[ks1][q], test_init_rho
-                        else:
-                            D_q_approx, rho_qj = D_q[ks1][q], rho[ks1][q,j].value
-                        denom_prev = D_q_approx*rho_qj
+                        denom_prev = d2w_denom(tt=t,tdq=D_q[ks1][q],trho=rho[ks1][q,j].value)
                         D_j_approx *= (rho[ks1][q,j] * D_q[ks1][q] *\
                             D_j_prev/denom_prev)**(denom_prev/D_j_prev)
                     
@@ -457,6 +465,10 @@ for theta in theta_vec:
                     
                     sigma_j.append(sigma_j_pre/(cp.prod(alphas[ks1][j,:])*D_j_approx**2))
     
+                sigma_j_k[ks1] = sigma_j
+            
+            # calculate delta_u 
+            
     
     # %% 
     for i in range(1,K_s1): #K_s2??
