@@ -158,7 +158,6 @@ class DQN:
             
             self.q_net = self.build_RNN()
             self.target_network = self.build_RNN()
-            
         else:
             self.input_size = [args.cnn_range, args.U_swarms + args.Clusters]
             
@@ -226,7 +225,7 @@ class DQN:
         ## randomly assigned at initialization [later on, need to make it so that
         ## it is assigned based on geography]
         
-        if args.linear == True:
+        if args.linear == True or args.RNN == True:
             state = np.reshape(state,[1, len(state)])
             next_state = np.reshape(next_state,[1,len(next_state)])
         
@@ -303,7 +302,7 @@ class DQN:
             else:
                 ## choose action with highest q-value
                 
-                if args.linear == True:
+                if args.linear == True or args.RNN == True:
                     state = np.reshape(state,[1,self.input_size])
                 else:
                     state = np.reshape(state,[1,self.input_size[0],self.input_size[1]])
