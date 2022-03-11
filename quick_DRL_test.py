@@ -61,7 +61,7 @@ parser.add_argument('--g_discount',type=float,default=0.7,\
                     help='gamma discount factor') #0.6,0.7,0.8
 parser.add_argument('--replay_bs',type=int,default=20,\
                     help='experience replay batch size')
-parser.add_argument('--linear',type=bool,default=True,\
+parser.add_argument('--linear',type=bool,default=False,\
                     help='MLP or CNN') ## argpase cannot evaluate booleans OOB - fix later
 parser.add_argument('--RNN',type=bool,default=True)
 parser.add_argument('--cnn_range',type=int, default=2,\
@@ -158,6 +158,7 @@ class DQN:
             
             self.q_net = self.build_RNN()
             self.target_network = self.build_RNN()
+            print('Tomato')
         else:
             self.input_size = [args.cnn_range, args.U_swarms + args.Clusters]
             
