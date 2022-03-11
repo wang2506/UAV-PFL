@@ -301,6 +301,7 @@ class DQN:
                 action_indexes = np.random.randint(0,self.action_size)
             else:
                 ## choose action with highest q-value
+                
                 if args.linear == True:
                     state = np.reshape(state,[1,self.input_size])
                 elif args.RNN == True:
@@ -974,8 +975,6 @@ for e in range(episodes):
                 for freq_val in np.where(np.array(init_state_set[-13:-3]) == 0.0)[0]:
                     freq_visits[timestep][freq_val] = 1 #np.array(init_state_set[-13:-3])
                 
-                init_state_set = np.round(np.array(init_state_set).astype(float),4)
-                
                 action_set = test_DQN.calc_action(state=init_state_set, \
                         args=args,ep_greed =ep_greed,action_space=action_space,\
                         min_md_pt_clusters=min_md_pt_clusters,\
@@ -1007,11 +1006,6 @@ for e in range(episodes):
                 #     np.array(current_state_set[-13:-3])
                 
                 prev_action_set = deepcopy(action_set)
-                
-                current_state_set = np.round(np.array(current_state_set).astype(float),4)
-                # current_state_set = np.reshape(current_state_set, \
-                #         (current_state_set.shape[0], 1))
-                
                 action_set = test_DQN.calc_action(state=current_state_set, \
                     args=args,ep_greed =ep_greed,action_space=action_space, \
                     prev_action_ind=prev_action_set,\
@@ -1088,7 +1082,7 @@ for e in range(episodes):
             if args.linear == True or args.RNN == True:
                 print('timestep='+str(timestep),
                       'reward_DQN ={:.2f}'.format(np.sum(reward_DQN,axis=0)[e][timestep]),
-                      'reward ML only = {:.2f}'.format(temp_ml_reward),
+                      'reward ML only = {:.2f}'.format(temp_ml_reward[0]),
                       'epsilon = {:.2f}'.format(args.ep_greed)
                       )
             else:
