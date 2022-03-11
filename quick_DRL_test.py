@@ -262,7 +262,7 @@ class DQN:
     def build_RNN(self):
         model = Sequential()
         
-        model.add(LSTM(64,input_shape=[self.input_size]))
+        model.add(LSTM(64,input_shape=(self.input_size,1)))
         model.add(Dense(128, activation='relu', kernel_initializer='normal', use_bias=True))
         model.add(Dense(self.action_size,activation='linear'))
         
