@@ -261,9 +261,9 @@ class DQN:
     def build_RNN(self):
         model = Sequential()
         
-        model.add(LSTM(64,input_shape=(self.input_size,1)))
+        model.add(LSTM(64,input_shape=(self.input_size,1),activation='sigmoid'))
         model.add(Dense(128, activation='relu', kernel_initializer='normal', use_bias=True))
-        model.add(Dense(self.action_size,activation='linear'))
+        model.add(Dense(self.action_size,activation='linear')) #linear activation == no activation
         
         model.compile(optimizer=self.optimizer,loss='categorical_crossentropy')# , metrics=['accuracy'])
 
@@ -495,6 +495,10 @@ class DQN:
         
             for state,action,reward,next_state in minibatch:
                 
+                if args.RNN == True: #linear net doesn't need to be reshaped
+                    state = np.reshape(state,[1,self.input_size,1])                
+                    next_state = np.reshape(next_state,[1,self.input_size,1])
+                    
                 target = self.q_net.predict(state)
                 # print(target)
                 # raise NameError('HiThere')
@@ -506,9 +510,6 @@ class DQN:
                 else:
                     t = self.target_network.predict(next_state)
                     target[0][action] = reward + self.g_discount * np.amax(t)
-                
-                if args.RNN == True: #linear net doesn't need to be reshaped
-                    state = np.reshape(state,[1,self.input_size,1])
                     
                 self.q_net.fit(state,target,epochs=1,verbose=0)
         
