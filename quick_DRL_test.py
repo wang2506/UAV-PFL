@@ -1277,7 +1277,7 @@ for e in range(episodes):
                         pk.dump(state_save,f)
                     
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'visit_freq_large'+\
-                              '_'+str(args.g_discount),'wb')\
+                              '_'+str(args.g_discount)\
                             +'_tanh_BCEloss','wb') as f:
                         pk.dump(freq_visits,f)
                         
