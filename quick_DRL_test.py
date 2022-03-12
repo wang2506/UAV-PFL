@@ -506,8 +506,11 @@ class DQN:
                 else:
                     t = self.target_network.predict(next_state)
                     target[0][action] = reward + self.g_discount * np.amax(t)
+                
+                if args.RNN == True: #linear net doesn't need to be reshaped
+                    state = np.reshape(state,[1,self.input_size,1])
                     
-                self.q_net.fit(state,target,epochs=1,verbose=0)    
+                self.q_net.fit(state,target,epochs=1,verbose=0)
         
         else: #follows the format of linear
             ## this is bugged ##TODO
