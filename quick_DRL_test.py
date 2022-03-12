@@ -262,7 +262,8 @@ class DQN:
         model = Sequential()
         
         model.add(LSTM(64,input_shape=(self.input_size,1),activation='sigmoid'))
-        model.add(Dense(128, activation='relu', kernel_initializer='normal', use_bias=True))
+        model.add(Dense(60, activation='relu'))
+        model.add(Dense(80, activation='relu'))
         model.add(Dense(self.action_size,activation='linear')) #linear activation == no activation
         
         model.compile(optimizer=self.optimizer,loss='mse')# , metrics=['accuracy'])
@@ -757,8 +758,8 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     penalty = 0
     for i,j in enumerate(battery_status):
         if j < min_battery_levels[i]: #0:
-            # penalty += 1000 #20000
-            penalty += 20000
+            penalty += 1000 #20000
+            # penalty += 20000
             current_reward = 0 #force zero out current reward if ANY battery runs out
             # bat_penalty = 1000
             
