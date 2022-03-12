@@ -59,7 +59,7 @@ parser.add_argument('--ep_min',type=float,default=0.005,\
                     help='epsilon minimum')
 parser.add_argument('--g_discount',type=float,default=0.7,\
                     help='gamma discount factor') #0.6,0.7,0.8
-parser.add_argument('--replay_bs',type=int,default=50,\
+parser.add_argument('--replay_bs',type=int,default=20,\
                     help='experience replay batch size') #20
 parser.add_argument('--linear',type=bool,default=False,\
                     help='MLP or CNN') ## argpase cannot evaluate booleans OOB - fix later
@@ -75,7 +75,7 @@ parser.add_argument('--training',type=int,default=1,\
 parser.add_argument('--centralized',type=bool,default=True,\
                     help='centralized or decentralized')
 parser.add_argument('--DQN_update_period',type=int,default=20,\
-                    help='DQN update period') #20, 50
+                    help='DQN update period') #10, 20, 50
 #8,3,2,4,2,2
 
 # parameters to find a greedy baseline
@@ -267,7 +267,8 @@ class DQN:
         model.add(Dense(60, activation='relu'))#,use_bias=True)
         model.add(Dense(self.action_size,activation='linear')) #linear activation == no activation
         
-        model.compile(optimizer=self.optimizer,loss=tf.keras.losses.BinaryCrossentropy(from_logits=True))
+        model.compile(optimizer=self.optimizer,loss='mse')
+        #loss=tf.keras.losses.BinaryCrossentropy(from_logits=True))
         #,loss='mse')# , metrics=['accuracy'])
 
         return model
@@ -1258,27 +1259,27 @@ for e in range(episodes):
                     # save data
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'reward'\
                               +'test_large'+'_'+str(args.g_discount)\
-                            +'_tanh_BCEloss','wb') as f:
+                            +'_tanh_mse','wb') as f:
                         pk.dump(reward_storage,f)
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+\
                               'ml_reward_only'+'test_large'+'_'+str(args.g_discount)\
-                            +'_tanh_BCEloss','wb') as f:
+                            +'_tanh_mse','wb') as f:
                         pk.dump(ml_reward_only_storage,f)                        
                     #+'_extra'
                     #str(fig_no)+
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'battery'\
                               +'test_large'+'_'+str(args.g_discount)\
-                            +'_tanh_BCEloss','wb') as f:
+                            +'_tanh_mse','wb') as f:
                         pk.dump(battery_storage,f)
                     #str(fig_no)+
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'all_states'\
                               +'test_large'+'_'+str(args.g_discount)\
-                            +'_tanh_BCEloss','wb') as f:
+                            +'_tanh_mse','wb') as f:
                         pk.dump(state_save,f)
                     
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'visit_freq_large'+\
                               '_'+str(args.g_discount)\
-                            +'_tanh_BCEloss','wb') as f:
+                            +'_tanh_mse','wb') as f:
                         pk.dump(freq_visits,f)
                         
             
