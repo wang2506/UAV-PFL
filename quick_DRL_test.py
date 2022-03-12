@@ -265,7 +265,7 @@ class DQN:
         model.add(Dense(128, activation='relu', kernel_initializer='normal', use_bias=True))
         model.add(Dense(self.action_size,activation='linear')) #linear activation == no activation
         
-        model.compile(optimizer=self.optimizer,loss='categorical_crossentropy')# , metrics=['accuracy'])
+        model.compile(optimizer=self.optimizer,loss='mse')# , metrics=['accuracy'])
 
         return model
     
