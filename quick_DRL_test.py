@@ -59,8 +59,8 @@ parser.add_argument('--ep_min',type=float,default=0.005,\
                     help='epsilon minimum')
 parser.add_argument('--g_discount',type=float,default=0.7,\
                     help='gamma discount factor') #0.6,0.7,0.8
-parser.add_argument('--replay_bs',type=int,default=20,\
-                    help='experience replay batch size')
+parser.add_argument('--replay_bs',type=int,default=50,\
+                    help='experience replay batch size') #20
 parser.add_argument('--linear',type=bool,default=False,\
                     help='MLP or CNN') ## argpase cannot evaluate booleans OOB - fix later
 parser.add_argument('--RNN',type=bool,default=True)
@@ -74,7 +74,7 @@ parser.add_argument('--training',type=int,default=1,\
                     help='training or testing the DRL')
 parser.add_argument('--centralized',type=bool,default=True,\
                     help='centralized or decentralized')
-parser.add_argument('--DQN_update_period',type=int,default=5,\
+parser.add_argument('--DQN_update_period',type=int,default=10,\
                     help='DQN update period') #20, 50
 #8,3,2,4,2,2
 
