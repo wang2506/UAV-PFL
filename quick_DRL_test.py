@@ -757,7 +757,8 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     penalty = 0
     for i,j in enumerate(battery_status):
         if j < min_battery_levels[i]: #0:
-            penalty += 1000 #20000
+            # penalty += 1000 #20000
+            penalty += 20000
             current_reward = 0 #force zero out current reward if ANY battery runs out
             # bat_penalty = 1000
             
