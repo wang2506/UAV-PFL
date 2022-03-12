@@ -261,13 +261,14 @@ class DQN:
     def build_RNN(self):
         model = Sequential()
         
-        model.add(LSTM(64,input_shape=(self.input_size,1),activation='sigmoid'))
-        model.add(Dense(60, activation='relu'))
-        model.add(Dense(80, activation='relu'))
-        model.add(Dense(60, activation='relu'))
+        model.add(LSTM(64,input_shape=(self.input_size,1),activation='tanh'))#activation='sigmoid'))
+        model.add(Dense(60, activation='relu'))#,use_bias=True)
+        model.add(Dense(80, activation='relu'))#,use_bias=True)
+        model.add(Dense(60, activation='relu'))#,use_bias=True)
         model.add(Dense(self.action_size,activation='linear')) #linear activation == no activation
         
-        model.compile(optimizer=self.optimizer,loss='mse')# , metrics=['accuracy'])
+        model.compile(optimizer=self.optimizer,loss=tf.keras.losses.BinaryCrossentropy(from_logits=True))
+        #,loss='mse')# , metrics=['accuracy'])
 
         return model
     
@@ -514,6 +515,10 @@ class DQN:
                     target[0][action] = reward + self.g_discount * np.amax(t)
                     
                 self.q_net.fit(state,target,epochs=1,verbose=0)
+        
+        # elif args.RNN == True:
+            
+            
         
         else: #follows the format of linear
             ## this is bugged ##TODO
@@ -1252,23 +1257,28 @@ for e in range(episodes):
                 else:
                     # save data
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'reward'\
-                              +'test_large'+'_'+str(args.g_discount),'wb') as f:
+                              +'test_large'+'_'+str(args.g_discount)\
+                            +'_tanh_BCEloss','wb') as f:
                         pk.dump(reward_storage,f)
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+\
-                              'ml_reward_only'+'test_large'+'_'+str(args.g_discount),'wb') as f:
+                              'ml_reward_only'+'test_large'+'_'+str(args.g_discount)\
+                            +'_tanh_BCEloss','wb') as f:
                         pk.dump(ml_reward_only_storage,f)                        
                     #+'_extra'
                     #str(fig_no)+
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'battery'\
-                              +'test_large'+'_'+str(args.g_discount),'wb') as f:
+                              +'test_large'+'_'+str(args.g_discount)\
+                            +'_tanh_BCEloss','wb') as f:
                         pk.dump(battery_storage,f)
                     #str(fig_no)+
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'all_states'\
-                              +'test_large'+'_'+str(args.g_discount),'wb') as f:
+                              +'test_large'+'_'+str(args.g_discount)\
+                            +'_tanh_BCEloss','wb') as f:
                         pk.dump(state_save,f)
                     
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'visit_freq_large'+\
-                              '_'+str(args.g_discount),'wb') as f:
+                              '_'+str(args.g_discount),'wb')\
+                            +'_tanh_BCEloss','wb') as f:
                         pk.dump(freq_visits,f)
                         
             
