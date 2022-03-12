@@ -74,7 +74,7 @@ parser.add_argument('--training',type=int,default=1,\
                     help='training or testing the DRL')
 parser.add_argument('--centralized',type=bool,default=True,\
                     help='centralized or decentralized')
-parser.add_argument('--DQN_update_period',type=int,default=10,\
+parser.add_argument('--DQN_update_period',type=int,default=20,\
                     help='DQN update period') #20, 50
 #8,3,2,4,2,2
 
