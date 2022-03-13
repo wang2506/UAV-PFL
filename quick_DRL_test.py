@@ -29,7 +29,8 @@ import time
 # seed = 1 #original runs use seed = 1
 # seed = 2
 # seed = 6
-seed = 3
+# seed = 3
+seed = 4
 np.random.seed(seed)
 random.seed(seed)
 rng = np.random.default_rng(seed=seed)
