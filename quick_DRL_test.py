@@ -853,6 +853,7 @@ if args.dynamic == True:
     # *np.random.rand(args.Clusters) #linear function for all clusters
     time_drift_max = deepcopy(time_drift_min) + np.array([13,11,15,3,2,5,5,1])
     cluster_limits = 20*time_drift_max
+    cluster_expectations = deepcopy(time_drift_min)
 else:
     ## static model drift
     cluster_expectations = 25*np.random.rand(args.Clusters) #20
@@ -956,7 +957,8 @@ for e in range(episodes):
     
     # print(init_last_visit)
     # determine drift based on init_last_visit
-    # cluster_expectations = deepcopy(time_drift_min) #initially it will be minimum
+    if args.dynamic == True:
+        cluster_expectations = deepcopy(time_drift_min) #initially it will be minimum
     
     init_state_set += (np.multiply(cluster_expectations,init_last_visit)).tolist()
     init_state_set += init_battery_levels
