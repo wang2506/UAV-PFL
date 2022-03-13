@@ -16,7 +16,7 @@ mpl.rc('font',family='Times New Roman')
 # mpl.rcParams['text.latex.preamble']=[r"\usepackage{amsmath}"]
 
 csfont = {'fontname':'Times New Roman'}
- 
+
 # %% moving average function
 
 def moving_average(x, w):
@@ -38,14 +38,14 @@ plt.figure(1)
 f1,ax1 = plt.subplots(1,3,figsize=(9,4))
 
 for ep_start in [0.7]:#[0.6,0.8]:
-    for gamma in [0.7]: #0.6,0.7]:#[0.7,0.8]:
+    for gamma in [0.6,0.7]:#[0.7,0.8]:
         
         # with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'+str(gamma)\
         #     +'_dynamic','rb') as f:
         #     data = pickle.load(f)
     
-        with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)+'_'+'reward'\
-                +'test_large'+'_'+str(gamma)+'_tanh_mse', \
+        with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(ep_start)+'_'+'reward'\
+                +'test_large'+'_'+str(gamma), \
                 'rb') as f:
             data = pickle.load(f)
     
@@ -111,13 +111,13 @@ ax1[0].set_ylabel('Reward',fontsize=20)
 # plots for battery
 
 for ep_start in [0.7]:#[0.6,0.8]:
-    for gamma in [0.7]:#[0.6,0.7]:#[0.7,0.8]:
+    for gamma in [0.6,0.7]:#[0.7,0.8]:
         # with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'+str(gamma)\
         #           +'_dynamic','rb') as f:
         #     data_b = pickle.load(f)
         
-        with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)\
-                +'_batterytest_large_'+str(gamma)+'_tanh_mse', \
+        with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(ep_start)\
+                +'_batterytest_large_'+str(gamma), \
                 'rb') as f:
             data_b = pickle.load(f)
         
@@ -249,12 +249,12 @@ ax1[1].set_ylabel('Avg Battery Level (kJ)',fontsize=20)
 # plt.title('median')
 
 for ep_start in [0.7]:#[0.6,0.8]:
-    for gamma in [0.7]:#[0.6,0.7]:#[0.7,0.8]:
+    for gamma in [0.6,0.7]:#[0.7,0.8]:
         # with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'+str(gamma)\
         #           +'_dynamic','rb') as f:
         #     data_b = pickle.load(f)
-        with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)\
-                +'_ml_reward_onlytest_large_'+str(gamma)+'_tanh_mse', \
+        with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(ep_start)\
+                +'_ml_reward_onlytest_large_'+str(gamma), \
                 'rb') as f:
             data_ml = pickle.load(f)
         
@@ -313,29 +313,21 @@ ax1[2].set_ylabel('Learning Objective',fontsize=20)
 # %% visit frequency plotter
 for ep_start in [0.7]:#[0.6,0.8]:
     for gamma in [0.7]:#[0.7,0.8]:
-        # with open(cwd+'/data/new10'+str(ep_start)+'_visit_freq_large_'\
-        #           +str(gamma)+'_dynamic','rb') as f:
-        #     freqs = pickle.load(f)
-
-        with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
-                  +str(ep_start)+'_visit_freq_large_'\
-                  +str(gamma)+'_tanh_mse','rb') as f:
+        with open(cwd+'/data/new10'+str(ep_start)+'_visit_freq_large_'\
+                  +str(gamma)+'_dynamic','rb') as f:
             freqs = pickle.load(f)
 
         # The dynamic model drift is linear
         
         # extract freqs in intervals of 1000
         ## because timestep%100, last batch is at timestep 9800
-        # final_freq = freqs[9800] - freqs[8800]
-        # mid_freq2 = freqs[6800] - freqs[5800]
-        # mid_freq = freqs[3800] - freqs[2800]
-        # init_freq = freqs[1800] - freqs[800]
+        final_freq = freqs[9800] - freqs[8800]
         
-        # timestep%100, only after first 100 has passed, 29800 is the final one
-        final_freq = freqs[29800] - freqs[28800]
-        mid_freq2 = freqs[19800] - freqs[18800]
-        mid_freq = freqs[15800] - freqs[14800]
-        init_freq = freqs[1800] - freqs[800]        
+        mid_freq2 = freqs[6800] - freqs[5800]
+        
+        mid_freq = freqs[3800] - freqs[2800]
+        
+        init_freq = freqs[1800] - freqs[800]
         
         x = np.arange(len(final_freq))  # the label locations
         width = 0.8  # the width of the bars
