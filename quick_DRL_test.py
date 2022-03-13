@@ -26,7 +26,9 @@ import tensorflow as tf
 import time
 
 # seed = 2 #1
-seed = 1
+# seed = 1 #original runs use seed = 1
+seed = 2
+# seed = 6
 np.random.seed(seed)
 random.seed(seed)
 rng = np.random.default_rng(seed=seed)
@@ -86,7 +88,7 @@ parser.add_argument('--greed_style',type=int,default=0,\
 parser.add_argument('--rng_thresh',type=float,default=0.2,\
                     help='rng min dist threshold')
 
-parser.add_argument('--dynamic',type=bool,default=True,\
+parser.add_argument('--dynamic',type=bool,default=False,\
                     help='Dynamic model drifts')
     
 # hard coded perviously, need to backtrack to get this automated
