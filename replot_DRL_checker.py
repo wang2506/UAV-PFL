@@ -39,7 +39,7 @@ f1,ax1 = plt.subplots(1,3,figsize=(9,4))
 
 for ep_start in [0.7]:#[0.6,0.8]:
     for gamma in [0.7]: #0.6,0.7]:#[0.7,0.8]:
-        for nn_style in ['MLP','RNN']:
+        for nn_style in ['RNN']:#['MLP','RNN']:
         # with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'+str(gamma)\
         #     +'_dynamic','rb') as f:
         #     data = pickle.load(f)
@@ -53,12 +53,16 @@ for ep_start in [0.7]:#[0.6,0.8]:
                     ,linestyle='dotted', \
                         color = 'magenta',linewidth=lwd)                    
             elif nn_style == 'RNN':
-                with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)+'_'+'reward'\
-                        +'test_large'+'_'+str(gamma)+'_tanh_mse', \
-                        'rb') as f:
-                    data = pickle.load(f)                
-                data_fixer = moving_average(data,1000)
-                ax1[0].plot(data_fixer,label='LSTM' \
+                datas = 0
+                for seed in [1,3,4]:
+                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)+'_'+'reward'\
+                            +'test_large'+'_'+str(gamma)+'_tanh_mse', \
+                            'rb') as f:
+                        data = pickle.load(f)
+                    datas += np.array(data)/3
+                data_fixer = moving_average(datas,1000)
+                
+                ax1[0].plot(data_fixer,label='Our Method' \
                     ,linestyle='solid', \
                         color = 'darkblue',linewidth=lwd)
 
@@ -71,7 +75,7 @@ ax1[0].set_ylabel('Reward',fontsize=20)
 # plots for battery
 for ep_start in [0.7]:#[0.6,0.8]:
     for gamma in [0.7]:#[0.6,0.7]:#[0.7,0.8]:
-        for nn_style in ['MLP','RNN']:
+        for nn_style in ['RNN']:#['MLP','RNN']:
         # with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'+str(gamma)\
         #           +'_dynamic','rb') as f:
         #     data_b = pickle.load(f)
@@ -91,13 +95,16 @@ for ep_start in [0.7]:#[0.6,0.8]:
                     ,linestyle='dotted', \
                         color = 'magenta',linewidth=lwd)                    
             elif nn_style == 'RNN':
-                with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)\
-                    +'_batterytest_large_'+str(gamma)+'_tanh_mse', \
-                        'rb') as f:
-                    data_b = pickle.load(f)                
-                data_b2 = [mean(i) for i in data_b]
+                datas_b = 0
+                for seed in [1,3,4]:
+                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)\
+                        +'_batterytest_large_'+str(gamma)+'_tanh_mse', \
+                            'rb') as f:
+                        data_b = pickle.load(f)    
+                    datas_b += np.array(data_b)/3
+                data_b2 = [mean(i) for i in datas_b]
                 data_b2 = moving_average(data_b2,1000)
-                ax1[1].plot(data_b2,label='LSTM' \
+                ax1[1].plot(data_b2,label='Our Method' \
                     ,linestyle='solid', \
                         color = 'darkblue',linewidth=lwd)
 
@@ -108,7 +115,7 @@ ax1[1].set_ylabel('Avg Battery Level (kJ)',fontsize=20)
 
 for ep_start in [0.7]:#[0.6,0.8]:
     for gamma in [0.7]:#[0.6,0.7]:#[0.7,0.8]:
-        for nn_style in ['MLP','RNN']:
+        for nn_style in ['RNN']:#['MLP','RNN']:
     
             if nn_style == 'MLP':
                 with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(ep_start)\
@@ -120,12 +127,15 @@ for ep_start in [0.7]:#[0.6,0.8]:
                     ,linestyle='dotted', \
                         color = 'magenta',linewidth=lwd)                    
             elif nn_style == 'RNN':
-                with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)\
-                    +'_ml_reward_onlytest_large_'+str(gamma)+'_tanh_mse', \
-                        'rb') as f:
-                    data_ml = pickle.load(f)                
-                data_ml2 = moving_average(data_ml,1000)
-                ax1[2].plot(data_ml2,label='LSTM' \
+                datas_ml = 0
+                for seed in [1,3,4]:
+                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)\
+                        +'_ml_reward_onlytest_large_'+str(gamma)+'_tanh_mse', \
+                            'rb') as f:
+                        data_ml = pickle.load(f)  
+                    datas_ml += np.array(data_ml)/3
+                data_ml2 = moving_average(datas_ml,1000)
+                ax1[2].plot(data_ml2,label='Our Method' \
                     ,linestyle='solid', \
                         color = 'darkblue',linewidth=lwd)
 
@@ -137,7 +147,7 @@ ax1[2].set_ylabel('Learning Objective',fontsize=20)
 
 # %% replot the paper
 
-
+seed = 1
 # %% visit frequency plotter
 for ep_start in [0.7]:#[0.6,0.8]:
     for gamma in [0.7]:#[0.7,0.8]:
@@ -173,13 +183,13 @@ for ep_start in [0.7]:#[0.6,0.8]:
         cats = 3 #4 #cats = categories
         plt.figure(3)
         fig, ax = plt.subplots(1,1,figsize=(4,2))
-        rects_init = ax.bar(x - 1*width/cats, init_freq, width=width/cats, \
+        rects_init = ax.bar(x - 1.02*width/cats, init_freq, width=width/cats, \
             label='1000-2000',edgecolor='black',color='goldenrod')
         rects_mid1 = ax.bar(x - 0*width/cats, mid_freq, width=width/cats, \
             label='15000-16000',edgecolor='black',color='forestgreen')
         # rects_mid2 = ax.bar(x + 0.5*width/cats, mid_freq2, width=width/cats, \
         #     label='5000-6000',edgecolor='black',color='royalblue')
-        rects_final = ax.bar(x + 1*width/cats, final_freq, width=width/cats, \
+        rects_final = ax.bar(x + 1.02*width/cats, final_freq, width=width/cats, \
             label='29000-30000',edgecolor='black',color='darkmagenta')
 
         # plt.title('Hist frequences with recharge stations')
@@ -218,7 +228,7 @@ for ep_start in [0.7]:#[0.6,0.8]:
         ax.text(2.5,320,'Min MD',fontsize=9)
         
         
-        plt.savefig(cwd+'/drl_plots/RNN_freq_recharge.pdf',dpi=1000, bbox_inches='tight')
+        # plt.savefig(cwd+'/drl_plots/RNN_freq_recharge.pdf',dpi=1000, bbox_inches='tight')
 
 # %% plotting the greedy DRL
 
@@ -318,7 +328,7 @@ f1.tight_layout()
 ax1[0].tick_params(axis='both', which='major', labelsize=18)
 ax1[1].tick_params(axis='both', which='major', labelsize=18)
 ax1[2].tick_params(axis='both', which='major', labelsize=18)
-f1.savefig(cwd+'/drl_plots/RNN_drl_ovr_comp.pdf',dpi=1000, bbox_inches='tight')
+# f1.savefig(cwd+'/drl_plots/RNN_drl_ovr_comp.pdf',dpi=1000, bbox_inches='tight')
 
 # f1.savefig(cwd+'/drl_plots/testml.pdf',dpi=1000, bbox_inches='tight')
 
