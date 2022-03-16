@@ -195,7 +195,8 @@ for ep_start in [0.7]:#[0.6,0.8]:
         # plt.title('Hist frequences with recharge stations')
         ax.set_axisbelow(True)
         ax.grid(True)
-        ax.set_ylabel('Visit Rate (Freq/1k Epochs)',fontsize=11) #visit frequency
+        ax.set_ylabel('Number of Visits',fontsize=11)
+        #' Rate (Freq/1k Epochs)',fontsize=11) #visit frequency
         ax.legend(fontsize=4)
         
         loc = mpl.ticker.MultipleLocator(base=1.0)
@@ -210,7 +211,7 @@ for ep_start in [0.7]:#[0.6,0.8]:
         kw = dict(ncol=4,loc = 'lower center',frameon=False)
         # kw2 = dict(ncol=3,loc = 'lower center',frameon=False)
         #(x, y, width, height)
-        leg1 = ax.legend(h[:],l[:],bbox_to_anchor=(-0.2,1.03,1.25,0.2),\
+        leg1 = ax.legend(h[:],l[:],bbox_to_anchor=(-0.05,0.98,1.05,0.2),\
                         mode='expand',fontsize=9,**kw)
         # leg2 = ax1[0].legend(h[0::2],l[0::2],bbox_to_anchor=(0.1,1.11,1.8,0.2),\
                                 # mode='expand',fontsize='large',**kw)
@@ -226,9 +227,9 @@ for ep_start in [0.7]:#[0.6,0.8]:
         # ax.text(5.5,620,'Min Model Drift',fontsize=9)
         ax.text(1.2,520,'Max MD', fontsize=9)
         ax.text(2.5,320,'Min MD',fontsize=9)
+        ax.text(2.5,1150, 'Epoch Range:',fontsize=11)
         
-        
-        # plt.savefig(cwd+'/drl_plots/RNN_freq_recharge.pdf',dpi=1000, bbox_inches='tight')
+        plt.savefig(cwd+'/drl_plots/RNN_freq_recharge.pdf',dpi=1000, bbox_inches='tight')
 
 # %% plotting the greedy DRL
 
@@ -328,7 +329,7 @@ f1.tight_layout()
 ax1[0].tick_params(axis='both', which='major', labelsize=18)
 ax1[1].tick_params(axis='both', which='major', labelsize=18)
 ax1[2].tick_params(axis='both', which='major', labelsize=18)
-# f1.savefig(cwd+'/drl_plots/RNN_drl_ovr_comp.pdf',dpi=1000, bbox_inches='tight')
+f1.savefig(cwd+'/drl_plots/RNN_drl_ovr_comp.pdf',dpi=1000, bbox_inches='tight')
 
 # f1.savefig(cwd+'/drl_plots/testml.pdf',dpi=1000, bbox_inches='tight')
 
