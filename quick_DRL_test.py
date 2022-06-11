@@ -19,18 +19,14 @@ import matplotlib.pyplot as plt
 
 from tensorflow.keras import Model, Sequential
 from tensorflow.keras.layers import Dense, Embedding, Reshape, Flatten, \
-    Conv1D, MaxPooling1D, Dropout, SimpleRNN, LSTM
+    Conv1D, MaxPooling1D, Dropout
 from tensorflow.keras.optimizers import Adam
 import tensorflow as tf
 
 import time
 
 # seed = 2 #1
-# seed = 1 #original runs use seed = 1
-# seed = 2
-# seed = 6
-# seed = 3
-seed = 4
+seed = 1
 np.random.seed(seed)
 random.seed(seed)
 rng = np.random.default_rng(seed=seed)
@@ -64,10 +60,9 @@ parser.add_argument('--ep_min',type=float,default=0.005,\
 parser.add_argument('--g_discount',type=float,default=0.7,\
                     help='gamma discount factor') #0.6,0.7,0.8
 parser.add_argument('--replay_bs',type=int,default=20,\
-                    help='experience replay batch size') #20, 50
-parser.add_argument('--linear',type=bool,default=False,\
+                    help='experience replay batch size')
+parser.add_argument('--linear',type=bool,default=True,\
                     help='MLP or CNN') ## argpase cannot evaluate booleans OOB - fix later
-parser.add_argument('--RNN',type=bool,default=True)
 parser.add_argument('--cnn_range',type=int, default=2,\
                     help='conv1d range')
 
@@ -79,7 +74,7 @@ parser.add_argument('--training',type=int,default=1,\
 parser.add_argument('--centralized',type=bool,default=True,\
                     help='centralized or decentralized')
 parser.add_argument('--DQN_update_period',type=int,default=20,\
-                    help='DQN update period') #10, 20, 50
+                    help='DQN update period') #50
 #8,3,2,4,2,2
 
 # parameters to find a greedy baseline
@@ -96,6 +91,7 @@ parser.add_argument('--dynamic',type=bool,default=False,\
 # hard coded perviously, need to backtrack to get this automated
 # parser.add_argument('--dynamic_drift',type=bool,default=False,\
                     # help='dynamic model drift')
+
 
 
 args = parser.parse_args()
@@ -153,15 +149,6 @@ class DQN:
             #self.target_network = deepcopy(self.q_net) #deepcopy fails on TF pickled objects
             self.target_network = self.build_linear_NN()
 
-        elif args.RNN == True:
-            ## input shape
-            self.input_size = args.U_swarms + args.Clusters + \
-                args.U_swarms + args.Clusters + \
-                args.recharge_points + 3  # +1 before args.Clusters
-            # self.input_size = 2*self.input_size
-            
-            self.q_net = self.build_RNN()
-            self.target_network = self.build_RNN()
         else:
             self.input_size = [args.cnn_range, args.U_swarms + args.Clusters]
             
@@ -229,7 +216,7 @@ class DQN:
         ## randomly assigned at initialization [later on, need to make it so that
         ## it is assigned based on geography]
         
-        if args.linear == True or args.RNN == True:
+        if args.linear == True:
             state = np.reshape(state,[1, len(state)])
             next_state = np.reshape(next_state,[1,len(next_state)])
         
@@ -257,26 +244,6 @@ class DQN:
 
         return model
 
-## TODO: add https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9448143
-# this is deep recurrent NN [aug 2021 - JSAC    ]
-## add https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9605672
-# for the soft value function [jan 2022]
-
-    def build_RNN(self):
-        model = Sequential()
-        
-        model.add(LSTM(64,input_shape=(self.input_size,1),activation='tanh'))#activation='sigmoid'))
-        model.add(Dense(60, activation='relu'))#,use_bias=True)
-        model.add(Dense(80, activation='relu'))#,use_bias=True)
-        model.add(Dense(60, activation='relu'))#,use_bias=True)
-        model.add(Dense(self.action_size,activation='linear')) #linear activation == no activation
-        
-        model.compile(optimizer=self.optimizer,loss='mse')
-        #loss=tf.keras.losses.BinaryCrossentropy(from_logits=True))
-        #,loss='mse')# , metrics=['accuracy'])
-
-        return model
-    
     def build_CNN(self):
         model = Sequential()
         
@@ -309,10 +276,9 @@ class DQN:
                 action_indexes = np.random.randint(0,self.action_size)
             else:
                 ## choose action with highest q-value
+                
                 if args.linear == True:
                     state = np.reshape(state,[1,self.input_size])
-                elif args.RNN == True:
-                    state = np.reshape(state,[1,self.input_size,1])
                 else:
                     state = np.reshape(state,[1,self.input_size[0],self.input_size[1]])
                 
@@ -499,18 +465,14 @@ class DQN:
     def retrain_exp_replay(self,batch_size,args=args):
         minibatch = random.sample(self.past_exps,batch_size)
         
-        if args.linear == True or args.RNN == True:
+        if args.linear == True:
         
             for state,action,reward,next_state in minibatch:
                 
-                if args.RNN == True: #linear net doesn't need to be reshaped
-                    state = np.reshape(state,[1,self.input_size,1])                
-                    next_state = np.reshape(next_state,[1,self.input_size,1])
-                    
                 target = self.q_net.predict(state)
                 # print(target)
                 # raise NameError('HiThere')
-                
+            
                 terminated = 0
                 
                 if terminated:
@@ -519,14 +481,10 @@ class DQN:
                     t = self.target_network.predict(next_state)
                     target[0][action] = reward + self.g_discount * np.amax(t)
                     
-                self.q_net.fit(state,target,epochs=1,verbose=0)
-        
-        # elif args.RNN == True:
-            
-            
+                self.q_net.fit(state,target,epochs=1,verbose=0)    
         
         else: #follows the format of linear
-            ## this is bugged ##TODO
+            
             for item in minibatch:
                 # print('item printing')
                 # print(item)
@@ -770,7 +728,6 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     for i,j in enumerate(battery_status):
         if j < min_battery_levels[i]: #0:
             penalty += 1000 #20000
-            # penalty += 20000
             current_reward = 0 #force zero out current reward if ANY battery runs out
             # bat_penalty = 1000
             
@@ -857,7 +814,6 @@ if args.dynamic == True:
     # *np.random.rand(args.Clusters) #linear function for all clusters
     time_drift_max = deepcopy(time_drift_min) + np.array([13,11,15,3,2,5,5,1])
     cluster_limits = 20*time_drift_max
-    cluster_expectations = deepcopy(time_drift_min)
 else:
     ## static model drift
     cluster_expectations = 25*np.random.rand(args.Clusters) #20
@@ -961,8 +917,7 @@ for e in range(episodes):
     
     # print(init_last_visit)
     # determine drift based on init_last_visit
-    if args.dynamic == True:
-        cluster_expectations = deepcopy(time_drift_min) #initially it will be minimum
+    # cluster_expectations = deepcopy(time_drift_min) #initially it will be minimum
     
     init_state_set += (np.multiply(cluster_expectations,init_last_visit)).tolist()
     init_state_set += init_battery_levels
@@ -986,14 +941,12 @@ for e in range(episodes):
                 (time_drift_max-time_drift_min)*10*(timestep+1)/(args.G_timesteps)
             
         # calculate the reward
-        if args.linear == True or args.RNN == True:
+        if args.linear == True:
             ep_greed = np.max([args.ep_min, args.ep_greed*(1-10**(-3))**timestep])
             
             if timestep == 0:
                 for freq_val in np.where(np.array(init_state_set[-13:-3]) == 0.0)[0]:
                     freq_visits[timestep][freq_val] = 1 #np.array(init_state_set[-13:-3])
-                
-                init_state_set = np.round(np.array(init_state_set).astype(float),4)
                 
                 action_set = test_DQN.calc_action(state=init_state_set, \
                         args=args,ep_greed =ep_greed,action_space=action_space,\
@@ -1026,11 +979,6 @@ for e in range(episodes):
                 #     np.array(current_state_set[-13:-3])
                 
                 prev_action_set = deepcopy(action_set)
-                
-                current_state_set = np.round(np.array(current_state_set).astype(float),4)
-                # current_state_set = np.reshape(current_state_set, \
-                #         (current_state_set.shape[0], 1))
-                
                 action_set = test_DQN.calc_action(state=current_state_set, \
                     args=args,ep_greed =ep_greed,action_space=action_space, \
                     prev_action_ind=prev_action_set,\
@@ -1104,7 +1052,7 @@ for e in range(episodes):
         ## printing check up
         if timestep % 10 == 0:
             #print(state_set)
-            if args.linear == True or args.RNN == True:
+            if args.linear == True:
                 print('timestep='+str(timestep),
                       'reward_DQN ={:.2f}'.format(np.sum(reward_DQN,axis=0)[e][timestep]),
                       'reward ML only = {:.2f}'.format(temp_ml_reward),
@@ -1133,7 +1081,7 @@ for e in range(episodes):
         
         # save all of the states
         
-        if args.linear == True or args.RNN == True:
+        if args.linear == True:
             state_save.append(state_set)
             
             # reward save for plots
@@ -1158,20 +1106,19 @@ for e in range(episodes):
         
         
         if timestep % 100 == 0:
-            print('saving results into file')
             # print(test_DQN.q_net.get_weights()[-1])
             
-            # plt.figure(fig_no) # plot reward change over time - move this to separate file later
+            plt.figure(fig_no) # plot reward change over time - move this to separate file later
             
-            # plt.plot(reward_storage)
-            # plt.xlabel('time instance')
-            # plt.ylabel('reward')
-            # plt.title('reward over time')    
+            plt.plot(reward_storage)
+            plt.xlabel('time instance')
+            plt.ylabel('reward')
+            plt.title('reward over time')    
             
             # # save image
             # plt.savefig(cwd+'/plots/'+str(fig_no)+'_'+str(args.ep_greed)+'_'+'linear.png')
             
-            # plt.clf()
+            plt.clf()
             
             # TODO : not really a todo, just a quick scroller
             try:
@@ -1245,60 +1192,42 @@ for e in range(episodes):
             else:
                 if args.dynamic == True:
                     # save data
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
-                              +str(args.ep_greed)+'_'+'reward'\
-                              +'test_large'+'_'+str(args.g_discount)\
-                            +'_tanh_mse_dynamic','wb') as f:
+                    with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'reward'\
+                              +'test_large'+'_'+str(args.g_discount)+'_dynamic','wb') as f:
                         pk.dump(reward_storage,f)
                     #+'_extra'
                     #str(fig_no)+
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
-                              +str(args.ep_greed)+'_'+'battery'\
-                              +'test_large'+'_'+str(args.g_discount)\
-                            +'_tanh_mse_dynamic','wb') as f:
+                    with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'battery'\
+                              +'test_large'+'_'+str(args.g_discount)+'_dynamic','wb') as f:
                         pk.dump(battery_storage,f)
                     #str(fig_no)+
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
-                              +str(args.ep_greed)+'_'+'all_states'\
-                              +'test_large'+'_'+str(args.g_discount)\
-                            +'_tanh_mse_dynamic','wb') as f:
+                    with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'all_states'\
+                              +'test_large'+'_'+str(args.g_discount)+'_dynamic','wb') as f:
                         pk.dump(state_save,f)
                     
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
-                              +str(args.ep_greed)+'_'+'visit_freq_large'+\
-                              '_'+str(args.g_discount)\
-                            +'_tanh_mse_dynamic','wb') as f:
+                    with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'visit_freq_large'+\
+                              '_'+str(args.g_discount)+'_dynamic','wb') as f:
                         pk.dump(freq_visits,f)
                 else:
                     # save data
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
-                              +str(args.ep_greed)+'_'+'reward'\
-                              +'test_large'+'_'+str(args.g_discount)\
-                            +'_tanh_mse','wb') as f:
+                    with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'reward'\
+                              +'test_large'+'_'+str(args.g_discount),'wb') as f:
                         pk.dump(reward_storage,f)
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
-                              +str(args.ep_greed)+'_'+\
-                              'ml_reward_only'+'test_large'+'_'+str(args.g_discount)\
-                            +'_tanh_mse','wb') as f:
+                    with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+\
+                              'ml_reward_only'+'test_large'+'_'+str(args.g_discount),'wb') as f:
                         pk.dump(ml_reward_only_storage,f)                        
                     #+'_extra'
                     #str(fig_no)+
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
-                              +str(args.ep_greed)+'_'+'battery'\
-                              +'test_large'+'_'+str(args.g_discount)\
-                            +'_tanh_mse','wb') as f:
+                    with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'battery'\
+                              +'test_large'+'_'+str(args.g_discount),'wb') as f:
                         pk.dump(battery_storage,f)
                     #str(fig_no)+
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
-                              +str(args.ep_greed)+'_'+'all_states'\
-                              +'test_large'+'_'+str(args.g_discount)\
-                            +'_tanh_mse','wb') as f:
+                    with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'all_states'\
+                              +'test_large'+'_'+str(args.g_discount),'wb') as f:
                         pk.dump(state_save,f)
                     
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
-                              +str(args.ep_greed)+'_'+'visit_freq_large'+\
-                              '_'+str(args.g_discount)\
-                            +'_tanh_mse','wb') as f:
+                    with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'visit_freq_large'+\
+                              '_'+str(args.g_discount),'wb') as f:
                         pk.dump(freq_visits,f)
                         
             

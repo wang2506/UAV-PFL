@@ -19,13 +19,15 @@ import time
 import sys
 
 #### this is the cvxpy optimization file
+## for lists - first element must be nonzero for dgp to accept
+## also, cp.sum, sum, np.sum the underlying wrapper starts with a 0 then +=
 seed = 1 #1,3,5,;6,7,8,;10,13, 16; 17
 np.random.seed(seed)
 start = time.time()
 
 sys.setrecursionlimit(5000)
 
-# %% plot defns
+
 fig1,ax1 = plt.subplots()
 ax1.set_title('objective function - devices 10, workers 2')
 ax1.set_xlabel('posynomial approximation iteration')
@@ -44,18 +46,17 @@ ax3.set_xlabel('posynomial approximation iteration')
 ax3.set_ylabel('value')
 ax3.grid(True)
 
-# %% theta change loop
 # 0.4
 plot_counter = 0
-theta_vec = [0.01] #[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-for theta in theta_vec:
+theta_vec = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     # %% objective function test
+    # T_s = 20
     np.random.seed(seed) # prevents randomization from messing up energies
-    T_s = 8 #200
+    K_s1 = 2 #1
+    K_s2 = 2#5
     tau_s1 = 2
     tau_s2 = 2
-    K_s1 = int(T_s/tau_s1) #17
-    K_s2 = int(T_s/(tau_s1*tau_s2)) #5
     
     img_to_bits =  8e4 #20
     params_to_bits = 1e4 #2
@@ -65,7 +66,30 @@ for theta in theta_vec:
     workers = 2 #5 #2-4 #3-5
     coordinators = 2 #3 #2 #1-2
     devices = 10 #2  #9-12
-
+    #5 uavs, 10 device, 10 uavs, 15 devices, 100 iterations
+    
+    T_s = 200 #20
+    # # np.random.seed(swarm_no*10 + cluster_no)
+    # K_s1 = 2 #1 #for buggy reasons
+    # K_s2 = 2#5
+    # tau_s1 = 1
+    # tau_s2 = 1
+    
+    # img_to_bits =  8e4 #20
+    # params_to_bits = 1e4 #2
+    
+    # swarms = 1 #
+    # leaders = 1 #same as swarms
+    
+    # cwd = os.getcwd()
+    # swarm_no = 0
+    # with open(cwd+'/geo_optim_chars/workers_swarm_no'+str(swarm_no),'rb') as f:
+    #     workers = pk.load(f)[0]
+    # with open(cwd+'/geo_optim_chars/coordinators_swarm_no'+str(swarm_no),'rb') as f:
+    #     coordinators = pk.load(f)[0]
+    # with open(cwd+'/geo_optim_chars/devices_cluster_no'+str(cluster_no),'rb') as f:
+    #     devices = pk.load(f)[0]    
+    
     ## powers and communication rates
     # powers
     uav_tx_powers = [0.1 for i in range(workers+coordinators)] #20 dbm, 0.1 W
@@ -76,8 +100,8 @@ for theta in theta_vec:
     
     # constants
     carrier_freq = 2 * 1e9
-    noise_db = 4e-21 #-174 dBm/Hz, we convert to watts
-    univ_bandwidth = 2e6 #MHz #10 MHz
+    noise_db = 1e-13 #-130 dB, we convert to watts
+    univ_bandwidth = 10*1e6 #MHz
     mu_tx = 4*np.pi * carrier_freq/(3*1e8)
     eta_los = 2 #3db 
     eta_nlos = 200 #23db
@@ -125,7 +149,7 @@ for theta in theta_vec:
             # dist_hj = dist_uav_uav_min + (dist_uav_uav_max-dist_uav_uav_min) \
             #     * np.random.rand() #randomly determined
             # TODO : note, the above was commented in order to emphasize varrho diffs
-            dist_hj = dist_uav_uav_varrho_emph[h+j]
+            dist_hj = dist_uav_uav_varrho_emph[h+j]            
             
             la2a_hj = eta_los * (mu_tx * dist_hj)**path_loss_alpha 
             
@@ -144,6 +168,13 @@ for theta in theta_vec:
     
     leader_tx_rates = min(worker_tx_rates) * np.ones(shape=(1,workers))
     
+    # coord_tx_rates = 5600*np.ones(shape=(coordinators,workers))
+    # worker_tx_rates = 5600*np.ones(shape=(workers,1))
+    # # device_tx_rates = 5600*np.ones(shape=(devices,workers+coordinators)) #1000
+    # # device_tx_rates[0,workers:] = 200000
+    # # device_tx_rates[1,workers:] = 200000
+    # leader_tx_rates = 5600*np.ones(shape=(1,workers))
+    
     ## 
     alphas = {i:cp.Variable(shape=(workers,3),pos=True) for i in range(K_s1)}
     
@@ -156,7 +187,8 @@ for theta in theta_vec:
     rho = {i:cp.Variable(shape=(devices,coordinators+workers),pos=True) for i in range(K_s1)}
     varrho = {i:cp.Variable(shape=(coordinators,workers),pos=True) for i in range(K_s1)}
     
-    Omega = cp.Variable(pos=True) #unused
+    Omega = cp.Variable(pos=True)
+    
     
     ## flight energy coeffs
     # max_speed_uav = 57 #
@@ -178,7 +210,7 @@ for theta in theta_vec:
     kg_newton = 9.8 
     
     psi_j = (np.zeros(workers)).tolist()
-    psi_h = (np.zeros(coordinators)).tolist()
+    psi_h = (np.zeros(coordinators)).tolist() #2 #11.95 #0.5 #0.25 #1 #10
     
     for j in range(workers):
         c1 = 0.5 * air_density * (zero_lift_breakpoint +\
@@ -202,154 +234,206 @@ for theta in theta_vec:
         
         psi_h[h] = c1 * (speed**3) + c2/speed
         
-    psi_m = c1 * (min_speed_uav**3) + c2/speed   # parameter for leader flight to nearest AP
+    # psi_m = c1 * (min_speed_uav**3) + c2/speed   # parameter for leader flight to nearest AP
     psi_l = psi_j[np.random.randint(0,workers)] #+ 2*psi_m*2/tau_s2
-
-    # building D_j
+    
+    
     D_q = {i:[500 for j in range(devices)]  for i in range(K_s1)}
+    
+    # building D_j
     D_j = {i:[] for i in range(K_s1)}
     
     for i in range(K_s1):
-        # device offloading
-        for j in range(coordinators+workers):
-            temp = [1e-10]
-            for k in range(devices): #devices to all uavs
-                temp.append(rho[i][k,j]*D_q[i][k])
-            D_j[i].append(cp.sum(temp))
-        
-        # coordinator offloading
-        for j in range(workers):
-            temp = [1e-10]
-            for k in range(coordinators):
-                temp.append(varrho[i][k,j]*D_j[i][workers+k])
-            D_j[i][j] += cp.sum(temp)
-        
+        if i == 0:
+            for j in range(coordinators+workers):
+                temp = [1e-10] #to satisfy log reqs
+                for k in range(devices):
+                    temp.append(rho[i][k,j]*D_q[i][k])
+            
+                D_j[i].append(cp.sum(temp))
+        else:
+            # device offloading
+            for j in range(coordinators+workers):
+                temp = [1e-10]
+                for k in range(devices): #devices to all uavs
+                    temp.append(rho[i][k,j]*D_q[i][k])
+                    
+                D_j[i].append(cp.sum(temp))
+            
+            # coordinator offloading
+            for j in range(workers):
+                temp = [1e-10]
+                for k in range(coordinators):
+                    temp.append(varrho[i][k,j]*D_j[i][workers+k])
+                D_j[i][j] += cp.sum(temp)
+                
+                # for k in range(coordinators): # coordinator to workers only
+                #     temp.append(varrho[i][workers+k,j]*D_j[i][workers+k]) #*D_j[i-1][workers+k])
+    
     B_j = {i:[600 for j in range(workers)] for i in range(K_s1)} 
     B_j_coord = {i:[600 for h in range(coordinators)] for i in range(K_s1)}
     
-    # %% build optimization problem
+    # %% build objective
     
-    # %% build constraints + energy terms
-    constraints = []
-    # build energy terms [first, no loop terms, then loop terms]
-    # calculate worker tx energy 
-    eng_tx_w = np.zeros(shape=workers)
-    for j in range(workers):
-        eng_tx_w[j] += K_s1*params_to_bits * uav_tx_powers[j] /worker_tx_rates[j]
-    
-    # calculate worker and coordinators flight energy
-    eng_f_j = np.zeros(workers)
-    for j in range(workers):
-        eng_f_j[j] += T_s*seconds_conversion * psi_j[j]
-    
-    eng_f_h = np.zeros(coordinators)
-    for h in range(coordinators):
-        eng_f_h[h] += T_s*seconds_conversion * psi_h[h]    
-    
-    # leader energy computation
-    eng_f_l = T_s*seconds_conversion * psi_l + 2 *K_s2 *psi_m * dist_device_uav_min
-    bit_div_rates = []
-    for j in range(workers):
-        bit_div_rates.append(params_to_bits/leader_tx_rates[0])
-    eng_tx_l = K_s1*np.max(bit_div_rates)*leader_tx_powers[0]
-    
-    # build loop dependent energy terms
-    eng_p = (1e-10 * np.ones(shape=(K_s1,workers))).tolist()
-    eng_tx_u = (1e-10 * np.ones(shape=(K_s1,coordinators))).tolist()
-    eng_p_obj, eng_tx_u_obj, eng_tx_q = 1e-10,1e-10,1e-10
-    for i in range(K_s1):
+    for i in range(1,K_s1):
+        print('new K_s1 iteration')
+        ## theta terms
         # calculate the processing energy needed
-        for j in range(workers):
-            eng_p[i][j] += tau_s1*0.5*capacitance*worker_c[j]*D_j[i][j]* \
-                (cp.sum(alphas[i][j,:])) * cp.power(worker_freq[i][j],2) 
-            eng_p_obj += tau_s1*eng_p[i][j]
+        eng_p = (1e-10 * np.ones(shape=workers)).tolist()
+        eng_p_obj = 1e-10 
         
-        # calculate coordinator tx energy
+        for j in range(workers):
+            eng_p[j] += 0.5*capacitance*worker_c[j]*D_j[i][j]* \
+                (cp.sum(alphas[i][j,:])) * cp.power(worker_freq[i][j],2) #*cp.power(worker_freq[i][j],2)
+            eng_p_obj += tau_s1*eng_p[j]
+            
+        # calculate tx energy by UAVs
+        eng_tx_u = (1e-10 * np.ones(shape=coordinators)).tolist()
+        eng_tx_u_obj = 1e-10 
+        
+        # for i in range(K_s1):
+        # for j in range(coordinators):
+        #     for k in range(workers):
+        #         eng_tx_u += varrho[i][j,k]*D_j[i][workers+j]*uav_tx_powers[workers+j]*\
+        #         img_to_bits/coord_tx_rates[j][k]
+    
         for q in range(devices):
             for j in range(coordinators):
                 for k in range(workers):
-                    eng_tx_u[i][j] += varrho[i][j,k]*rho[i][q,workers+j]\
-                        *D_q[i][q]*uav_tx_powers[workers+j]*\
-                        img_to_bits/coord_tx_rates[j][k]
-        for j in range(coordinators):
-            eng_tx_u_obj += eng_tx_u[i][j]
-        
+                    eng_tx_u[j] += varrho[i][j,k]*rho[i][q,workers+j]*D_q[i][q]*uav_tx_powers[workers+j]*\
+                    img_to_bits/coord_tx_rates[j][k]
+                    
+                    eng_tx_u_obj += eng_tx_u[j]
+                    
+        # calculate worker tx energy 
+        eng_tx_w = np.zeros(shape=workers)
+    
+        for j in range(workers):
+            eng_tx_w[j] += params_to_bits * uav_tx_powers[j] /worker_tx_rates[j]
+    
         # calculate device tx energy
+        eng_tx_q = 1e-10 #q reps device
+    
         for j in range(devices):
             for k in range(coordinators+workers):
                 eng_tx_q += rho[i][j,k]*D_q[i][j]*device_tx_powers[j]*\
                     img_to_bits/device_tx_rates[j][k]
+    
+    
+        # calculate worker and coordinators flight energy
+        eng_f_j = np.zeros(workers)
+        eng_f_h = np.zeros(coordinators)
         
+        for j in range(workers):
+            eng_f_j[j] += seconds_conversion * psi_j[j]
+    
+        for h in range(coordinators):
+            eng_f_h[h] += seconds_conversion * psi_h[h]
+    
+        eng_f_l = seconds_conversion * psi_l
+    
+        # leader energy computation
+        eng_tx_l = 0
+    
+        for l in range(leaders):
+            # build vector 
+            bit_div_rates = []
+            for j in range(workers):
+                bit_div_rates.append(params_to_bits/leader_tx_rates[l])
+            eng_tx_l += np.max(bit_div_rates)*leader_tx_powers[l]
+        
+        ## build constraints
+        constraints = []
+    
         # alphas
         for j in range(workers):
             for k in range(3):
-                constraints.append(alphas[i][j,k] >= 1e-10) 
+                constraints.append(alphas[i][j,k] >= 1e-10)#1e-10)
                 constraints.append(alphas[i][j,k] <= 1)
-
+    
         # freqs
         for j in range(workers):
             constraints.append(worker_freq[i][j] <= freq_max)
             constraints.append(worker_freq[i][j] >= freq_min)
-        
+    
+    
         # offloading vars
         for j in range(devices):
             for k in range(coordinators+workers):
                 constraints.append(rho[i][j,k] <= 1)
                 constraints.append(rho[i][j,k] >= 1e-10)
+                # constraints.append(rho[i][j,k] >= 0.99)
+                
             constraints.append(cp.sum(rho[i][j,:]) <= 1)
-        
+            # equality constraint throws error
+            # constraints.append(cp.sum(rho[i][j,:]) >= 0.59)
+            # constraints.append(cp.sum(rho[i][j,:]) <= 1.51)
+    
         for j in range(coordinators):
             for k in range(workers):
                 constraints.append(varrho[i][j,k] <= 1)
                 constraints.append(varrho[i][j,k] >= 1e-10)
+    
             constraints.append(cp.sum(varrho[i][j,:]) <= 1)
-    
-    # Add the energy constraints into the constraints structure (also 20,000 bat)
-    eng_bat_j = 20000 * np.ones(shape=workers)
-    eng_bat_h = 20000 * np.ones(shape=coordinators)
-    eng_bat_l = 20000        
-    eng_thresh_j = 20 * np.ones(shape=workers)
-    eng_thresh_h = 20 * np.ones(shape=coordinators)
-    eng_thresh_l = 20 
-    
-    # energy limit constraints
-    for j in range(workers):
-        constraints.append(cp.sum([t_eng_p[j] for t_eng_p in eng_p]) \
-            + eng_tx_w[j] + eng_f_j[j] <= (eng_bat_j[j] - eng_thresh_j[j]) )
-
-    for h in range(coordinators):
-        constraints.append(cp.sum([t_eng_tx_u[h] for t_eng_tx_u in eng_tx_u]) +\
-            + eng_f_h[h] <= (eng_bat_h[h] - eng_thresh_h[h]) )
-    
-    constraints.append(eng_f_l  + eng_tx_l <= (eng_bat_l - eng_thresh_l))
-    
-    # build timing terms
-    zeta_p = np.zeros((K_s1,workers)).tolist()
-    zeta_g_j = np.zeros((K_s1,workers)).tolist()
-    zeta_g_h = np.zeros((K_s1,coordinators)).tolist()
-    zeta_local = 5 #1000
-    for i in range(K_s1):
+        
+        zeta_p = np.zeros(workers).tolist()
+        zeta_g_j = np.zeros(workers).tolist()
+        zeta_g_h = np.zeros(coordinators).tolist()
+        zeta_local = 5 #1000
+        
+        # implementing zeta constraint
         for j in range(workers):    
-            zeta_p[i][j] = tau_s1*worker_c[j] * (cp.sum(alphas[i][j,:])) \
-                * D_j[i][j] / worker_freq[i][j]
+            zeta_p[j] = tau_s1*worker_c[j] * (cp.sum(alphas[i][j,:])) * D_j[i][j] / worker_freq[i][j]
+            zeta_g_j[j] = 1e-10 #img_to_bits
             
-            zeta_g_j[i][j] = 1e-10
             for q in range(devices):
-                zeta_g_j[i][j] += rho[i][q,j] * D_q[i][q] * img_to_bits/device_tx_rates[q,j]
+                zeta_g_j[j] += rho[i][q,j] * D_q[i][q] * img_to_bits/device_tx_rates[q,j]
+                
             for h in range(coordinators):
                 for q in range(devices):
-                    zeta_g_j[i][j] += varrho[i][h,j] * rho[i][q,workers+h] * D_q[i][q] *\
+                    zeta_g_j[j] += varrho[i][h,j] * rho[i][q,workers+h] * D_q[i][q] *\
                         img_to_bits/coord_tx_rates[h,j] 
-        
-            constraints.append(zeta_p[i][j] + zeta_g_j[i][j] <= zeta_local)
+                    #* D_j[i][workers+h] *\
+                        #img_to_bits/coord_tx_rates[h,j] #device_tx_rates[q,workers+h] produces good results
+                        #rho[i][q,workers+h] * D_q[i][q] *
+                        
+            constraints.append(zeta_p[j] + zeta_g_j[j] <= zeta_local)
         
         for h in range(coordinators):
-            zeta_g_h[i][h] = 1e-10
+            zeta_g_h[h] = 1e-10
             for q in range(devices):
-                zeta_g_h[i][h] += rho[i][q,workers+h] * D_q[i][q] * \
+                zeta_g_h[h] += rho[i][q,workers+h] * D_q[i][q] * \
                     img_to_bits/device_tx_rates[q,workers+h]
             
-            constraints.append(zeta_g_h[i][h] <= zeta_local)
+            constraints.append(zeta_g_h[h] <= zeta_local)
+            
+        # # # data capacity constraints
+        # for j in range(workers):
+        #     constraints.append(D_j[i][j] <= B_j[i][j])
+        # for h in range(coordinators):
+        #     constraints.append(D_j[i][workers+h] <= B_j_coord[i][h])
+        
+        # 20,000
+        eng_bat_j = 20000 * np.ones(shape=workers)
+        eng_bat_h = 20000 * np.ones(shape=coordinators)
+        eng_thresh_j = 20 * np.ones(shape=workers)
+        eng_thresh_h = 20 * np.ones(shape=coordinators)
+        
+        eng_bat_l = 20000
+        eng_thresh_l = 20 
+        
+        # energy limits 
+        for j in range(workers):
+            constraints.append(eng_p[j] + eng_tx_w[j] + eng_f_j[j] \
+                <= (eng_bat_j[j] - eng_thresh_j[j])/(K_s1) )
+    
+        for h in range(coordinators):
+            constraints.append(eng_f_h[h] + eng_tx_u[h] \
+                <= (eng_bat_h[h] - eng_thresh_h[h])/( K_s1 ) )
+        
+        # constraints.append(eng_f_l  + eng_tx_l \
+        #         <= (eng_bat_l - eng_thresh_l)/ K_s1)
+        
     
     ## 1-theta terms
     eta_2 = 1e-4 #1e-4
@@ -357,12 +441,13 @@ for theta in theta_vec:
     grad_fu_scale = 1/(eta_2/2 - 6 *eta_2**2 * mu_F/2) * (3*eta_2**2 *mu_F/2 + eta_2)
     
     B, eta_1, mu = 500, 1e-3, 10 #500
-    sigma_j_H,sigma_j_G = 50, 50
+    sigma_j_H,sigma_j_G = 50, 50 ##sigma_j_H greatly affects data?
     gamma_u_F, gamma_F = 10, 10
     
     ## need to approximate delta_u
     # delta_u = D_j[]
     delta_u_holder = []
+    # init_delta_u = 50 #1e-10
     
     max_approx_iters = 2 #5 #10 #50 #100 #100 #200 #50
     # max_approx_iters = 5
@@ -371,107 +456,16 @@ for theta in theta_vec:
     plot_acc = []
     
     # calc objective fxn value with initial estimate numbers
-    alpha_ind_init = 0.9    
+    # eng_p_prior = 0.01*0.5*capacitance*()
+    alpha_ind_init = 0.9
+    
     test_init_rho = 0.05
     test_init_varrho = 0.1
     
     sigma_c_H,sigma_c_G = 50, 50 #50, 50
     B_cluster = 500
     
-    # %% some fxn defs
-    def d2w_denom(tt,tdq,trho,ti_rho=test_init_rho):
-        if tt == 0:
-            tdp = tdq*ti_rho #temp_denom_prev, temp_data_q #q is device
-        else:
-            tdp = tdq*trho
-        return tdp
-    
-    def c2w_denom(tt,tdq,trho,tvrho,ti_vrho=test_init_varrho,ti_rho=test_init_rho):
-    	if tt == 0:
-    		tdp = d2w_denom(tt=tt,tdq=tdq,trho=ti_rho)*ti_vrho
-    	else:
-    		tdp = d2w_denom(tt=tt,tdq=tdq,trho=trho)*tvrho
-    	return tdp
-    
-    
-    # %% 
-    # TODO: this is wrong!!! - the for loops should be flipped!!
-    for t in range(max_approx_iters):
-        # calc weighted sigma term
-        delta_u_approx_vec = [1 for i in range(K_s1)]
-        delta_u_vec = [1e-10 for i in range(K_s1)]
-        for ks2 in range(1,K_s2+1):
-            # calc delta_j_outer = tau_s1*alpha_j(k)*D_j(k)
-            # k = ks2*tau_s2
-            delta_j_outer_vec = []
-            t_ks2_ind = (ks2-1)*tau_s2
-            for j in range(workers): 
-                # calc delta_j
-                # TODO: resume here
-                delta_j_outer_vec.append(tau_s1*cp.sum(alphas[t_ks2_ind])*D_j[t_ks2_ind])
-                
-            #delta_u_outer variables
-            delta_u_approx_outer_vec = [1 for i in range(1,K_s2+1)]
-            delta_u_outer_vec = [1e-10 for i in range(1,K_s2+1)]
-            
-            min_ks1, max_ks1 = (ks2-1)*tau_s2, ks2*tau_s2-1 #0 starting index
-            sigma_j_k = {ks1: [] for ks1 in range(min_ks1, max_ks1)}
-            for ks1 in range(min_ks1, max_ks1):
-                sigma_j = []
-                for j in range(workers):
-                    #calc sigma - first approx D_j
-                    sigma_prev, D_j_approx = 10, 1
-                    D_j_prev = 1e-10 #the total denom
-                    for q in range(devices): # previous D_j estimate
-                        denom_prev = d2w_denom(tt=t,tdq=D_q[ks1][q],trho=rho[ks1][q,j].value)
-                        D_j_prev += denom_prev
-                
-                    for h in range(coordinators):
-                        for q in range(devices):
-                            denom_prev = c2w_denom(tt=t,tdq=D_q[ks1][q],\
-                                    trho=rho[ks1][q,workers+h].value,\
-                                    tvrho=varrho[ks1][h,j].value)
-                            D_j_prev += denom_prev
-                            
-                    input('run test')
-                    
-                    #calc approximation
-                    for q in range(devices):
-                        denom_prev = d2w_denom(tt=t,tdq=D_q[ks1][q],trho=rho[ks1][q,j].value)
-                        D_j_approx *= (rho[ks1][q,j] * D_q[ks1][q] *\
-                            D_j_prev/denom_prev)**(denom_prev/D_j_prev)
-                    
-                    for h in range(coordinators):
-                        if t == 0:
-                            varrho_hj = test_init_varrho
-                        else:
-                            varrho_hj = varrho[ks1][h,j].value
-                        for q in range(devices):
-                            if t == 0:
-                                D_q_approx, rho_qh = D_q[ks1][q], test_init_rho
-                            else:
-                                D_q_approx, rho_qh = D_q[ks1][q], rho[ks1][q,j].value
-                            denom_prev = D_q_approx*varrho_hj*rho_qh
-                            D_j_approx *= (varrho[ks1][h,j] * rho[ks1][q,workers+h] *\
-                                D_q[ks1][q] * D_j_prev/denom_prev) \
-                                **(denom_prev/D_j_prev)
-                    
-                    sigma_j_pre = 3*B**2*eta_1**2*sigma_j_H*alphas[ks1][j,0]*\
-                        alphas[ks1][j,1]*D_j[ks1][j] \
-                        + 3*eta_1**2 * sigma_j_H * sigma_j_G  \
-                        *( alphas[ks1][j,0] + mu**2 * eta_1**2 * alphas[ks1][j,1]) \
-                        + 12 * sigma_j_G * alphas[ks1][j,2] * D_j[ks1][j] \
-                        *( alphas[ks1][j,0] + mu**2 * eta_1**2 * alphas[ks1][j,1] )
-                    
-                    sigma_j.append(sigma_j_pre/(cp.prod(alphas[ks1][j,:])*D_j_approx**2))
-    
-                sigma_j_k[ks1] = sigma_j
-            
-            # calculate delta_u 
-            
-    
-    # %% 
-    for i in range(1,K_s1): #K_s2??
+    for i in range(1,K_s1):
         for t in range(max_approx_iters):
             delta_u_approx = 1
             delta_u = 1e-10
@@ -481,13 +475,19 @@ for theta in theta_vec:
             init_h_j1,init_h_j2,init_h_j3 = [],[],[]
             
             ## varrho and D_j must be considered hereafter
+            # else: #i != 0, D_j and varrho active
+        
+            # init_h_j1 = np.zeros(shape=(devices,coordinators,workers))
+            # init_h_j2 = np.zeros(shape=(devices,coordinators,workers))
+            # init_h_j3 = np.zeros(shape=(devices,coordinators,workers))
+            
             if t == 0:
+    
                 # calculate delta_u and delta_u_approx
                 for j in range(workers):
-                    alpha_j1, alpha_j2, alpha_j3 = alpha_ind_init,alpha_ind_init,alpha_ind_init
+                    alpha_j1, alpha_j2, alpha_j3 = alpha_ind_init,alpha_ind_init,alpha_ind_init # 0.9,0.9,0.9
                     alpha_j = alpha_j1 + alpha_j2 + alpha_j3
                     
-                    # device to worker delta_u
                     for q in range(devices):
                         rho_qj, D_q_approx =  test_init_rho, D_q[i][q]  #1/(workers+coordinators),
                         
@@ -496,8 +496,7 @@ for theta in theta_vec:
                         init_q_j3.append(alpha_j3*rho_qj*D_q_approx)
                         
                         delta_u += alpha_j*rho_qj*D_q_approx
-
-                    # device to coord delta_u
+                    
                     for h in range(coordinators):
                         varrho_hj = test_init_varrho #1/workers                        
                         
@@ -507,6 +506,8 @@ for theta in theta_vec:
                             init_h_j1.append(alpha_j1*varrho_hj*rho_qh*D_q_approx)
                             init_h_j2.append(alpha_j2*varrho_hj*rho_qh*D_q_approx)
                             init_h_j3.append(alpha_j3*varrho_hj*rho_qh*D_q_approx)
+                        
+                            # init_h_j1[q,h,j] = alpha_j*varrho_hj*rho_qh*D_q_approx
     
                             delta_u += alpha_j*varrho_hj*rho_qh*D_q_approx
                 
@@ -521,6 +522,16 @@ for theta in theta_vec:
                         delta_u_approx *= (alphas[i][j,2] *rho[i][q,j] * D_q[i][q] *\
                             delta_u/init_q_j3[j*devices+q] ) **(init_q_j3[j*devices+q]/delta_u)  
                         
+                        # delta_u_approx *= (alpha_j1 * test_init_rho * D_q[i][q] *\
+                        #     delta_u/init_q_j1[j*devices+q] ) **(init_q_j1[j*devices+q]/delta_u)
+                        # delta_u_approx *= (alpha_j2 * test_init_rho * D_q[i][q] *\
+                        #     delta_u/init_q_j2[j*devices+q] ) **(init_q_j2[j*devices+q]/delta_u)
+                        # delta_u_approx *= (alpha_j3 * test_init_rho * D_q[i][q] *\
+                        #     delta_u/init_q_j3[j*devices+q] ) **(init_q_j3[j*devices+q]/delta_u)  
+                        
+                        # powers_check += (init_q_j1[j*devices+q]+\
+                        #     init_q_j2[j*devices+q]+init_q_j3[j*devices+q])/delta_u 
+                        
                     for h in range(coordinators):
                         for q in range(devices):
                             delta_u_approx *= (alphas[i][j,0] *varrho[i][h,j] *rho[i][q,workers+h]*\
@@ -532,6 +543,27 @@ for theta in theta_vec:
                             delta_u_approx *= (alphas[i][j,2] *varrho[i][h,j] *rho[i][q,workers+h]*\
                                 D_q[i][q] * delta_u/init_h_j3[j*devices*coordinators+h*devices+q] ) \
                                 **(init_h_j3[j*devices*coordinators+h*devices+q]/delta_u)
+                
+                            # delta_u_approx *= (alpha_j1 * test_init_varrho * test_init_rho *\
+                            #     D_q[i][q] * delta_u/init_h_j1[j*devices*coordinators+h*devices+q] ) \
+                            #     **(init_h_j1[j*devices*coordinators+h*devices+q]/delta_u)
+                            # delta_u_approx *= (alpha_j2 * test_init_varrho * test_init_rho *\
+                            #     D_q[i][q] * delta_u/init_h_j2[j*devices*coordinators+h*devices+q] ) \
+                            #     **(init_h_j2[j*devices*coordinators+h*devices+q]/delta_u)
+                            # delta_u_approx *= (alpha_j3 * test_init_varrho * test_init_rho *\
+                            #     D_q[i][q] * delta_u/init_h_j3[j*devices*coordinators+h*devices+q] ) \
+                            #     **(init_h_j3[j*devices*coordinators+h*devices+q]/delta_u)
+                            
+                            # powers_check += (init_h_j1[j*devices*coordinators+h*devices+q]+\
+                            #     init_h_j2[j*devices*coordinators+h*devices+q]+\
+                            #     init_h_j3[j*devices*coordinators+h*devices+q])/delta_u 
+                            
+                                # print(delta_u_approx)
+                            
+                            
+                # print('powers_check = ' + str(powers_check))        
+                # print(delta_u_approx)
+                # print(delta_u)
                 
                 ## calc sigma
                 # first approx D_j
@@ -558,6 +590,9 @@ for theta in theta_vec:
                         
                             D_j_prev += denom_prev
                     
+                    # sig_powers_check = 0
+                    
+                    # print('dj_prev =' + str(D_j_prev))
                     # calc approximation
                     for q in range(devices):
                         D_q_approx, rho_qj = D_q[i][q], test_init_rho #1/(workers+coordinators)
@@ -565,7 +600,13 @@ for theta in theta_vec:
                         
                         D_j_approx *= (rho[i][q,j] * D_q[i][q] *\
                             D_j_prev/denom_prev)**(denom_prev/D_j_prev)
+                          
+                        # D_j_approx *= (rho_qj * D_q_approx *\
+                        #     D_j_prev/denom_prev)**(denom_prev/D_j_prev)
+                            
+                        # sig_powers_check += denom_prev/D_j_prev
                         
+                            
                     for h in range(coordinators):
                         varrho_hj = test_init_varrho
                         
@@ -576,6 +617,15 @@ for theta in theta_vec:
                             D_j_approx *= (varrho[i][h,j] * rho[i][q,workers+h] *\
                                 D_q[i][q] * D_j_prev/denom_prev) \
                                 **(denom_prev/D_j_prev)
+                            
+                            # D_j_approx *= (varrho_hj * test_init_rho *\
+                            #     D_q_approx * D_j_prev/denom_prev) \
+                            #     **(denom_prev/D_j_prev)
+                                
+                            # sig_powers_check += denom_prev/D_j_prev
+                    
+                    # print('dj_approx =' + str(D_j_approx))
+                    # print(sig_powers_check)
                     
                     sigma_j_pre = 3*B**2*eta_1**2*sigma_j_H*alphas[i][j,0]*alphas[i][j,1]*D_j[i][j] \
                         + 3*eta_1**2 * sigma_j_H * sigma_j_G  \
@@ -583,7 +633,12 @@ for theta in theta_vec:
                         + 12 * sigma_j_G * alphas[i][j,2] * D_j[i][j] \
                         *( alphas[i][j,0] + mu**2 * eta_1**2 * alphas[i][j,1] )
                     
+                    # print(D_j_approx)
+                    
+                    
                     sigma_j.append(sigma_j_pre/(cp.prod(alphas[i][j,:])*D_j_approx**2))
+                    # sigma_j.append(1/cp.prod(alphas[i][j,:]))
+                    
                     
                     ## mismatch term
                     mismatch_pre_factor = 3*B_cluster**2 * eta_1**2 * sigma_c_H * D_j[i][j] \
@@ -664,6 +719,7 @@ for theta in theta_vec:
                         
                             D_j_prev += denom_prev
                     
+                    
                     # calc approximation
                     for q in range(devices):
                         D_q_approx, rho_qj = D_q[i][q], rho[i][q,j].value
@@ -700,9 +756,11 @@ for theta in theta_vec:
                     
                     # D_j_approx doesn't consider the alpha factors, we already have the approx
                     mismatch_j[j] = (mismatch_pre_factor / D_j_approx**2 )
-
+    
+    
             # sum delta_j/delta_u
             delta_diff_sigma = 1e-10 # delta_diff = delta_diff/delta_u_approx
+            # print(i)
             for j in range(workers):
                 delta_diff_sigma += cp.sum(alphas[i][j,:])*D_j[i][j]*sigma_j[j]/delta_u_approx
             
@@ -721,21 +779,41 @@ for theta in theta_vec:
             
             upsilon = upsilon_pt1 + upsilon_pt2
             
-            # mismatch calc (\widehat{\Xi})
+            # mismatch calc
             mismatch = 1e-10
             for j in range(workers):
                 mismatch_scale = cp.sum(alphas[i][j,:]) * D_j[i][j] /delta_u_approx
                 mismatch += mismatch_scale * mismatch_j[j] 
+        
             
             # learning combine
+            # theta = 0.3
+            
             true_objective = (1-theta)*(eng_p_obj + eng_tx_u_obj + eng_tx_q) + \
                 theta* (grad_fu_scale*(delta_diff_sigma + mu_F**2 * upsilon) \
                 + 3 * eta_2**2 * mu_F * gamma_u_F / (eta_2/2 - 6 * eta_2**2 * mu_F/2) \
                 + mismatch)
+            # + sum(eng_f_j) + sum(eng_f_h) + eng_f_l 
+            #     #delta_i/delta_u
+            # + sum(eng_tx_w) \ + eng_tx_l
+            
+            # true_objective = (1-theta)*(eng_p_obj + eng_tx_u_obj + eng_tx_q + sum(eng_tx_w) \
+            #     + eng_tx_l + sum(eng_f_j) + sum(eng_f_h) + eng_f_l )
+            
+            # true_objective = theta* (grad_fu_scale*(delta_diff_sigma + mu_F**2 * upsilon) \
+            #     + 3 * eta_2**2 * mu_F * gamma_u_F / (eta_2/2 - 6 * eta_2**2 * mu_F/2) \
+            #     + mismatch)
+                # eng_p + eng_tx_u + eng_tx_w + eng_tx_q +  + sum(eng_f_j)
+            # true_objective = grad_fu_scale*delta_diff
+            # true_objective = (eng_p + eng_tx_u + eng_tx_w + eng_tx_q + eng_f_j)
+            
+            # constraints.append(true_objective <= Omega) #1e-10)
+            # constraints.append(Omega >= 1e-10)
             
             ## objective function
+            # objective_fxn = Omega
             objective_fxn = true_objective
-
+    
         # %% formulate problem and solve
             # print(alpha_j1,alpha_j2,alpha_j3)    
             print(time.time()-start)
@@ -775,8 +853,32 @@ for theta in theta_vec:
             # plot_acc.append(np.round(temp_acc,5))
             plot_acc.append(temp_acc.value)
             
+            # print(varrho[i].value)
+            # print(rho[i].value)
             
-    # %% plotting    
+            # for j in range(workers):
+            #     print(alphas[i][j,0].value)
+            #     print(alphas[i][j,1].value)
+            #     print(alphas[i][j,2].value)
+            
+            
+    # %% plotting
+        # plt.figure(1)
+        
+        # plt.plot(plot_obj)
+        # # plt.title('objective fxn value - iter: ' + str(i))
+        # plt.title('objective fxn - devices: ' + str(devices) + 'workers: ' + str(workers))
+        # # plt.savefig()
+        
+        # plt.figure(2)
+        # plt.plot(plot_energy)
+        # plt.title('aggregate energy - iter: ' + str(i))
+        
+        # plt.figure(3)
+        # plt.plot(plot_acc)
+        # plt.title('gradient result - iter: ' + str(i))
+        # ax3.plot(plot_acc)
+    
     init_learning_estimate = 0
     temp_delta_u_approx = 0
     temp_alpha_est = 0.1*3 #0.9*3 ## testing random - manually save
@@ -863,6 +965,7 @@ for theta in theta_vec:
     const_energies += eng_p_obj2 + eng_tx_u_obj2 + eng_tx_q2
     
     
+    
     # calc initial point
     plot_energy.append(const_energies)
     plot_energy = np.roll(plot_energy,1)
@@ -906,68 +1009,68 @@ for theta in theta_vec:
     # print(plot_acc)
     # plt.title('gradient result - iter: ' + str(i))
 
-    # ## store the plot_obj/energy/acc
-    # cwd = os.getcwd()
-    # subfolder = 'avg' #'greed'
-    # with open(cwd+'/geo_optim_chars/'+subfolder+'/147_tau_adjust_seed_'+str(seed)+\
+    ## store the plot_obj/energy/acc
+    cwd = os.getcwd()
+    subfolder = 'avg' #'greed'
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust_seed_'+str(seed)+\
+              '_default_'+str(theta)+'_obj','wb') as f:
+        pk.dump(plot_obj,f)
+
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust_seed_'+str(seed)+\
+              'default_'+str(theta)+'_energy','wb') as f:
+        pk.dump(plot_energy,f)
+
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust_seed_'+str(seed)+\
+              'default_'+str(theta)+'_acc','wb') as f:
+        pk.dump(plot_acc,f)    
+    
+    # subfolder = 'greed'
+    # with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust'+\
     #           '_default_'+str(theta)+'_obj','wb') as f:
     #     pk.dump(plot_obj,f)
 
-    # with open(cwd+'/geo_optim_chars/'+subfolder+'/147_tau_adjust_seed_'+str(seed)+\
-    #           'default_'+str(theta)+'_energy','wb') as f:
+    # with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust+\
+    #           '_default_'+str(theta)+'_energy','wb') as f:
     #     pk.dump(plot_energy,f)
 
-    # with open(cwd+'/geo_optim_chars/'+subfolder+'/147_tau_adjust_seed_'+str(seed)+\
-    #           'default_'+str(theta)+'_acc','wb') as f:
+    # with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust+\
+    #           '_default_'+str(theta)+'_acc','wb') as f:
     #     pk.dump(plot_acc,f)    
+        
+    # ## store the data
+    # cwd = os.getcwd()
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust_seed_'+str(seed)+\
+              '_'+str(theta)+'rho','wb') as f:
+        pk.dump(rho[1].value,f)
     
-    # # subfolder = 'greed'
-    # # with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust'+\
-    # #           '_default_'+str(theta)+'_obj','wb') as f:
-    # #     pk.dump(plot_obj,f)
-
-    # # with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust+\
-    # #           '_default_'+str(theta)+'_energy','wb') as f:
-    # #     pk.dump(plot_energy,f)
-
-    # # with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust+\
-    # #           '_default_'+str(theta)+'_acc','wb') as f:
-    # #     pk.dump(plot_acc,f)    
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust_seed_'+str(seed)+\
+              '_'+str(theta)+'varrho','wb') as f:
+        pk.dump(varrho[1].value,f)
     
-    # # ## store the data
-    # # cwd = os.getcwd()
-    # with open(cwd+'/geo_optim_chars/'+subfolder+'/147_tau_adjust_seed_'+str(seed)+\
-    #           '_'+str(theta)+'rho','wb') as f:
-    #     pk.dump(rho[1].value,f)
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust_seed_'+str(seed)+\
+              '_'+str(theta)+'alphas','wb') as f:
+        pk.dump(alphas[1].value,f)
     
-    # with open(cwd+'/geo_optim_chars/'+subfolder+'/147_tau_adjust_seed_'+str(seed)+\
-    #           '_'+str(theta)+'varrho','wb') as f:
-    #     pk.dump(varrho[1].value,f)
+    # worker freqs and D_j
+    worker_freq2 = []
+    for l in worker_freq[1]:
+        worker_freq2.append(l.value)
     
-    # with open(cwd+'/geo_optim_chars/'+subfolder+'/147_tau_adjust_seed_'+str(seed)+\
-    #           '_'+str(theta)+'alphas','wb') as f:
-    #     pk.dump(alphas[1].value,f)
+    D_j2 = []
+    for l in D_j[1]:
+        D_j2.append(l.value)
     
-    # # worker freqs and D_j
-    # worker_freq2 = []
-    # for l in worker_freq[1]:
-    #     worker_freq2.append(l.value)
-    
-    # D_j2 = []
-    # for l in D_j[1]:
-    #     D_j2.append(l.value)
-    
-    # # with open(cwd+'/geo_optim_chars/'+subfolder+'/seed_'+str(seed)+\
-    # #           '_'+str(theta)+'worker_freq','wb') as f:
-    # #     pk.dump(worker_freq2,f)
-
-    # with open(cwd+'/geo_optim_chars/'+subfolder+'/147_tau_adjust_seed_'+str(seed)+\
+    # with open(cwd+'/geo_optim_chars/'+subfolder+'/seed_'+str(seed)+\
     #           '_'+str(theta)+'worker_freq','wb') as f:
     #     pk.dump(worker_freq2,f)
 
-    # with open(cwd+'/geo_optim_chars/'+subfolder+'/147_tau_adjust_seed_'+str(seed)+\
-    #           '_'+str(theta)+'D_j','wb') as f:
-    #     pk.dump(D_j2,f)
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust_seed_'+str(seed)+\
+              '_'+str(theta)+'worker_freq','wb') as f:
+        pk.dump(worker_freq2,f)
+
+    with open(cwd+'/geo_optim_chars/'+subfolder+'/tau_adjust_seed_'+str(seed)+\
+              '_'+str(theta)+'D_j','wb') as f:
+        pk.dump(D_j2,f)
 
 
 # %% saving
@@ -984,4 +1087,132 @@ for theta in theta_vec:
 #     +str(workers)+'_c_'+str(coordinators),'wb') as f:
 #     pk.dump(plot_energy,f)
 
+
+# %% graveyard
+# build the alpha dict
+# for i in range(workers):
+#     for j in range(4):        
+#         if j == 0:
+#             alphas[i].append(1e-10) #to satisfy log reqs
+#         else:
+#             alphas[i].append(cp.Variable(pos=True))
+
+# # rho vec populate
+# for i in range(devices):
+#     rho[i] = [cp.Variable(pos=True) for j in range(coordinators+workers)]
+
+# # varrho vec populate
+# for i in range(coordinators+1):
+#     varrho[i] = [cp.Variable(pos=True) for j in range(coordinators+workers)]
+    
+
+        # if t == 0 and i == 0:
+            
+        #     ## calculate delta_u_approx
+        #     for j in range(workers):
+        #         alpha_j1,alpha_j2,alpha_j3 = 0.9,0.9,0.9
+        #         alpha_j = alpha_j1 + alpha_j2 + alpha_j3
+                
+        #         for q in range(devices):
+        #             rho_qj = 1/(workers) #0.95
+        #             D_q_approx = D_q[i][q] # as this is currently hard coded
+                    
+        #             # init_q_j.append(init_i_alpha*init_rho_qj*init_D_q)
+        #             init_q_j1.append(alpha_j1*rho_qj*D_q_approx)
+        #             init_q_j2.append(alpha_j2*rho_qj*D_q_approx)
+        #             init_q_j3.append(alpha_j3*rho_qj*D_q_approx)
+                    
+        #             delta_u += alpha_j*rho_qj*D_q_approx
+
+        #     for j in range(workers):
+        #         for q in range(devices):
+        #             delta_u_approx *= (alphas[i][j,0] *rho[i][q,j] * D_q[i][q] *\
+        #                 delta_u/init_q_j1[j*devices+q] ) **(init_q_j1[j*devices+q]/delta_u)
+        #             delta_u_approx *= (alphas[i][j,1] *rho[i][q,j] * D_q[i][q] *\
+        #                 delta_u/init_q_j2[j*devices+q] ) **(init_q_j2[j*devices+q]/delta_u)
+        #             delta_u_approx *= (alphas[i][j,2] *rho[i][q,j] * D_q[i][q] *\
+        #                 delta_u/init_q_j3[j*devices+q] ) **(init_q_j3[j*devices+q]/delta_u)                
+            
+        #     ## calc sigma
+        #     # first approx D_j
+        #     sigma_j = []
+        #     for j in range(workers):
+        #         sigma_prev, D_j_approx = 10, 1
+        #         D_j_prev = 1e-10
+                
+        #         for q in range(devices):
+        #             D_q_approx, rho_qj = D_q[i][q], 1/workers #0.95
+        #             denom_prev = D_q_approx*rho_qj
+                    
+        #             # D_j_approx *= (rho[i][q,j] * D_q[i][q] *\
+        #             #     sigma_prev/denom_prev ) **(denom_prev/sigma_prev)
+        #             D_j_prev += denom_prev
+                
+        #         for q in range(devices):
+        #             D_q_approx, rho_qj = D_q[i][q], 1/(workers)
+        #             denom_prev = D_q_approx*rho_qj
+                    
+        #             D_j_approx *= (rho[i][q,j] * D_q[i][q] *\
+        #                 D_j_prev/denom_prev)**(denom_prev/D_j_prev)
+                    
+        #         sigma_j_pre = 3*(B**2)*(eta_1**2)*sigma_j_H*alphas[i][j,0]*alphas[i][j,1]*D_j[i][j] \
+        #             + 3*eta_1**2 * sigma_j_H * sigma_j_G  \
+        #             *( alphas[i][j,0] + mu**2 * eta_1**2 * alphas[i][j,1]) \
+        #             + 12 * sigma_j_G * alphas[i][j,2] * D_j[i][j] \
+        #             *( alphas[i][j,0] + mu**2 * eta_1**2 * alphas[i][j,1] )
+                
+        #         sigma_j.append(sigma_j_pre/(cp.prod(alphas[i][j,:])*D_j_approx**2))
+                
+        # elif t!= 0 and i == 0:
+        #     ## update delta_u_approx
+        #     for j in range(workers):
+        #         alpha_j1, alpha_j2, alpha_j3 = alphas[i][j,0].value, \
+        #             alphas[i][j,1].value, alphas[i][j,2].value
+        #         alpha_j = alpha_j1 + alpha_j2 + alpha_j3
+                
+        #         for q in range(devices):
+        #             rho_qj = rho[i][q,j].value
+        #             D_q_approx = D_q[i][q]
+                    
+        #             init_q_j1.append(alpha_j1*rho_qj*D_q_approx)
+        #             init_q_j2.append(alpha_j2*rho_qj*D_q_approx)
+        #             init_q_j3.append(alpha_j3*rho_qj*D_q_approx)
+                    
+        #             delta_u += alpha_j*rho_qj*D_q_approx
+                    
+        #     for j in range(workers):
+        #         for q in range(devices):
+        #             delta_u_approx *= (alphas[i][j,0] *rho[i][q,j] * D_q[i][q] *\
+        #                 delta_u/init_q_j1[j*devices+q] ) **(init_q_j1[j*devices+q]/delta_u)
+        #             delta_u_approx *= (alphas[i][j,1] *rho[i][q,j] * D_q[i][q] *\
+        #                 delta_u/init_q_j2[j*devices+q] ) **(init_q_j2[j*devices+q]/delta_u)
+        #             delta_u_approx *= (alphas[i][j,2] *rho[i][q,j] * D_q[i][q] *\
+        #                 delta_u/init_q_j3[j*devices+q] ) **(init_q_j3[j*devices+q]/delta_u)   
+            
+        #     ## update sigma, via updating D_j approx
+        #     # first approx D_j
+        #     for j in range(workers):
+        #         sigma_prev, D_j_approx = sigma_j[j].value, 1 #D_j[i][j].value
+        #         D_j_prev = 1e-10
+                
+        #         for q in range(devices):
+        #             D_q_approx, rho_qj = D_q[i][q], rho[i][q,j].value
+        #             denom_prev = D_q_approx*rho_qj
+                    
+        #             D_j_prev += denom_prev
+                
+        #         for q in range(devices):
+        #             D_q_approx, rho_qj = D_q[i][q], rho[i][q,j].value
+        #             denom_prev = D_q_approx*rho_qj
+                    
+        #             D_j_approx *= (rho[i][q,j] * D_q[i][q] *\
+        #                 D_j_prev/denom_prev)**(denom_prev/D_j_prev)
+                    
+        #         sigma_j_pre = 3*B**2*eta_1**2*sigma_j_H*alphas[i][j,0]*alphas[i][j,1]*D_j[i][j] \
+        #             + 3*eta_1**2 * sigma_j_H * sigma_j_G  \
+        #             *( alphas[i][j,0] + mu**2 * eta_1**2 * alphas[i][j,1]) \
+        #             + 12 * sigma_j_G * alphas[i][j,2] * D_j[i][j] \
+        #             *( alphas[i][j,0] + mu**2 * eta_1**2 * alphas[i][j,1] )
+                
+        #         sigma_j[j] = sigma_j_pre/(cp.prod(alphas[i][j,:])*D_j_approx**2)
 
