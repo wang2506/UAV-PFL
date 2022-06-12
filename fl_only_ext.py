@@ -16,7 +16,7 @@ import random
 import pickle
 import gc #garbage collection
 
-from Shared_ML_code.neural_nets import MLP, CNN, FedAvg, FPAvg, LocalUpdate, \
+from Shared_ML_code.neural_nets import MLP, CNN, CNN2, FedAvg, FPAvg, LocalUpdate, \
     LocalUpdate_PFL, FedAvg2, LocalUpdate_FO_PFL, LocalUpdate_HF_PFL
 from Shared_ML_code.testing import test_img, test_img2
 from Shared_ML_code.fl_parser import ml_parser
@@ -43,15 +43,26 @@ else:
 if settings.data_style == 'mnist':
     trans_mnist = transforms.Compose([transforms.ToTensor(), \
                                       transforms.Normalize((0.1307,),(0.3081,))])
-    dataset_train = torchvision.datasets.MNIST('./data/mnist/',train=True,download=False,\
+    dataset_train = torchvision.datasets.MNIST('./data/mnist/',train=True,download=True,\
                                                 transform=trans_mnist)
-    dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=False,\
+    dataset_test = torchvision.datasets.MNIST('./data/mnist/',train=False,download=True,\
                                               transform=trans_mnist)
+    nchannels = 1
 elif settings.data_style == 'fmnist': 
-    dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=False,\
+    dataset_train = torchvision.datasets.FashionMNIST('./data/fmnist/',train=True,download=True,\
                                     transform=transforms.ToTensor())
-    dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=False,\
+    dataset_test = torchvision.datasets.FashionMNIST('./data/fmnist/',train=False,download=True,\
                                     transform=transforms.ToTensor())
+    nchannels = 1        
+elif settings.data_style == 'cifar10':
+    trans_cifar10 = transforms.Compose(
+        [transforms.ToTensor(),
+         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])    
+    dataset_train = torchvision.datasets.FashionMNIST('./data/cifar/',train=True,download=True,\
+                                    transform=trans_cifar10)
+    dataset_test = torchvision.datasets.FashionMNIST('./data/cifar/',train=False,download=True,\
+                                    transform=trans_cifar10)
+    nchannels = 3
 
 # %% filtering the ML data
 # label split
@@ -164,7 +175,8 @@ for save_type in [settings.iid_style]:
             avg_qty = 2500 #3 swarms
         elif settings.data_style == 'fmnist':
             avg_qty = 3500 #3k data was ok
-    
+        elif settings.data_style == 'cifar10':
+            avg_qty = 3500
     
     def pop_data_qty(data_holder,data_qty,nodes_per_swarm=nodes_per_swarm):
         counter = 0
@@ -256,29 +268,51 @@ for save_type in [settings.iid_style]:
         d_h = 64
         d_out = 10
         global_net = MLP(d_in,d_h,d_out).to(device)
-        
         with open(cwd+'/data/default_w','rb') as f:
             default_w = pickle.load(f)
         
         lr = 1e-2 #MLP
-    else:
-        nchannels = 1
+    elif settings.nn_style == 'CNN':
         nclasses = 10
-        global_net = CNN(nchannels,nclasses).to(device)
-        
-        # with open(cwd+'/data/CNN_default_w','rb') as f:
-        #     default_w = pickle.load(f)        
-        try:
-            with open(cwd+'/data/CNN_new_w','rb') as f:
-                default_w = pickle.load(f)        
-            global_net.load_state_dict(default_w)
-        except:
-            default_w = deepcopy(global_net.state_dict())
-            
+        global_net = CNN(nchannels,nclasses).to(device)        
+        if settings.data_style != 'cifar10':
+            try:
+                with open(cwd+'/data/CNN_new_w','rb') as f:
+                    default_w = pickle.load(f)        
+                global_net.load_state_dict(default_w)
+            except:
+                default_w = deepcopy(global_net.state_dict())
+        elif settings.data_style == 'cifar10':
+            try:
+                with open(cwd+'/data/CNN_cifar_w','rb') as f:
+                    default_w = pickle.load(f)        
+                global_net.load_state_dict(default_w)
+            except:
+                default_w = deepcopy(global_net.state_dict())
+
         lr = 1e-3 #1e-2 #CNN
         # lr = 4e-4
         # lr = 2*1e-4
-        
+    elif settings.nn_style == 'CNN2':
+        nclasses = 10
+        global_net = CNN2(nchannels,nclasses).to(device)        
+        if settings.data_style != 'cifar10':
+            try:
+                with open(cwd+'/data/CNN2_w','rb') as f:
+                    default_w = pickle.load(f)        
+                global_net.load_state_dict(default_w)
+            except:
+                default_w = deepcopy(global_net.state_dict())
+        elif settings.data_style == 'cifar10':
+            try:
+                with open(cwd+'/data/CNN2_cifar_w','rb') as f:
+                    default_w = pickle.load(f)        
+                global_net.load_state_dict(default_w)
+            except:
+                default_w = deepcopy(global_net.state_dict())
+
+        lr = 1e-3
+    
     print(global_net)
     global_net.train()
     
@@ -295,7 +329,7 @@ for save_type in [settings.iid_style]:
         global_period = settings.rd_val
     
     ## main loop for ratio variance ##
-    for ratio in [2,4,8]:#1,2,4,
+    for ratio in [1,2,4,8]:#1,2,4,
         # ratio dynamics
         if settings.ratio == 'global': #global dynamic, swarm varied
              global_period = swarm_period * ratio
@@ -312,9 +346,12 @@ for save_type in [settings.iid_style]:
         if settings.nn_style =='MLP':
             fl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(settings.swarms)]
             worker_models = [MLP(d_in,d_h,d_out).to(device) for i in range(sum(nodes_per_swarm))]
-        else:
+        elif settings.nn_stlye == 'CNN':
             fl_swarm_models = [CNN(nchannels,nclasses).to(device) for i in range(settings.swarms)]   
             worker_models = [CNN(nchannels,nclasses).to(device) for i in range(sum(nodes_per_swarm))]
+        elif settings.nn_style == 'CNN2':
+            fl_swarm_models = [CNN2(nchannels,nclasses).to(device) for i in range(settings.swarms)]   
+            worker_models = [CNN2(nchannels,nclasses).to(device) for i in range(sum(nodes_per_swarm))]            
         
         for i in fl_swarm_models:
             i.load_state_dict(default_w)

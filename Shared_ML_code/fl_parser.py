@@ -10,8 +10,8 @@ import argparse
 def ml_parser():
     parser = argparse.ArgumentParser()
     
-    parser.add_argument('--data_style',type=str,default='mnist',\
-                        choices=['mnist','fmnist'],\
+    parser.add_argument('--data_style',type=str,default='cifar10',\
+                        choices=['mnist','fmnist','cifar10'],\
                         help='data style: mnist or fashion-mnist')
     parser.add_argument('--nn_style',type=str,default='CNN',\
                         choices=['CNN','MLP'],\
@@ -20,7 +20,7 @@ def ml_parser():
                         choices=['global','swarm'],\
                         help='global or swarm-wide ratio varying')
     
-    parser.add_argument('--iid_style',type=str,default='extreme',\
+    parser.add_argument('--iid_style',type=str,default='mild',\
                         choices=['extreme','mild','iid'],\
                         help='noniid/iid styles')
     
