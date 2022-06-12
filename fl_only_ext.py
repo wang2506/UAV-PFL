@@ -58,9 +58,9 @@ elif settings.data_style == 'cifar10':
     trans_cifar10 = transforms.Compose(
         [transforms.ToTensor(),
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])    
-    dataset_train = torchvision.datasets.FashionMNIST('./data/cifar/',train=True,download=True,\
+    dataset_train = torchvision.datasets.CIFAR10('./data/cifar/',train=True,download=True,\
                                     transform=trans_cifar10)
-    dataset_test = torchvision.datasets.FashionMNIST('./data/cifar/',train=False,download=True,\
+    dataset_test = torchvision.datasets.CIFAR10('./data/cifar/',train=False,download=True,\
                                     transform=trans_cifar10)
     nchannels = 3
 
@@ -72,8 +72,9 @@ for index, (pixels,label) in enumerate(dataset_train):
     
 test = {i: [] for i in range(10)} 
 for index, (pixels,label) in enumerate(dataset_test):
-    test[label].append(index)    
+    test[label].append(index)
 
+input('a')
 # %% filtering continued (the previous chunk is slow)
 # assign datasets to nodes
 total_time = 40#120
