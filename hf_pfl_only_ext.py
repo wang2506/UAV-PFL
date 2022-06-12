@@ -348,9 +348,11 @@ for save_type in [settings.iid_style]:
         
         if settings.nn_style =='MLP':
             HF_hn_pfl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(settings.swarms)]
-        else:
+        elif settings.nn_style == 'CNN':
             HF_hn_pfl_swarm_models = [CNN(nchannels,nclasses).to(device) for i in range(settings.swarms)]   
             # print(default_w['fc2.bias'])            
+        elif settings.nn_style == 'CNN2':
+            HF_hn_pfl_swarm_models = [CNN2(nchannels,nclasses).to(device) for i in range(settings.swarms)]   
         
         for i in HF_hn_pfl_swarm_models:
             i.load_state_dict(default_w)
@@ -478,8 +480,8 @@ for save_type in [settings.iid_style]:
                 for i in HF_hn_pfl_swarm_models:
                     i.load_state_dict(w_global)
                     i.train()        
-        
-                
+
+
             ## evaluate model performance
             if ((t+1) % (global_period) == 0):
                 # HF_hn_pfl_acc_temp, total_loss_temp = 0, 0

@@ -74,7 +74,6 @@ test = {i: [] for i in range(10)}
 for index, (pixels,label) in enumerate(dataset_test):
     test[label].append(index)
 
-input('a')
 # %% filtering continued (the previous chunk is slow)
 # assign datasets to nodes
 total_time = 40#120

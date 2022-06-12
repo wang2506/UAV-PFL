@@ -112,10 +112,10 @@ class CNN(nn.Module):
 
 class CNN2(nn.Module):
     def __init__(self,nchannels,nclasses):
-        super(CNN, self).__init__()
+        super(CNN2, self).__init__()
         self.conv1 = nn.Conv2d(nchannels, 20, 5, 1)
         self.conv2 = nn.Conv2d(20, 50, 5, 1)
-        self.fc1 = nn.Linear(4*4*50, 500)
+        self.fc1 = nn.Linear(5*5*50, 500)
         self.fc2 = nn.Linear(500, nclasses)
 
     def forward(self, x):
@@ -123,7 +123,7 @@ class CNN2(nn.Module):
         x = F.max_pool2d(x, 2, 2)
         x = F.relu(self.conv2(x))
         x = F.max_pool2d(x, 2, 2)
-        x = x.view(-1, 4*4*50)
+        x = x.view(-1, 5*5*50)
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
         return x

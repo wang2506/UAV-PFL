@@ -13,8 +13,8 @@ def ml_parser():
     parser.add_argument('--data_style',type=str,default='cifar10',\
                         choices=['mnist','fmnist','cifar10'],\
                         help='data style: mnist or fashion-mnist')
-    parser.add_argument('--nn_style',type=str,default='CNN',\
-                        choices=['CNN','MLP'],\
+    parser.add_argument('--nn_style',type=str,default='CNN2',\
+                        choices=['CNN','MLP','CNN2'],\
                         help='neural network style: cnn or mlp')
     parser.add_argument('--ratio',type=str,default='global',\
                         choices=['global','swarm'],\
