@@ -346,7 +346,7 @@ for save_type in [settings.iid_style]:
         if settings.nn_style =='MLP':
             fl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(settings.swarms)]
             worker_models = [MLP(d_in,d_h,d_out).to(device) for i in range(sum(nodes_per_swarm))]
-        elif settings.nn_stlye == 'CNN':
+        elif settings.nn_style == 'CNN':
             fl_swarm_models = [CNN(nchannels,nclasses).to(device) for i in range(settings.swarms)]   
             worker_models = [CNN(nchannels,nclasses).to(device) for i in range(sum(nodes_per_swarm))]
         elif settings.nn_style == 'CNN2':
