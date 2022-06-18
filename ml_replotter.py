@@ -25,6 +25,7 @@ data_loc = cwd+'/data/'
 
 data_source = 'mnist'
 data_source = 'fmnist'
+data_source = 'cifar10'
 lwd = 2.5
 
 # %% plot 2 ratio plots with taus1 = 1
@@ -44,6 +45,7 @@ init_acc = 10.5
 init_loss = 2.302232319
 
 nn_style = 'CNN'
+nn_style = 'CNN2'
 # nn_style = 'MLP'
 ratio_vec = [1,2,4,8]
 for ratio in [1,2,4,8]:

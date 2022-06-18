@@ -163,8 +163,8 @@ for ep_start in [0.7]:#[0.6,0.8]:
                 ax1[1].plot(data_b2,label=r'DRL: $\gamma$ = '+str(gamma) \
                     ,linestyle='dashdot', \
                         color = 'darkblue',linewidth=lwd) #+ r' $\epsilon$ = ' + str(ep_start)
-    
-    
+
+
 # ax1[1].set_title('b)',fontsize=20,y=-0.32) # Battery Over Time',fontsize=15,y=-0.24)
 ax1[1].set_title('(b)',fontsize=20,y=-0.35) # Battery Over Time',fontsize=15,y=-0.24)
 ax1[1].grid(True)
@@ -538,7 +538,7 @@ ax1[2].tick_params(axis='both', which='major', labelsize=18)
 # f1.savefig(cwd+'/drl_plots/drl_ovr_comp.pdf',dpi=1000, bbox_inches='tight')
 # f1.savefig(cwd+'/drl_plots/chris_drl_ovr_comp.pdf',dpi=1000, bbox_inches='tight')
 
-f1.savefig(cwd+'/drl_plots/testml.pdf',dpi=1000, bbox_inches='tight')
+# f1.savefig(cwd+'/drl_plots/testml.pdf',dpi=1000, bbox_inches='tight')
 
 
 
