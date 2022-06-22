@@ -286,7 +286,7 @@ init_loss = 2.302232319
 # data_source = 'mnist'
 # data_source = 'fmnist'
 
-nn_style = 'CNN'
+nn_style = 'CNN2'
 # nn_style = 'MLP'
 ratio_vec = [1,2,4,8]
 for ratio in [1,2,4,8]:
