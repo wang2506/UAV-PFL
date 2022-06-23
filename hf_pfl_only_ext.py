@@ -14,7 +14,7 @@ from copy import deepcopy
 import random
 import pickle
 
-from Shared_ML_code.neural_nets import MLP, CNN, CNN2, FedAvg, FPAvg, LocalUpdate, \
+from Shared_ML_code.neural_nets import MLP, MLP2, CNN, CNN2, FedAvg, FPAvg, LocalUpdate, \
     LocalUpdate_PFL, FedAvg2, LocalUpdate_trad_FO, LocalUpdate_HF_PFL, LocalUpdate_trad_HF
 from Shared_ML_code.testing import test_img, test_img2
 from Shared_ML_code.fl_parser import ml_parser
@@ -65,13 +65,22 @@ elif settings.data_style == 'cifar10':
 
 # %% filtering the ML data
 # label split
-train = {i: [] for i in range(10)}
-for index, (pixels,label) in enumerate(dataset_train):
-    train[label].append(index)
-    
-test = {i: [] for i in range(10)} 
-for index, (pixels,label) in enumerate(dataset_test):
-    test[label].append(index)    
+if settings.data_style != 'mlradio':
+    train = {i: [] for i in range(10)}
+    for index, (pixels,label) in enumerate(dataset_train):
+        train[label].append(index)
+        
+    test = {i: [] for i in range(10)} 
+    for index, (pixels,label) in enumerate(dataset_test):
+        test[label].append(index)
+else:
+    train = {i: [] for i in range(10)}
+    for index, label in enumerate(dataset_train.y_data):
+        train[label].append(index)
+        
+    test = {i: [] for i in range(10)} 
+    for index, label in enumerate(dataset_test.y_data):
+        test[label].append(index)    
 
 # %% filtering continued (the previous chunk is slow)
 # assign datasets to nodes
@@ -175,7 +184,9 @@ for save_type in [settings.iid_style]:
         elif settings.data_style == 'fmnist':
             avg_qty = 3500 #3k data was ok
         elif settings.data_style == 'cifar10':
-            avg_qty = 3500    
+            avg_qty = 3500
+        elif settings.data_style == 'mlradio':
+            avg_qty = 2500
     
     def pop_data_qty(data_holder,data_qty,nodes_per_swarm=nodes_per_swarm):
         counter = 0
@@ -263,14 +274,27 @@ for save_type in [settings.iid_style]:
     cwd = os.getcwd()
     ## setup FL
     if settings.nn_style == 'MLP':
-        d_in = 784 #np.prod(dataset_train[0][0].shape)
-        d_h = 64
-        d_out = 10
-        global_net = MLP(d_in,d_h,d_out).to(device)
-        
-        with open(cwd+'/data/default_w','rb') as f:
-            default_w = pickle.load(f)  
-        
+        if settings.data_style != 'mlradio':
+            d_in = 784 #np.prod(dataset_train[0][0].shape)
+            d_h = 64
+            d_out = 10
+            global_net = MLP(d_in,d_h,d_out).to(device)
+            with open(cwd+'/data/default_w','rb') as f:
+                default_w = pickle.load(f)
+            global_net.load_state_dict(default_w)
+        elif settings.data_style == 'mlradio':
+            d_in = 2*128
+            d_h = 64
+            d_out = 10
+            global_net = MLP2(d_in,d_h,d_out).to(device)
+            try:
+                with open(cwd+'/data/default_w_mlr','rb') as f:
+                    default_w = pickle.load(f)
+                global_net.load_state_dict()
+            except:
+                default_w = global_net.state_dict()
+                with open(cwd+'/data/default_w_mlr','wb') as f:
+                    pickle.dump(default_w,f)
         lr,lr2 = 1e-2,1e-2 #MLP
     elif settings.nn_style == 'CNN':
         nclasses = 10
@@ -333,7 +357,7 @@ for save_type in [settings.iid_style]:
         global_period = settings.rd_val
     
     ## main loop for ratio variance ##
-    for ratio in [2,4,8]:#,6,8,10]:
+    for ratio in [1,2,4,8]:#,6,8,10]:
         # ratio dynamics
         if settings.ratio == 'global': #global dynamic, swarm varied
              global_period = swarm_period * ratio
