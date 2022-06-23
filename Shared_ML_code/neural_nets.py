@@ -234,6 +234,7 @@ class LocalUpdate(object):
             
             for batch_indx,(images,labels) in enumerate(self.ldr_train):
                 images,labels = images.to(self.device),labels.to(self.device)
+                labels = labels.type(torch.long)
                 net.zero_grad()
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
@@ -273,6 +274,7 @@ class LocalUpdate_PFL(object):
             # use for SGD
             for batch_indx,(images,labels) in enumerate(self.ldr_train):
                 images,labels = images.to(self.device),labels.to(self.device)
+                labels = labels.type(torch.long)                
                 net.zero_grad()
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
@@ -289,6 +291,7 @@ class LocalUpdate_PFL(object):
             
             for batch_indx,(images,labels) in enumerate(self.ldr_train2):
                 images,labels = images.to(self.device),labels.to(self.device)
+                labels = labels.type(torch.long)                
                 net.zero_grad()
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
@@ -306,6 +309,7 @@ class LocalUpdate_PFL(object):
             
             for batch_indx,(images,labels) in enumerate(self.ldr_train2):
                 images,labels = images.to(self.device),labels.to(self.device)
+                labels = labels.type(torch.long)
                 net.zero_grad()
                 log_probs = net(images)
                 loss_hess = self.loss_func(log_probs,labels)
@@ -361,6 +365,7 @@ class LocalUpdate_FO_PFL(object):
             # use for SGD
             for batch_indx,(images,labels) in enumerate(self.ldr_train):
                 images,labels = images.to(self.device),labels.to(self.device)
+                labels = labels.type(torch.long)
                 net.zero_grad()
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
@@ -384,6 +389,7 @@ class LocalUpdate_FO_PFL(object):
             
             for batch_indx,(images,labels) in enumerate(self.ldr_train2):
                 images,labels = images.to(self.device),labels.to(self.device)
+                labels = labels.type(torch.long)
                 net.zero_grad()
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
@@ -463,6 +469,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
                 
                 for batch_index_in,(images_in,labels_in) in enumerate(self.ldr_train):
                     images_in,labels_in = images_in.to(self.device),labels_in.to(self.device)
+                    labels_in = labels_in.type(torch.long)
                     net.zero_grad()
                     log_probs = net(images_in)
                     loss = self.loss_func(log_probs,labels_in)
@@ -475,6 +482,7 @@ class LocalUpdate_HF_PFL(object): #MLP 1e-3; CNN 1e-3 - extreme noniid; try hard
                 optimizer2 = SGD_FO_PFL(net.parameters(),temp_params,\
                         lr=self.lr2)#, momentum=0.5,weight_decay=1e-4)
                 images,labels = images.to(self.device),labels.to(self.device)
+                labels = labels.type(torch.long)                
                 net.zero_grad()
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
@@ -826,6 +834,7 @@ class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
             ## inner params obtain - step size - eta_1
             for batch_indx,(images,labels) in enumerate(self.ldr_train):
                 images,labels = images.to(self.device),labels.to(self.device)
+                labels = labels.type(torch.long)
                 net.zero_grad()
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
@@ -851,6 +860,7 @@ class LocalUpdate_trad_HF(object): #MLP 1e-3; CNN 1e-2
                 net_neg = deepcopy(net)
                 
                 images,labels = images.to(self.device),labels.to(self.device)
+                labels = labels.type(torch.long)
                 net.zero_grad()#, net_pos.zero_grad(), net_neg.zero_grad()
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)           
@@ -979,6 +989,7 @@ class LocalUpdate_trad_FO(object): #MLP 1e-3; CNN 1e-2
             ## inner params obtain - step size - eta_1
             for batch_indx,(images,labels) in enumerate(self.ldr_train):
                 images,labels = images.to(self.device),labels.to(self.device)
+                labels = labels.type(torch.long)
                 net.zero_grad()
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)
@@ -1000,6 +1011,7 @@ class LocalUpdate_trad_FO(object): #MLP 1e-3; CNN 1e-2
                 lr2_result = []
                 
                 images,labels = images.to(self.device),labels.to(self.device)
+                labels = labels.type(torch.long)
                 net.zero_grad()#, net_pos.zero_grad(), net_neg.zero_grad()
                 log_probs = net(images)
                 loss = self.loss_func(log_probs,labels)           
