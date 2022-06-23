@@ -16,10 +16,11 @@ import random
 import pickle
 import gc #garbage collection
 
-from Shared_ML_code.neural_nets import MLP, CNN, CNN2, FedAvg, FPAvg, LocalUpdate, \
+from Shared_ML_code.neural_nets import MLP, MLP2, CNN, CNN2, FedAvg, FPAvg, LocalUpdate, \
     LocalUpdate_PFL, FedAvg2, LocalUpdate_FO_PFL, LocalUpdate_HF_PFL
 from Shared_ML_code.testing import test_img, test_img2
 from Shared_ML_code.fl_parser import ml_parser
+from Shared_ML_code.cdsets import RML
 
 gc.collect()
 torch.cuda.empty_cache()
@@ -63,16 +64,28 @@ elif settings.data_style == 'cifar10':
     dataset_test = torchvision.datasets.CIFAR10('./data/cifar/',train=False,download=True,\
                                     transform=trans_cifar10)
     nchannels = 3
+elif settings.data_style == 'mlradio':
+    dataset_train = RML(ldir='./data/radio_ml/',train=True)
+    dataset_test = RML(ldir='./data/radio_ml/',train=False)
 
 # %% filtering the ML data
 # label split
-train = {i: [] for i in range(10)}
-for index, (pixels,label) in enumerate(dataset_train):
-    train[label].append(index)
-    
-test = {i: [] for i in range(10)} 
-for index, (pixels,label) in enumerate(dataset_test):
-    test[label].append(index)
+if settings.data_style != 'mlradio':
+    train = {i: [] for i in range(10)}
+    for index, (pixels,label) in enumerate(dataset_train):
+        train[label].append(index)
+        
+    test = {i: [] for i in range(10)} 
+    for index, (pixels,label) in enumerate(dataset_test):
+        test[label].append(index)
+else:
+    train = {i: [] for i in range(10)}
+    for index, label in enumerate(dataset_train.y_data):
+        train[label].append(index)
+        
+    test = {i: [] for i in range(10)} 
+    for index, label in enumerate(dataset_test.y_data):
+        test[label].append(index)    
 
 # %% filtering continued (the previous chunk is slow)
 # assign datasets to nodes
@@ -177,6 +190,8 @@ for save_type in [settings.iid_style]:
             avg_qty = 3500 #3k data was ok
         elif settings.data_style == 'cifar10':
             avg_qty = 3500
+        elif settings.data_style == 'mlradio':
+            avg_qty = 2500
     
     def pop_data_qty(data_holder,data_qty,nodes_per_swarm=nodes_per_swarm):
         counter = 0
@@ -273,10 +288,10 @@ for save_type in [settings.iid_style]:
                 default_w = pickle.load(f)
             global_net.load_state_dict(default_w)
         elif settings.data_style == 'mlradio':
-            dim_in = 2*128
-            dim_h = 64
-            dim_out = 10
-            global_net = MLP(d_in,d_h,d_out).to(device)
+            d_in = 2*128
+            d_h = 64
+            d_out = 10
+            global_net = MLP2(d_in,d_h,d_out).to(device)
             try:
                 with open(cwd+'/data/default_w_mlr','rb') as f:
                     default_w = pickle.load(f)
@@ -357,8 +372,12 @@ for save_type in [settings.iid_style]:
         
         # assign a model for every single worker and swarm       
         if settings.nn_style =='MLP':
-            fl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(settings.swarms)]
-            worker_models = [MLP(d_in,d_h,d_out).to(device) for i in range(sum(nodes_per_swarm))]
+            if settings.data_style == 'mnist': 
+                fl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(settings.swarms)]
+                worker_models = [MLP(d_in,d_h,d_out).to(device) for i in range(sum(nodes_per_swarm))]
+            elif settings.data_style == 'mlradio': 
+                fl_swarm_models = [MLP2(d_in,d_h,d_out).to(device) for i in range(settings.swarms)]
+                worker_models = [MLP2(d_in,d_h,d_out).to(device) for i in range(sum(nodes_per_swarm))]                
         elif settings.nn_style == 'CNN':
             fl_swarm_models = [CNN(nchannels,nclasses).to(device) for i in range(settings.swarms)]   
             worker_models = [CNN(nchannels,nclasses).to(device) for i in range(sum(nodes_per_swarm))]
@@ -452,7 +471,6 @@ for save_type in [settings.iid_style]:
         print(init_acc)
         print('initial loss measurement')
         print(init_loss)
-        
         
         for t in range(int(total_time/swarm_period)):
             # swarm_w = {i:[] for i in range(settings.swarms)}

@@ -38,15 +38,16 @@ class MLP2(nn.Module):
         self.relu = nn.ReLU()
         self.dropout = nn.Dropout()
         self.layer_hidden = nn.Linear(dim_hidden,dim_out)
-        #self.softmax = nn.Softmax(dim=1)
-        self.sigmoid = nn.Sigmoid()
+        self.softmax = nn.Softmax(dim=1)
+        # self.sigmoid = nn.Sigmoid()
         
     def forward(self,x):
         x = self.layer_input(x)
         x = self.dropout(x)
         x = self.relu(x)
         x = self.layer_hidden(x)
-        return self.sigmoid(x)
+        # return self.sigmoid(x)
+        return self.softmax(x)
 
 class MLP3(nn.Module):
     def __init__(self,dim_in,dim_hidden,dim_out):

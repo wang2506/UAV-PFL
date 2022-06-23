@@ -52,15 +52,12 @@ def test_img2(net_g, datatest,bs,indexes,device=torch.device('cpu')):
     correct = 0
     data_loader = DataLoader(segmentdataset(datatest,indexes),batch_size=bs,shuffle=True)
     
-    # print('currently on cpu')
-    # print('line 56 testing.py')
-    
     for idx, (data, target) in enumerate(data_loader):
         data = data.to(device)
         target = target.to(device)
         
-        # data = data.to(torch.device('cpu'))
-        # target = target.to(torch.device('cpu'))
+        ## added this for radioML dataset
+        target = target.type(torch.long)
         
         log_probs = net_g(data)
         # sum up batch loss
