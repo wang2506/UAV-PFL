@@ -18,6 +18,7 @@ from Shared_ML_code.neural_nets import MLP, MLP2, CNN, CNN2, FedAvg, FPAvg, Loca
     LocalUpdate_PFL, FedAvg2, LocalUpdate_trad_FO, LocalUpdate_HF_PFL, LocalUpdate_trad_HF
 from Shared_ML_code.testing import test_img, test_img2
 from Shared_ML_code.fl_parser import ml_parser
+from Shared_ML_code.cdsets import RML
 
 # gc.collect()
 # torch.cuda.empty_cache()
@@ -61,7 +62,9 @@ elif settings.data_style == 'cifar10':
     dataset_test = torchvision.datasets.CIFAR10('./data/cifar/',train=False,download=True,\
                                     transform=trans_cifar10)
     nchannels = 3
-
+elif settings.data_style == 'mlradio':
+    dataset_train = RML(ldir='./data/radio_ml/',train=True)
+    dataset_test = RML(ldir='./data/radio_ml/',train=False)
 
 # %% filtering the ML data
 # label split
