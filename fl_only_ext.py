@@ -287,6 +287,7 @@ for save_type in [settings.iid_style]:
             with open(cwd+'/data/default_w','rb') as f:
                 default_w = pickle.load(f)
             global_net.load_state_dict(default_w)
+            lr = 1e-2 #MLP            
         elif settings.data_style == 'mlradio':
             d_in = 2*128
             d_h = 64
@@ -300,7 +301,7 @@ for save_type in [settings.iid_style]:
                 default_w = global_net.state_dict()
                 with open(cwd+'/data/default_w_mlr','wb') as f:
                     pickle.dump(default_w,f)
-        lr = 1e-2 #MLP
+            lr = 1e-3
     elif settings.nn_style == 'CNN':
         nclasses = 10
         global_net = CNN(nchannels,nclasses).to(device)        
