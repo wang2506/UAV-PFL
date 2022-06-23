@@ -13,6 +13,7 @@ data/mnist/raw
 data/cifar/
 data/usps/
 data/MNISTM/
+data/radio_ml/
 optim_prob/backups/
 
 # C extensions
