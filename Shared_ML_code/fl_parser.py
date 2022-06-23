@@ -10,10 +10,10 @@ import argparse
 def ml_parser():
     parser = argparse.ArgumentParser()
     
-    parser.add_argument('--data_style',type=str,default='cifar10',\
+    parser.add_argument('--data_style',type=str,default='mlradio',\
                         choices=['mnist','fmnist','cifar10','mlradio'],\
                         help='data style: mnist or fashion-mnist')
-    parser.add_argument('--nn_style',type=str,default='CNN2',\
+    parser.add_argument('--nn_style',type=str,default='MLP',\
                         choices=['CNN','MLP','CNN2'],\
                         help='neural network style: cnn or mlp')
     parser.add_argument('--ratio',type=str,default='swarm',\
