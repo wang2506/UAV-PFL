@@ -3,6 +3,7 @@ __pycache__/
 Shared_ML_code/__pycache__/
 *.py[cod]
 *$py.class
+./__pycache__/
 
 # custom
 data/mnist/MNIST/processed/
