@@ -374,7 +374,10 @@ for save_type in [settings.iid_style]:
         HF_hn_pfl_acc_full, total_loss_full = [], []
         
         if settings.nn_style =='MLP':
-            HF_hn_pfl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(settings.swarms)]
+            if settings.data_style == 'mnist': 
+                HF_hn_pfl_swarm_models = [MLP(d_in,d_h,d_out).to(device) for i in range(settings.swarms)]
+            elif settings.data_style == 'mlradio':
+                HF_hn_pfl_swarm_models = [MLP2(d_in,d_h,d_out).to(device) for i in range(settings.swarms)]
         elif settings.nn_style == 'CNN':
             HF_hn_pfl_swarm_models = [CNN(nchannels,nclasses).to(device) for i in range(settings.swarms)]   
             # print(default_w['fc2.bias'])            
