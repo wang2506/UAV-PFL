@@ -264,13 +264,27 @@ for save_type in [settings.iid_style]:
     cwd = os.getcwd()
     ## setup FL
     if settings.nn_style == 'MLP':
-        d_in = 784 #np.prod(dataset_train[0][0].shape)
-        d_h = 64
-        d_out = 10
-        global_net = MLP(d_in,d_h,d_out).to(device)
-        with open(cwd+'/data/default_w','rb') as f:
-            default_w = pickle.load(f)
-        
+        if settings.data_style != 'mlradio':
+            d_in = 784 #np.prod(dataset_train[0][0].shape)
+            d_h = 64
+            d_out = 10
+            global_net = MLP(d_in,d_h,d_out).to(device)
+            with open(cwd+'/data/default_w','rb') as f:
+                default_w = pickle.load(f)
+            global_net.load_state_dict(default_w)
+        elif settings.data_style == 'mlradio':
+            dim_in = 2*128
+            dim_h = 64
+            dim_out = 10
+            global_net = MLP(d_in,d_h,d_out).to(device)
+            try:
+                with open(cwd+'/data/default_w_mlr','rb') as f:
+                    default_w = pickle.load(f)
+                global_net.load_state_dict()
+            except:
+                default_w = global_net.state_dict()
+                with open(cwd+'/data/default_w_mlr','wb') as f:
+                    pickle.dump(default_w,f)
         lr = 1e-2 #MLP
     elif settings.nn_style == 'CNN':
         nclasses = 10
@@ -312,7 +326,6 @@ for save_type in [settings.iid_style]:
                 default_w = deepcopy(global_net.state_dict())
 
         lr = 1e-3
-    
     print(global_net)
     global_net.train()
     

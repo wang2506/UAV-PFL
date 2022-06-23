@@ -39,6 +39,9 @@ dtrain_c10 = torchvision.datasets.CIFAR10('./data/cifar/',train=True,download=Tr
 dtest_c10 = torchvision.datasets.CIFAR10('./data/cifar/',train=False,download=True)#,\
                                 # transform=trans_cifar10)
 
+dtrain_celeba = torchvision.datasets.CelebA('./data/celeba/',split='test',target_type='identity',\
+                                        download=True)
+
 # %% plot the datasets
 import matplotlib.pyplot as plt
 # plt.rcParams["figure.autolayout"] = True
