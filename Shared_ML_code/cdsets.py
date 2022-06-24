@@ -15,7 +15,11 @@ class RML(Dataset):
         in_x = np.load(ldir+'/x_10.npy')
         in_y = np.load(ldir+'/y_10.npy')
         
-        in_x = np.reshape(in_x,(in_x.shape[0],in_x.shape[1]*in_x.shape[2]))
+        # in_x = np.reshape(in_x,(in_x.shape[0],in_x.shape[1]*in_x.shape[2]))\
+        in_x = in_x[:,np.newaxis,:,:]
+        in_x = np.reshape(in_x,(in_x.shape[0],in_x.shape[1],\
+                int(np.sqrt(in_x.shape[2]*in_x.shape[3])),\
+                    int(np.sqrt(in_x.shape[2]*in_x.shape[3]))))
         x_train, x_test, y_train, y_test = \
             train_test_split(in_x, in_y, test_size=0.20, random_state=25, shuffle=True)
         
