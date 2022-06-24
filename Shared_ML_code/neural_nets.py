@@ -131,7 +131,7 @@ class CNN2(nn.Module):
 
 class CNNR(nn.Module):
     def __init__(self,nchannels,nclasses):
-        super(CNN, self).__init__()
+        super(CNNR, self).__init__()
         self.conv1 = nn.Conv2d(nchannels, 16, 2, 1)
         self.conv2 = nn.Conv2d(16, 32, 2, 1)
         self.fc1 = nn.Linear(18432, 128)
