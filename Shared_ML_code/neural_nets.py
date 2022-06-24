@@ -145,8 +145,6 @@ class CNNR(nn.Module):
         x = nn.ReLU()(x)
         x = nn.MaxPool2d(2, 1)(x)
         x = torch.flatten(x, 1)
-        print('shape output of flatten')
-        print(x.shape)
         x = self.fc1(x)
         x = nn.ReLU()(x)
         x = self.fc2(x)
