@@ -129,6 +129,30 @@ class CNN2(nn.Module):
         x = self.fc2(x)
         return x
 
+class CNNR(nn.Module):
+    def __init__(self,nchannels,nclasses):
+        super(CNN, self).__init__()
+        self.conv1 = nn.Conv2d(nchannels, 16, 2, 1)
+        self.conv2 = nn.Conv2d(16, 32, 2, 1)
+        self.fc1 = nn.Linear(18432, 128)
+        self.fc2 = nn.Linear(128, nclasses)
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = nn.ReLU()(x)
+        x = nn.MaxPool2d(2, 1)(x)
+        x = self.conv2(x)
+        x = nn.ReLU()(x)
+        x = nn.MaxPool2d(2, 1)(x)
+        x = torch.flatten(x, 1)
+        print('shape output of flatten')
+        print(x.shape)
+        x = self.fc1(x)
+        x = nn.ReLU()(x)
+        x = self.fc2(x)
+        output = F.softmax(x, dim=1)
+        return output
+    
 class CNNCIFAR10(nn.Module):
     def __init__(self, nchannels,nclasses):
         super(CNNCIFAR10, self).__init__()

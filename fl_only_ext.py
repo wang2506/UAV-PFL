@@ -16,7 +16,7 @@ import random
 import pickle
 import gc #garbage collection
 
-from Shared_ML_code.neural_nets import MLP, MLP2, CNN, CNN2, FedAvg, FPAvg, LocalUpdate, \
+from Shared_ML_code.neural_nets import MLP, MLP2, CNN, CNN2, CNNR, FedAvg, FPAvg, LocalUpdate, \
     LocalUpdate_PFL, FedAvg2, LocalUpdate_FO_PFL, LocalUpdate_HF_PFL
 from Shared_ML_code.testing import test_img, test_img2
 from Shared_ML_code.fl_parser import ml_parser
@@ -67,6 +67,7 @@ elif settings.data_style == 'cifar10':
 elif settings.data_style == 'mlradio':
     dataset_train = RML(ldir='./data/radio_ml/',train=True)
     dataset_test = RML(ldir='./data/radio_ml/',train=False)
+    nchannels = 1
 
 # %% filtering the ML data
 # label split
@@ -301,28 +302,38 @@ for save_type in [settings.iid_style]:
                 default_w = global_net.state_dict()
                 with open(cwd+'/data/default_w_mlr','wb') as f:
                     pickle.dump(default_w,f)
-            lr = 1e-3
+            lr = 1e-2
     elif settings.nn_style == 'CNN':
-        nclasses = 10
-        global_net = CNN(nchannels,nclasses).to(device)        
-        if settings.data_style != 'cifar10':
+        if settings.data_style != 'mlradio':
+            nclasses = 10
+            global_net = CNN(nchannels,nclasses).to(device)        
+            if settings.data_style != 'cifar10':
+                try:
+                    with open(cwd+'/data/CNN_new_w','rb') as f:
+                        default_w = pickle.load(f)        
+                    global_net.load_state_dict(default_w)
+                except:
+                    default_w = deepcopy(global_net.state_dict())
+            elif settings.data_style == 'cifar10':
+                try:
+                    with open(cwd+'/data/CNN_cifar_w','rb') as f:
+                        default_w = pickle.load(f)        
+                    global_net.load_state_dict(default_w)
+                except:
+                    default_w = deepcopy(global_net.state_dict())
+            lr = 1e-3 #1e-2 #CNN
+        elif settings.data_style == 'mlradio':
+            nclasses = 10
+            global_net = CNNR(nchannels,nclasses).to(device)
             try:
-                with open(cwd+'/data/CNN_new_w','rb') as f:
+                with open(cwd+'/data/CNNR_new_w','rb') as f:
                     default_w = pickle.load(f)        
                 global_net.load_state_dict(default_w)
             except:
                 default_w = deepcopy(global_net.state_dict())
-        elif settings.data_style == 'cifar10':
-            try:
-                with open(cwd+'/data/CNN_cifar_w','rb') as f:
-                    default_w = pickle.load(f)        
-                global_net.load_state_dict(default_w)
-            except:
-                default_w = deepcopy(global_net.state_dict())
-
-        lr = 1e-3 #1e-2 #CNN
-        # lr = 4e-4
-        # lr = 2*1e-4
+                with open(cwd+'/data/CNNR_new_w','wb') as f:
+                    pickle.dump(default_w,f)
+            lr = 1e-3
     elif settings.nn_style == 'CNN2':
         nclasses = 10
         global_net = CNN2(nchannels,nclasses).to(device)        
@@ -380,8 +391,12 @@ for save_type in [settings.iid_style]:
                 fl_swarm_models = [MLP2(d_in,d_h,d_out).to(device) for i in range(settings.swarms)]
                 worker_models = [MLP2(d_in,d_h,d_out).to(device) for i in range(sum(nodes_per_swarm))]                
         elif settings.nn_style == 'CNN':
-            fl_swarm_models = [CNN(nchannels,nclasses).to(device) for i in range(settings.swarms)]   
-            worker_models = [CNN(nchannels,nclasses).to(device) for i in range(sum(nodes_per_swarm))]
+            if settings.data_style != 'mlradio':
+                fl_swarm_models = [CNN(nchannels,nclasses).to(device) for i in range(settings.swarms)]   
+                worker_models = [CNN(nchannels,nclasses).to(device) for i in range(sum(nodes_per_swarm))]
+            else:
+                fl_swarm_models = [CNNR(nchannels,nclasses).to(device) for i in range(settings.swarms)]   
+                worker_models = [CNNR(nchannels,nclasses).to(device) for i in range(sum(nodes_per_swarm))]                
         elif settings.nn_style == 'CNN2':
             fl_swarm_models = [CNN2(nchannels,nclasses).to(device) for i in range(settings.swarms)]   
             worker_models = [CNN2(nchannels,nclasses).to(device) for i in range(sum(nodes_per_swarm))]            

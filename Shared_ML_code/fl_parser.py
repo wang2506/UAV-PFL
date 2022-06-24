@@ -13,7 +13,7 @@ def ml_parser():
     parser.add_argument('--data_style',type=str,default='mlradio',\
                         choices=['mnist','fmnist','cifar10','mlradio'],\
                         help='data style: mnist or fashion-mnist')
-    parser.add_argument('--nn_style',type=str,default='MLP',\
+    parser.add_argument('--nn_style',type=str,default='CNN',\
                         choices=['CNN','MLP','CNN2'],\
                         help='neural network style: cnn or mlp')
     parser.add_argument('--ratio',type=str,default='swarm',\
