@@ -134,7 +134,7 @@ class CNNR(nn.Module):
         super(CNNR, self).__init__()
         self.conv1 = nn.Conv2d(nchannels, 16, 2, 1)
         self.conv2 = nn.Conv2d(16, 32, 2, 1)
-        self.fc1 = nn.Linear(18432, 128)
+        self.fc1 = nn.Linear(4608, 128)
         self.fc2 = nn.Linear(128, nclasses)
 
     def forward(self, x):
