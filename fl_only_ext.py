@@ -192,7 +192,7 @@ for save_type in [settings.iid_style]:
         elif settings.data_style == 'cifar10':
             avg_qty = 3500
         elif settings.data_style == 'mlradio':
-            avg_qty = 2500
+            avg_qty = 6000 #2500
     
     def pop_data_qty(data_holder,data_qty,nodes_per_swarm=nodes_per_swarm):
         counter = 0
@@ -410,7 +410,7 @@ for save_type in [settings.iid_style]:
             i.train()
 
         def run_one_iter(loc_models,online=settings.online,nps=nodes_per_swarm,\
-            nts=node_train_sets,device=device,ep_len=1):
+            nts=node_train_sets,device=device,ep_len=1,lr=None):
             swarm_w = {i:[] for i in range(settings.swarms)}
 
             uav_counter = 0
@@ -489,6 +489,16 @@ for save_type in [settings.iid_style]:
         print(init_loss)
         
         for t in range(int(total_time/swarm_period)):
+            if settings.data_style == 'mlradio':
+                if t*swarm_period < 10:
+                    lr = 5e-2
+                elif t*swarm_period < 20:
+                    lr = 1e-2
+                elif t*swarm_period < 30:
+                    lr = 5e-3
+                elif t*swarm_period < 40:
+                    1e-3
+            
             # swarm_w = {i:[] for i in range(settings.swarms)}
             # data_processed = {i:0 for i in range(swarms)}
 
@@ -496,7 +506,7 @@ for save_type in [settings.iid_style]:
             print('hierarchical FL begins here')
             # swarm_w = run_one_iter(worker_models,ep_len=swarm_period)
             swarm_w = run_one_iter(worker_models,ep_len=swarm_period,\
-                    nts = node_train_sets[t]) #one local training iter
+                    nts = node_train_sets[t],lr=lr) #one local training iter
             
             # for i in fl_swarm_models:
             #     print(i.state_dict()['fc2.bias'])
