@@ -586,7 +586,7 @@ for save_type in [settings.iid_style]:
                 temp_pfl_swarm_models = deepcopy(HF_hn_pfl_swarm_models)
                 # temp_swarm_w = run_one_iter(temp_pfl_swarm_models,meta=True)
                 temp_swarm_w = run_one_iter(temp_pfl_swarm_models,ep_len=1,\
-                    nts = node_train_sets[t]) #one local training iter                
+                    nts = node_train_sets[t],lr=lr) #one local training iter                
                 
                 
                 # perform a sw_agg
