@@ -192,7 +192,7 @@ for save_type in [settings.iid_style]:
         elif settings.data_style == 'cifar10':
             avg_qty = 3500
         elif settings.data_style == 'mlradio':
-            avg_qty = 2500 #2500
+            avg_qty = 5000  #2500
     
     def pop_data_qty(data_holder,data_qty,nodes_per_swarm=nodes_per_swarm):
         counter = 0
@@ -497,7 +497,7 @@ for save_type in [settings.iid_style]:
                 elif t*swarm_period < 30:
                     lr = 5e-3
                 elif t*swarm_period < 40:
-                    1e-3
+                    lr = 1e-3
             
             # swarm_w = {i:[] for i in range(settings.swarms)}
             # data_processed = {i:0 for i in range(swarms)}
@@ -586,50 +586,50 @@ for save_type in [settings.iid_style]:
                 # print(total_loss)
 
 
-                ## calculate localized accuracy prior to aggregations
-                ## personalized model performance 
-                fl_acc_temp = 0
-                total_loss_temp = 0
+                # ## calculate localized accuracy prior to aggregations
+                # ## personalized model performance 
+                # fl_acc_temp = 0
+                # total_loss_temp = 0
                 
-                temp_fl_swarm_models = deepcopy(fl_swarm_models)
-                # temp_swarm_w = run_one_iter(temp_fl_swarm_models) 
+                # temp_fl_swarm_models = deepcopy(fl_swarm_models)
+                # # temp_swarm_w = run_one_iter(temp_fl_swarm_models) 
                 
-                temp_worker_models = deepcopy(worker_models)
-                # temp_swarm_w = run_one_iter(temp_worker_models)
-                temp_swarm_w = run_one_iter(temp_worker_models,ep_len=1,\
-                    nts = node_train_sets[t],lr=lr) #one local training iter
+                # temp_worker_models = deepcopy(worker_models)
+                # # temp_swarm_w = run_one_iter(temp_worker_models)
+                # temp_swarm_w = run_one_iter(temp_worker_models,ep_len=1,\
+                #     nts = node_train_sets[t],lr=lr) #one local training iter
                 
-                # perform a sw_agg
-                temp_fl_swarm_models,agg_w_swarms,agg_t_swarms = \
-                    sw_agg(temp_fl_swarm_models,temp_swarm_w)
+                # # perform a sw_agg
+                # temp_fl_swarm_models,agg_w_swarms,agg_t_swarms = \
+                #     sw_agg(temp_fl_swarm_models,temp_swarm_w)
                 
-                for i,ii in enumerate(temp_fl_swarm_models):
-                    ii.eval()
-                    temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
-                            indexes=swarm_test_sets[i],device=device)
+                # for i,ii in enumerate(temp_fl_swarm_models):
+                #     ii.eval()
+                #     temp_acc, loss = test_img2(ii,dataset_test,bs=batch_size,\
+                #             indexes=swarm_test_sets[i],device=device)
                     
-                    fl_acc_temp += temp_acc/len(fl_swarm_models)
-                    total_loss_temp += loss/len(fl_swarm_models) #swarms
+                #     fl_acc_temp += temp_acc/len(fl_swarm_models)
+                #     total_loss_temp += loss/len(fl_swarm_models) #swarms
                     
-                fl_acc.append(fl_acc_temp)
-                total_loss.append(total_loss_temp)
-                print('personalized meta metric')
-                print(fl_acc[-1])
+                # fl_acc.append(fl_acc_temp)
+                # total_loss.append(total_loss_temp)
+                # print('personalized meta metric')
+                # print(fl_acc[-1])
         
         # saving results
         cwd = os.getcwd()
         
         # streamline later this if-else is unneeded, but its 2 am rn
         # if settings.iid_style == 'extreme':
-        with open(cwd+'/data/3fl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
-            settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
-            '_'+settings.nn_style+'_debug','wb') as f:
-            pickle.dump(fl_acc,f)
+        # with open(cwd+'/data/3fl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
+        #     settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
+        #     '_'+settings.nn_style+'_debug','wb') as f:
+        #     pickle.dump(fl_acc,f)
     
-        with open(cwd+'/data/3fl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
-            settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
-            '_'+settings.nn_style+'_debug','wb') as f:
-            pickle.dump(total_loss,f)
+        # with open(cwd+'/data/3fl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
+        #     settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
+        #     '_'+settings.nn_style+'_debug','wb') as f:
+        #     pickle.dump(total_loss,f)
         
         with open(cwd+'/data/3full_fl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
@@ -640,7 +640,7 @@ for save_type in [settings.iid_style]:
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
             '_'+settings.nn_style+'_debug','wb') as f:
             pickle.dump(total_loss_full,f)
-            
+        
         # elif settings.iid_style == 'mild':
         #     with open(cwd+'/data/fl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
         #         settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
