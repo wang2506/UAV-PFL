@@ -493,13 +493,13 @@ for save_type in [settings.iid_style]:
         for t in range(int(total_time/swarm_period)):
             if settings.data_style == 'mlradio':
                 if t*swarm_period < 10:
-                    lr = 5e-2
+                    lr = 1e-2#5e-2
                 elif t*swarm_period < 20:
-                    lr = 1e-2
+                    lr = 5e-3#1e-2
                 elif t*swarm_period < 30:
-                    lr = 5e-3
+                    lr = 1e-3#5e-3
                 elif t*swarm_period < 40:
-                    lr = 1e-3
+                    lr = 5e-4#1e-3
             
             # swarm_w = {i:[] for i in range(settings.swarms)}
             # data_processed = {i:0 for i in range(swarms)}
