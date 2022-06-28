@@ -31,7 +31,9 @@ settings = ml_parser()
 init_seed = 1
 random.seed(init_seed)
 np.random.seed(init_seed)
-torch.manual_seed(init_seed)
+# torch.manual_seed(init_seed)
+torch_seed = 2
+torch.manual_seed(torch_seed)
 
 if settings.comp == 'gpu':
     device = torch.device('cuda:1')
@@ -623,12 +625,14 @@ for save_type in [settings.iid_style]:
         
         with open(cwd+'/data/3full_hn_pfl_acc_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
-            '_'+settings.nn_style+'_debug','wb') as f:
+            '_'+settings.nn_style+'_tseed'+str(torch_seed)+\
+            '_debug','wb') as f:
             pickle.dump(HF_hn_pfl_acc_full,f)
         
         with open(cwd+'/data/3full_hn_pfl_loss_'+settings.iid_style+'_'+str(ratio)+'_'+\
             settings.data_style+'_'+str(swarm_period)+'_'+str(global_period)+\
-            '_'+settings.nn_style+'_debug','wb') as f:
+            '_'+settings.nn_style+'_tseed'+str(torch_seed)+\
+            '_debug','wb') as f:
             pickle.dump(total_loss_full,f)
         
         # elif settings.iid_style == 'mild':
@@ -651,130 +655,3 @@ for save_type in [settings.iid_style]:
         #               +'_'+str(swarm_period)+'_'+str(global_period),'wb') as f:
         #         pickle.dump(total_loss,f)
         
-# %% graveyard
-
-        # ### calculate optim variables    
-        # swarm_w_prev = default_w # used to calc optim variables
-        # comp_w = swarm_w[0] # arbitrary
-        
-        # ## B_j, need magnitude
-        # mag_B_j = 0
-        # for i in default_w.keys():
-        #     mag_B_j += torch.norm(1/lr*default_w[i] - 1/lr*comp_w[i])
-            
-        #     grad_diffs[0].append(1/lr*default_w[i] - 1/lr*comp_w[i])
-        #     grad_diffs[1].append(1/lr*default_w[i] - 1/lr*swarm_w[1][i])
-            
-        # print(mag_B_j)
-        # mu_j = 0
-        # mu_j_grad = 0
-        # mu_j_params = 0
-        # for i in default_w.keys():
-        #     mu_j_grad += torch.norm(1/lr * comp_w[i] - 1/lr * swarm_w[1][i])
-        #     mu_j_params += torch.norm(comp_w[ )
-        
-    
-        # B_j = [i - swarm_w] 
-
-
-#### HN-PFL procedure 
-### 1. create object for each node/device
-### 2. after \tau1 = swarm_period iterations, aggregate cluster-wise (weighed)
-### 3. after \tau2 = global_period swarm-wide aggregations, aggregate globally (unweighted)
-
-# print('HN-PFL begins here')
-
-# uav_counter = 0
-# for ind_i,val_i in enumerate(nodes_per_cluster):
-#     for j in range(val_i): # each uav in i
-#         local_obj = LocalUpdate_PFL(device,bs=10,lr=lr,epochs=swarm_period,\
-#                 dataset=dataset_train,indexes=static_nts[uav_counter])
-#         _,w,loss = local_obj.train(net=deepcopy(pfl_swarm_models[ind_i]).to(device))
-        
-#         swarm_w[ind_i].append(w)
-        
-#         uav_counter += 1
-
-## calculating final localized accuracy
-            # swarm_w = {i:[] for i in range(settings.swarms)}
-            
-            # uav_counter = 0
-            # for ind_i,val_i in enumerate(nodes_per_swarm):
-            #     for j in range(val_i): # each uav in i
-            #         if settings.online == False:
-            #             local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr1=lr,lr2=lr2,epochs=1,\
-            #                     dataset=dataset_train,indexes=node_train_sets[uav_counter])
-            #         else:
-            #             local_obj = LocalUpdate_HF_PFL(device,bs=batch_size,lr1=lr,lr2=lr2,epochs=1,\
-            #                     dataset=dataset_train,indexes=node_train_sets[t][uav_counter])
-                    
-            #         _,w,loss = local_obj.train(net=deepcopy(HF_hn_pfl_swarm_models[ind_i]).to(device))
-                    
-            #         swarm_w[ind_i].append(w)
-                    
-            #         uav_counter += 1
-            
-            # ## run FL swarm-wide aggregation only
-            # if settings.online == False:
-            #     temp_qty = deepcopy(data_qty).tolist()
-            # else:
-            #     temp_qty = 0*data_qty[t]
-            #     for t_prime in range(swarm_period*global_period):
-            #         temp_qty += data_qty[t-t_prime]
-            #     temp_qty = temp_qty.tolist()
-                
-            # for ind_i,val_i in enumerate(nodes_per_swarm):
-            #     t2_static_qty = temp_qty[:val_i]
-            #     del temp_qty[:val_i]
-                
-            #     t3_static_qty = [i*swarm_period for i in t2_static_qty]
-                
-            #     w_avg_swarm = FedAvg2(swarm_w[ind_i],t3_static_qty)
-    
-            #     HF_hn_pfl_swarm_models[ind_i].load_state_dict(w_avg_swarm)
-            #     HF_hn_pfl_swarm_models[ind_i].train()
-
-
-                # # swarm-wide agg
-                # if settings.online == False:
-                #     temp_qty = deepcopy(data_qty).tolist()
-                # else:
-                #     temp_qty = 0*data_qty[t]
-                #     for t_prime in range(swarm_period*global_period):
-                #         temp_qty += data_qty[t-t_prime]
-                #     temp_qty = temp_qty.tolist()
-                    
-                # t_swarm_total_qty = []
-                # w_swarms = []
-                
-                # for ind_i,val_i in enumerate(nodes_per_swarm):
-                #     t2_static_qty = temp_qty[:val_i]
-                #     del temp_qty[:val_i]
-                    
-                #     t3_static_qty = [i*swarm_period for i in t2_static_qty]
-
-                #     w_avg_swarm = FedAvg2(swarm_w[ind_i],t3_static_qty)
-                    
-                #     t_swarm_total_qty.append(sum(t3_static_qty))
-                #     w_swarms.append(w_avg_swarm)
-
-
-
-                # if settings.online == False:
-                #     temp_qty = deepcopy(data_qty).tolist()
-                # else:
-                #     temp_qty = 0*data_qty[t]
-                #     for t_prime in range(swarm_period*global_period):
-                #         temp_qty += data_qty[t-t_prime]
-                #     temp_qty = temp_qty.tolist()
-                    
-                # for ind_i,val_i in enumerate(nodes_per_swarm):
-                #     t2_static_qty = temp_qty[:val_i]
-                #     del temp_qty[:val_i]
-                    
-                #     t3_static_qty = [i*swarm_period for i in t2_static_qty]
-                    
-                #     w_avg_swarm = FedAvg2(swarm_w[ind_i],t3_static_qty)
-        
-                #     HF_hn_pfl_swarm_models[ind_i].load_state_dict(w_avg_swarm)
-                #     HF_hn_pfl_swarm_models[ind_i].train()
