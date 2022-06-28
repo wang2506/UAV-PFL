@@ -16,7 +16,7 @@ def ml_parser():
     parser.add_argument('--nn_style',type=str,default='CNN2',\
                         choices=['CNN','MLP','CNN2'],\
                         help='neural network style: cnn or mlp')
-    parser.add_argument('--ratio',type=str,default='swarm',\
+    parser.add_argument('--ratio',type=str,default='global',\
                         choices=['global','swarm'],\
                         help='global or swarm-wide ratio varying')
     
