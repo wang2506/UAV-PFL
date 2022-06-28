@@ -32,7 +32,7 @@ init_seed = 1
 random.seed(init_seed)
 np.random.seed(init_seed)
 # torch.manual_seed(init_seed)
-torch_seed = 2
+torch_seed = 1
 torch.manual_seed(torch_seed)
 
 if settings.comp == 'gpu':
@@ -189,7 +189,7 @@ for save_type in [settings.iid_style]:
         elif settings.data_style == 'fmnist':
             avg_qty = 3500 #3k data was ok
         elif settings.data_style == 'cifar10':
-            avg_qty = 3500
+            avg_qty = 2500
         elif settings.data_style == 'mlradio':
             avg_qty = 60000 #5000 #2500 #2500
     
