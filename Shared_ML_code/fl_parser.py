@@ -20,7 +20,7 @@ def ml_parser():
                         choices=['global','swarm'],\
                         help='global or swarm-wide ratio varying')
     
-    parser.add_argument('--iid_style',type=str,default='mild',\
+    parser.add_argument('--iid_style',type=str,default='iid',\
                         choices=['extreme','mild','iid'],\
                         help='noniid/iid styles')
     
