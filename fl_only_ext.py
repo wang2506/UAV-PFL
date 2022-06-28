@@ -451,7 +451,7 @@ for save_type in [settings.iid_style]:
             
             t_swarm_total_qty = []
             w_swarms = []
-                
+            
             for ind_i,val_i in enumerate(nps):
                 # t2_static_qty = temp_qty[:val_i]
                 # del temp_qty[:val_i]
