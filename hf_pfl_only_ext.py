@@ -522,7 +522,7 @@ for save_type in [settings.iid_style]:
                     lr = 5e-3
                 elif t*swarm_period < 40:
                     lr = 1e-3         
-                lr2 = lr
+                lr2 = 5e-2 #lr
             # swarm_w = {i:[] for i in range(settings.swarms)}
             # data_processed = {i:0 for i in range(swarms)}
 
