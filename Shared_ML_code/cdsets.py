@@ -21,7 +21,7 @@ from copy import deepcopy
 
 class RML(Dataset):
     def __init__(self,ldir,train=True):
-        db_vec = [10,12,14,16,18] #0,2,4,6,8,
+        db_vec = [0,2,4,6,8,10,12,14,16,18] #
         train_x,train_y = [],[]
         test_x,test_y = [],[]
         for ind_db,db_vals in enumerate(db_vec):
@@ -226,14 +226,14 @@ class RML(Dataset):
 #         other frameworks which employ an update of the form
 
 #         .. math::
-#              v_{t+1} = \mu * v_{t} + lr * g_{t+1} \\
-#              p_{t+1} = p_{t} - v_{t+1}
+#               v_{t+1} = \mu * v_{t} + lr * g_{t+1} \\
+#               p_{t+1} = p_{t} - v_{t+1}
 
 #         The Nesterov version is analogously modified.
 #     """
 
 #     def __init__(self, params, lr=required, momentum=0, dampening=0,
-#                  weight_decay=0, nesterov=False):
+#                   weight_decay=0, nesterov=False):
 #         if lr is not required and lr < 0.0:
 #             raise ValueError("Invalid learning rate: {}".format(lr))
 #         if momentum < 0.0:
@@ -458,35 +458,35 @@ if __name__ == '__main__':
     # d_h = 64
     # d_out = 10
     # # global_net = MLP2(d_in,d_h,d_out).to(device)
-    # global_net = CNNR(1,10).to(device)
+    # global_net = CNNR(1,4).to(device)
     # # lr = 1e-1 #works better for MLP
 
     # for i in range(100):
-    #     # if i < 10:
-    #     #     lr = 5e-2
-    #     # elif i < 20:
-    #     #     lr = 1e-2
-    #     # elif i < 30:
-    #     #     lr = 5e-3
-    #     # elif i < 40:
-    #     #     1e-3
-    #     # elif i < 50:
-    #     #     5e-4
-    #     # else:
-    #     #     1e-4
-        
     #     if i < 10:
-    #         lr = 1e-2
+    #         lr = 5e-2
     #     elif i < 20:
-    #         lr = 5e-3
+    #         lr = 1e-2
     #     elif i < 30:
-    #         lr = 1e-3
+    #         lr = 5e-3
     #     elif i < 40:
-    #         5e-4
+    #         lr = 1e-3
     #     elif i < 50:
-    #         1e-4
+    #         lr = 5e-4
     #     else:
-    #         5e-5
+    #         lr = 5e-4
+        
+    #     # if i < 10:
+    #     #     lr = 1e-2
+    #     # elif i < 20:
+    #     #     lr = 5e-3
+    #     # elif i < 30:
+    #     #     lr = 1e-3
+    #     # elif i < 40:
+    #     #     5e-4
+    #     # elif i < 50:
+    #     #     1e-4
+    #     # else:
+    #     #     5e-5
         
     #     # t_obj = LocalUpdate(device,bs=12,lr=lr,epochs=1,\
     #     #             dataset=dtrain,indexes=range(dtrain.y_data.shape[0]))

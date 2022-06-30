@@ -200,7 +200,7 @@ for save_type in [settings.iid_style]:
         elif settings.data_style == 'cifar10':
             avg_qty = 3500
         elif settings.data_style == 'mlradio':
-            avg_qty = 5000 #60000 #5000  #2500
+            avg_qty = 10000 #60000 #5000  #2500
     
     def pop_data_qty(data_holder,data_qty,nodes_per_swarm=nodes_per_swarm):
         counter = 0
@@ -500,17 +500,25 @@ for save_type in [settings.iid_style]:
         print('initial loss measurement')
         print(init_loss)
         
-        
         for t in range(int(total_time/swarm_period)):
             if settings.data_style == 'mlradio':
+                # if t*swarm_period < 10:
+                #     lr = 1e-2#5e-2
+                # elif t*swarm_period < 20:
+                #     lr = 5e-3#1e-2
+                # elif t*swarm_period < 30:
+                #     lr = 1e-3#5e-3
+                # elif t*swarm_period < 40:
+                #     lr = 5e-4#1e-3
+            
                 if t*swarm_period < 10:
-                    lr = 1e-2#5e-2
+                    lr = 5e-2
                 elif t*swarm_period < 20:
-                    lr = 5e-3#1e-2
+                    lr = 1e-2
                 elif t*swarm_period < 30:
-                    lr = 1e-3#5e-3
+                    lr = 5e-3
                 elif t*swarm_period < 40:
-                    lr = 5e-4#1e-3
+                    lr = 1e-3         
             
             # swarm_w = {i:[] for i in range(settings.swarms)}
             # data_processed = {i:0 for i in range(swarms)}
