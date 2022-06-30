@@ -94,11 +94,17 @@ nodes_per_swarm = [np.random.randint(2,4) for i in range(settings.swarms)]
 
 # labels_per_node assignment function
 def pop_labels(temp_lpn,temp_ls,max_labels=10,flag=True):
-    starting_list = list(range(max_labels))
+    if settings.data_style != 'mlradio':
+        starting_list = list(range(max_labels))
+    else:
+        starting_list = list(range(4))
     freq_tracker = np.zeros(max_labels) #label frequency tracker
     for i,j in enumerate(temp_lpn):
         j = int(j)
-        tts = sorted(random.sample(range(max_labels),j))
+        if settings.data_style != 'mlradio':
+            tts = sorted(random.sample(range(max_labels),j))
+        else:
+            tts = sorted(random.sample(range(4),j))
         
         if flag == True: #extreme flag
             if tts[0] in starting_list:
@@ -151,7 +157,10 @@ for save_type in [settings.iid_style]:
     elif save_type == 'mild':
         lpc = [np.random.randint(3,4) for i in range(settings.swarms)] #static qty of labels per node
     else:
-        lpc = [10 for i in range(settings.swarms)]
+        if settings.data_style != 'mlradio':
+            lpc = [10 for i in range(settings.swarms)]
+        else:
+            lpc = [4 for i in range(settings.swarms)]
     
     # data structure [online vs static data distributions]
     ## populating ML label holders
@@ -189,9 +198,9 @@ for save_type in [settings.iid_style]:
         elif settings.data_style == 'fmnist':
             avg_qty = 3500 #3k data was ok
         elif settings.data_style == 'cifar10':
-            avg_qty = 2500
+            avg_qty = 3500
         elif settings.data_style == 'mlradio':
-            avg_qty = 60000 #5000 #2500 #2500
+            avg_qty = 20000 #60000 #5000  #2500
     
     def pop_data_qty(data_holder,data_qty,nodes_per_swarm=nodes_per_swarm):
         counter = 0

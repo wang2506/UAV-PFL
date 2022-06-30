@@ -26,6 +26,7 @@ data_loc = cwd+'/data/'
 data_source = 'mnist'
 data_source = 'fmnist'
 data_source = 'cifar10'
+data_source = 'mlradio'
 lwd = 2.5
 
 # %% plot 2 ratio plots with taus1 = 1
@@ -45,11 +46,12 @@ init_acc = 10.5
 init_loss = 2.302232319
 
 nn_style = 'CNN'
-nn_style = 'CNN2'
+# nn_style = 'CNN2'
 # nn_style = 'MLP'
 ratio_vec = [1,2,4,8]
 
 # tseed = None
+# tseed = 1
 tseed = 2
 for ratio in [1,2,4,8]:
     ## reload data
@@ -61,7 +63,7 @@ for ratio in [1,2,4,8]:
     
     swarm_period = 1
     global_period = ratio*swarm_period
-    for iid_style in ['mild']: 
+    for iid_style in ['iid']:#['mild']: 
         
         # ## personalized accuracies
         # with open(data_loc+'3fl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
@@ -79,6 +81,7 @@ for ratio in [1,2,4,8]:
                   +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style+\
                 '_tseed'+str(tseed)+'_debug','rb') as f:
             f_fl_acc = pk.load(f)        
+
         
         with open(data_loc+'3full_hn_pfl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
                     +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style+\
@@ -299,7 +302,7 @@ for ratio in [1,2,4,8]:
     
     global_period = 1
     swarm_period = ratio*global_period
-    for iid_style in ['mild']: 
+    for iid_style in ['iid']:#['mild']: 
         
         # ## personalized accuracies
         # with open(data_loc+'3fl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \

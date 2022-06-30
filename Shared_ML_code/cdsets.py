@@ -29,6 +29,20 @@ class RML(Dataset):
             in_x /= np.amax(in_x)
             in_x = in_x[:,np.newaxis,:,:]
             in_y = np.load(ldir+'/y_'+str(db_vals)+'.npy')
+            
+            ## segment dataset so that only first 4 labels are kept
+            train = {i: [] for i in range(10)}
+            # for index, label in enumerate(in_x):
+            #     train[label].append(index)
+            
+            test = {i: [] for i in range(10)} 
+            for index, label in enumerate(in_y):
+                test[label].append(index)    
+                train[label].append(index)
+
+            in_x = np.concatenate([in_x[train[0]],in_x[train[1]],in_x[train[2]],in_x[train[3]]])
+            in_y = np.concatenate([in_y[train[0]],in_y[train[1]],in_y[train[2]],in_y[train[3]]])
+            
             x_train, x_test, y_train, y_test = \
                 train_test_split(in_x, in_y, test_size=0.20, random_state=(25), shuffle=True)
             
@@ -419,24 +433,24 @@ if __name__ == '__main__':
     
     # torch.manual_seed(1)
     # np.random.seed(1)
-    # # # determine the number of datapoints per label
-    # # train = {i: [] for i in range(10)}
-    # # for index, label in enumerate(dtrain.y_data):
-    # #     train[label].append(index)
+    # # determine the number of datapoints per label
+    # train = {i: [] for i in range(10)}
+    # for index, label in enumerate(dtrain.y_data):
+    #     train[label].append(index)
     
-    # # test = {i: [0] for i in range(10)} 
-    # # for index, label in enumerate(dtest.y_data):
-    # #     test[label].append(index)
+    # test = {i: [0] for i in range(10)} 
+    # for index, label in enumerate(dtest.y_data):
+    #     test[label].append(index)
     
-    # # import matplotlib.pyplot as plt
-    # # for i in range(10):
-    # #     plt.figure()
-    # #     plt.title('plot label '+str(i))
-    # #     for j in range(3):
-    # #         temp = dtrain[train[i][j]][0] # for concat of input data
-    # #         temp = np.reshape(temp,(temp.shape[1]*temp.shape[2],temp.shape[0]))
-    # #         plt.plot(temp)
-    # #         # plt.plot(dtrain[train[i][j]][0])
+    # import matplotlib.pyplot as plt
+    # for i in range(10):
+    #     plt.figure()
+    #     plt.title('plot label '+str(i))
+    #     for j in range(1):
+    #         temp = dtrain[train[i][j]][0] # for concat of input data
+    #         temp = np.reshape(temp,(temp.shape[1]*temp.shape[2],temp.shape[0]))
+    #         plt.plot(temp)
+    #         # plt.plot(dtrain[train[i][j]][0])
 
     # device = torch.device('cuda')
     # d_in = 2*128
