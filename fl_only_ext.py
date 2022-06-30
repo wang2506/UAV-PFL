@@ -334,7 +334,7 @@ for save_type in [settings.iid_style]:
                     default_w = deepcopy(global_net.state_dict())
             lr = 1e-3 #1e-2 #CNN
         elif settings.data_style == 'mlradio':
-            nclasses = 10
+            nclasses = 4 #10
             global_net = CNNR(nchannels,nclasses).to(device)
             try:
                 with open(cwd+'/data/CNNR_new_w','rb') as f:

@@ -333,7 +333,7 @@ for save_type in [settings.iid_style]:
             lr,lr2 = 1e-3,1e-2 #CNN # debug lr-rates # lr = 2*1e-4 # lr2 = 1e-2
             lr,lr2 = 1e-3, 1e-2
         elif settings.data_style == 'mlradio':
-            nclasses = 10
+            nclasses = 4 #10
             nchannels = 1
             global_net = CNNR(nchannels,nclasses).to(device)
             try:
