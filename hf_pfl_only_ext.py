@@ -276,7 +276,10 @@ for save_type in [settings.iid_style]:
     # %% same as above for [testing dataset]
     ## basically just sort the testing dataset into indexes for each swarm
     swarm_test_sets = {i:[] for i in range(settings.swarms)} #indexed by swarm
-    all_test_indexes = list(range(10000)) #10k test images in MNIST and FMNIST
+    if settings.data_style != 'mlradio':
+        all_test_indexes = list(range(10000)) #10k test images in MNIST and FMNIST
+    else:
+        all_test_indexes = list(range(len(dataset_test.y_data)))
     
     for i in range(settings.swarms):
         swarm_ls = deepcopy(ls[i])
