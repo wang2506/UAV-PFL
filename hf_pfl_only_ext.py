@@ -417,7 +417,7 @@ for save_type in [settings.iid_style]:
         
         
         def run_one_iter(loc_models,online=settings.online,nps=nodes_per_swarm,\
-            nts=node_train_sets,device=device,meta=False,ep_len=1,lr=None):
+            nts=node_train_sets,device=device,meta=False,ep_len=1,lr=None,lr2=None):
             swarm_w = {i:[] for i in range(settings.swarms)}
 
             uav_counter = 0
@@ -522,7 +522,7 @@ for save_type in [settings.iid_style]:
                     lr = 5e-3
                 elif t*swarm_period < 40:
                     lr = 1e-3         
-            
+                lr2 = lr
             # swarm_w = {i:[] for i in range(settings.swarms)}
             # data_processed = {i:0 for i in range(swarms)}
 
@@ -531,7 +531,7 @@ for save_type in [settings.iid_style]:
             
             # swarm_w = run_one_iter(HF_hn_pfl_swarm_models,ep_len=swarm_period) #one local training iter
             swarm_w = run_one_iter(HF_hn_pfl_swarm_models,ep_len=swarm_period,\
-                    nts = node_train_sets[t],lr=lr) #one local training iter
+                    nts = node_train_sets[t],lr=lr,lr2=lr2) #one local training iter
             
             
             # for i in HF_hn_pfl_swarm_models:
@@ -608,7 +608,7 @@ for save_type in [settings.iid_style]:
                 # temp_pfl_swarm_models = deepcopy(HF_hn_pfl_swarm_models)
                 # # temp_swarm_w = run_one_iter(temp_pfl_swarm_models,meta=True)
                 # temp_swarm_w = run_one_iter(temp_pfl_swarm_models,ep_len=1,\
-                #     nts = node_train_sets[t],lr=lr) #one local training iter                
+                #     nts = node_train_sets[t],lr=lr,lr2=lr2) #one local training iter                
                 
                 
                 # # perform a sw_agg
