@@ -200,7 +200,7 @@ for save_type in [settings.iid_style]:
         elif settings.data_style == 'cifar10':
             avg_qty = 3500
         elif settings.data_style == 'mlradio':
-            avg_qty = 6000 #60000 #5000  #2500
+            avg_qty = 3500 #6000 #60000 #5000  #2500
     
     def pop_data_qty(data_holder,data_qty,nodes_per_swarm=nodes_per_swarm):
         counter = 0
