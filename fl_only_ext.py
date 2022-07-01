@@ -97,17 +97,11 @@ nodes_per_swarm = [np.random.randint(2,4) for i in range(settings.swarms)]
 
 # labels_per_node assignment function
 def pop_labels(temp_lpn,temp_ls,max_labels=10,flag=True):
-    if settings.data_style != 'mlradio':
-        starting_list = list(range(max_labels))
-    else:
-        starting_list = list(range(4))
+    starting_list = list(range(max_labels))
     freq_tracker = np.zeros(max_labels) #label frequency tracker
     for i,j in enumerate(temp_lpn):
         j = int(j)
-        if settings.data_style != 'mlradio':
-            tts = sorted(random.sample(range(max_labels),j))
-        else:
-            tts = sorted(random.sample(range(4),j))
+        tts = sorted(random.sample(range(max_labels),j))
         
         if flag == True: #extreme flag
             if tts[0] in starting_list:
@@ -167,6 +161,11 @@ for save_type in [settings.iid_style]:
     
     # data structure [online vs static data distributions]
     ## populating ML label holders
+    if settings.data_style != 'mlradio':
+        t_max_labels = 10
+    elif settings.data_style == 'mlradio':
+        t_max_labels = 4
+        
     if settings.online == True:
         var_lpc = np.zeros((total_time,settings.swarms))
         for i in range(total_time):
@@ -176,18 +175,20 @@ for save_type in [settings.iid_style]:
         
         if save_type == 'extreme':
             for i in range(total_time):
-                ls[i] = pop_labels(lpc[i,:],ls[i])
+                ls[i] = pop_labels(lpc[i,:],ls[i],max_labels=t_max_labels)
         else:
             for i in range(total_time):
-                ls[i] = pop_labels(lpc[i,:],ls[i],flag=False)
+                ls[i] = pop_labels(lpc[i,:],ls[i],max_labels=t_max_labels,flag=False)
         
     else:
         ls = {i: [] for i in range(settings.swarms)} # actual labels at each swarm
         
         if save_type == 'extreme':
-            ls = pop_labels(lpc,ls)
+            ls = pop_labels(lpc,ls,max_labels=t_max_labels)
         else:
-            ls = pop_labels(lpc,ls,flag=False)
+            ls = pop_labels(lpc,ls,max_labels=t_max_labels,flag=False)
+    
+    input('a')
     
     # %% populating data for nodes/swarms
     
