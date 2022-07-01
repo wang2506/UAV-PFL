@@ -63,8 +63,7 @@ for ratio in [1,2,4,8]:
     
     swarm_period = 1
     global_period = ratio*swarm_period
-    for iid_style in ['iid']:#['mild']: 
-        
+    for iid_style in ['iid']:#['mild']:  'iid'
         # ## personalized accuracies
         # with open(data_loc+'3fl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
         #           +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style+\
@@ -178,8 +177,12 @@ ax2[ind].set_xlabel('Local Iteration',fontsize=13)
 # tylab = ax2[ind].get_yticklabels()
 if data_source == 'mnist':
     tylab = ['1.5', '1.6', '1.7', '1.8', '1.9', '2.0', '2.1', '2.2', '2.3', '2.4']
-else:
+elif data_source == 'fmnist':
     tylab = ['1.8', '1.9', '2.0', '2.1', '2.2', '2.3', '2.4']
+elif data_source == 'cifar10':
+    tylab = ['1.2','1.4','1.6','1.8','2.0','2.2']
+elif data_source == 'mlradio':
+    tylab = ['0.5','0.75','1.00','1.25','1.50','1.75','2.00','2.25']
 
 txlab = ['−10', '0', '10', '20', '30', '40', '50']
 ax2[ind].set_xticklabels(txlab,fontsize=12)
@@ -187,7 +190,6 @@ ax2[ind].set_yticklabels(tylab,fontsize=12)
 
 ax2[ind].grid(True)
 ax2[ind].legend()
-
 
 
 ind = 1
@@ -243,8 +245,12 @@ ax2[ind].set_title('b) '+data_source.upper()+' Classification Accuracy',y=-0.3,f
 
 if data_source == 'mnist':
     tylab = ['0', '20', '40', '60', '80', '100']
-else:
+elif data_source =='fmnist':
     tylab = ['0', '10', '20', '30', '40', '50', '60', '70']
+elif data_source == 'cifar10':
+    tylab = ['0','10','20','30','40','50']
+elif data_source == 'mlradio':
+    tylab = ['0','20','40','60','80'] 
     
 ax2[ind].set_xticklabels(txlab,fontsize=12)
 ax2[ind].set_yticklabels(tylab,fontsize=12)
@@ -303,7 +309,7 @@ for ratio in [1,2,4,8]:
     
     global_period = 1
     swarm_period = ratio*global_period
-    for iid_style in ['iid']:#['mild']: 
+    for iid_style in ['iid']:#['mild']: 'iid'
         
         # ## personalized accuracies
         # with open(data_loc+'3fl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
@@ -413,9 +419,13 @@ ax2[ind].set_xlabel('Local Iteration',fontsize=13)
 
 if data_source == 'mnist':
     tylab = ['1.5', '1.6', '1.7', '1.8', '1.9', '2.0', '2.1', '2.2', '2.3', '2.4']
-else:
+elif data_source =='fmnist':
     tylab = ['1.8', '1.9', '2.0', '2.1', '2.2', '2.3', '2.4']
-    
+elif data_source == 'cifar10':
+    tylab = ['1.0','1.2','1.4','1.6','1.8','2.0','2.2'] 
+elif data_source == 'mlradio':
+    tylab = ['0.5','0.75','1.00','1.25','1.50','1.75','2.00','2.25']
+
 ax2[ind].set_xticklabels(txlab,fontsize=12)
 ax2[ind].set_yticklabels(tylab,fontsize=12)
 
@@ -477,9 +487,13 @@ ax2[ind].set_xlabel('Local Iteration',fontsize=13)
 
 if data_source == 'mnist':
     tylab = ['0', '20', '40', '60', '80', '100']
-else:
+elif data_source == 'fmnist':
     tylab = ['0', '10', '20', '30', '40', '50', '60', '70']
-
+elif data_source == 'cifar10':
+    tylab = ['0','10','20','30','40','50']
+elif data_source == 'mlradio':
+    tylab = ['0','20','40','60','80'] 
+    
 ax2[ind].set_xticklabels(txlab,fontsize=12)
 ax2[ind].set_yticklabels(tylab,fontsize=12)
 

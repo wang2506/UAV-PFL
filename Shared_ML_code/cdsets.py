@@ -400,30 +400,30 @@ class RML(Dataset):
             
 #         return net,net.state_dict(),(sum(batch_loss)/len(batch_loss))
 
-# def test_img2(net_g, datatest,bs,indexes,device=torch.device('cpu')):
-#     net_g.eval()
-#     # testing
-#     test_loss = 0
-#     correct = 0
-#     data_loader = DataLoader(segmentdataset(datatest,indexes),batch_size=bs,shuffle=True)
+def test_img2(net_g, datatest,bs,indexes,device=torch.device('cpu')):
+    net_g.eval()
+    # testing
+    test_loss = 0
+    correct = 0
+    data_loader = DataLoader(segmentdataset(datatest,indexes),batch_size=bs,shuffle=True)
     
-#     for idx, (data, target) in enumerate(data_loader):
-#         data = data.to(device)
-#         target = target.to(device)
+    for idx, (data, target) in enumerate(data_loader):
+        data = data.to(device)
+        target = target.to(device)
         
-#         ## added this for radioML dataset
-#         target = target.type(torch.long)
+        ## added this for radioML dataset
+        target = target.type(torch.long)
         
-#         log_probs = net_g(data)
-#         # sum up batch loss
-#         test_loss += F.cross_entropy(log_probs, target, reduction='sum').item()
-#         # get the index of the max log-probability
-#         y_pred = log_probs.data.max(1, keepdim=True)[1]
-#         correct += y_pred.eq(target.data.view_as(y_pred)).long().cpu().sum()
+        log_probs = net_g(data)
+        # sum up batch loss
+        test_loss += F.cross_entropy(log_probs, target, reduction='sum').item()
+        # get the index of the max log-probability
+        y_pred = log_probs.data.max(1, keepdim=True)[1]
+        correct += y_pred.eq(target.data.view_as(y_pred)).long().cpu().sum()
 
-#     test_loss /= len(data_loader.dataset)
-#     accuracy = 100*correct.item() / len(data_loader.dataset)
-#     return accuracy, test_loss
+    test_loss /= len(data_loader.dataset)
+    accuracy = 100*correct.item() / len(data_loader.dataset)
+    return accuracy, test_loss
 
 if __name__ == '__main__':
     pwd = os.pardir
@@ -475,23 +475,24 @@ if __name__ == '__main__':
     #     else:
     #         lr = 5e-4
         
-    #     # if i < 10:
+    #     # if i < 5:
+    #     #     lr = 1e-1
+    #     # elif i < 10:
     #     #     lr = 1e-2
-    #     # elif i < 20:
-    #     #     lr = 5e-3
-    #     # elif i < 30:
+    #     # elif i < 15:
     #     #     lr = 1e-3
-    #     # elif i < 40:
-    #     #     5e-4
-    #     # elif i < 50:
-    #     #     1e-4
+    #     # elif i < 20:
+    #     #     lr = 1e-4
+    #     # elif i < 25:
+    #     #     lr = 1e-5
     #     # else:
-    #     #     5e-5
+    #     #     lr = 1e-6
+    #     lr2 = 5e-2
         
-    #     # t_obj = LocalUpdate(device,bs=12,lr=lr,epochs=1,\
-    #     #             dataset=dtrain,indexes=range(dtrain.y_data.shape[0]))
-    #     t_obj = LocalUpdate_trad_FO(device,bs=12,lr1=lr,lr2=lr,epochs=1,\
+    #     t_obj = LocalUpdate(device,bs=12,lr=lr,epochs=1,\
     #                 dataset=dtrain,indexes=range(dtrain.y_data.shape[0]))
+    #     # t_obj = LocalUpdate_trad_FO(device,bs=12,lr1=lr,lr2=lr,epochs=1,\
+    #     #             dataset=dtrain,indexes=range(dtrain.y_data.shape[0]))
     #     _,w,loss = t_obj.train(net=global_net)
     #     # print(w['layer_hidden.bias'])
     #     global_net.load_state_dict(w)
