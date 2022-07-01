@@ -188,8 +188,6 @@ for save_type in [settings.iid_style]:
         else:
             ls = pop_labels(lpc,ls,max_labels=t_max_labels,flag=False)
     
-    input('a')
-    
     # %% populating data for nodes/swarms
     
     # data per device and total data per swarm

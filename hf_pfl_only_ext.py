@@ -155,7 +155,7 @@ for save_type in [settings.iid_style]:
             lpc = [10 for i in range(settings.swarms)]
         else:
             lpc = [4 for i in range(settings.swarms)]
-    
+
     # data structure [online vs static data distributions]
     ## populating ML label holders
     if settings.data_style != 'mlradio':
