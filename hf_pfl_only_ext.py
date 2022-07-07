@@ -384,7 +384,7 @@ for save_type in [settings.iid_style]:
         global_period = settings.rd_val
     
     ## main loop for ratio variance ##
-    for ratio in [2,4,8]:#,6,8,10]:
+    for ratio in [1,2,4,8]:#,6,8,10]:
         # ratio dynamics
         if settings.ratio == 'global': #global dynamic, swarm varied
              global_period = swarm_period * ratio
@@ -513,15 +513,26 @@ for save_type in [settings.iid_style]:
                 # elif t*swarm_period < 40:
                 #     lr = 5e-4#1e-3
             
-                if t*swarm_period < 10:
+                # if t*swarm_period < 10:
+                #     lr = 5e-2
+                # elif t*swarm_period < 20:
+                #     lr = 1e-2
+                # elif t*swarm_period < 30:
+                #     lr = 5e-3
+                # elif t*swarm_period < 40:
+                #     lr = 1e-3
+                # lr2 = 5e-2 #lr
+                
+                if t*swarm_period < 20:
                     lr = 5e-2
-                elif t*swarm_period < 20:
-                    lr = 1e-2
                 elif t*swarm_period < 30:
-                    lr = 5e-3
+                    lr = 1e-2
                 elif t*swarm_period < 40:
-                    lr = 1e-3         
-                lr2 = 5e-2 #lr
+                    lr = 5e-3
+                elif t*swarm_period < 50:
+                    lr = 1e-3
+                lr2 = 1e-2 #lr       
+                
             # swarm_w = {i:[] for i in range(settings.swarms)}
             # data_processed = {i:0 for i in range(swarms)}
 

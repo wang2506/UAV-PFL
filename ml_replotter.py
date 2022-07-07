@@ -63,7 +63,7 @@ for ratio in [1,2,4,8]:
     
     swarm_period = 1
     global_period = ratio*swarm_period
-    for iid_style in ['iid']:#['mild']:  'iid'
+    for iid_style in ['mild']:#['mild']:  'iid'
         # ## personalized accuracies
         # with open(data_loc+'3fl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
         #           +'_'+str(swarm_period)+'_'+str(global_period)+'_'+nn_style+\
@@ -309,7 +309,7 @@ for ratio in [1,2,4,8]:
     
     global_period = 1
     swarm_period = ratio*global_period
-    for iid_style in ['iid']:#['mild']: 'iid'
+    for iid_style in ['mild']:#['mild']: 'iid'
         
         # ## personalized accuracies
         # with open(data_loc+'3fl_acc_'+iid_style+'_'+str(ratio)+'_'+data_source \
