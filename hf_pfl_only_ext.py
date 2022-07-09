@@ -512,7 +512,7 @@ for save_type in [settings.iid_style]:
                     lr = 1e-2
                 elif t*swarm_period < 30:
                     lr = 1e-3
-                lr2 = 1e-1 #lr
+                lr2 = lr #1e-1 #lr
                 
                 # if t*swarm_period < 10:
                 #     lr = 5e-2
