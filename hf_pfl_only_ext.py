@@ -343,9 +343,10 @@ for save_type in [settings.iid_style]:
                     default_w = pickle.load(f)        
                 global_net.load_state_dict(default_w)
             except:
-                default_w = deepcopy(global_net.state_dict())
-                with open(cwd+'/data/CNN_mlradio_w','wb') as f:
-                    pickle.dump(default_w,f)   
+                raise TypeError('no valid default_w for mlradio')
+                # default_w = deepcopy(global_net.state_dict())
+                # with open(cwd+'/data/CNN_mlradio_w','wb') as f:
+                #     pickle.dump(default_w,f)   
             # lr,lr2 = 1e-3,1e-2 #CNN
             lr2 = 1e-2
     elif settings.nn_style == 'CNN2':
@@ -504,25 +505,25 @@ for save_type in [settings.iid_style]:
         
         for t in range(int(total_time/swarm_period)):
             if settings.data_style == 'mlradio':
-                if t*swarm_period < 10:
-                    lr = 1e-1
-                elif t*swarm_period < 20:
-                    lr = 5e-2
-                elif t*swarm_period < 30:
-                    lr = 1e-2
-                elif t*swarm_period < 40:
-                    lr = 5e-3
-                lr2 = 5e-2 #lr
-                
                 # if t*swarm_period < 10:
-                #     lr = 5e-2
+                #     lr = 1e-1
                 # elif t*swarm_period < 20:
-                #     lr = 1e-2
+                #     lr = 5e-2
                 # elif t*swarm_period < 30:
-                #     lr = 5e-3
+                #     lr = 1e-2
                 # elif t*swarm_period < 40:
-                #     lr = 1e-3
+                #     lr = 5e-3
                 # lr2 = 5e-2 #lr
+                
+                if t*swarm_period < 10:
+                    lr = 5e-2
+                elif t*swarm_period < 20:
+                    lr = 1e-2
+                elif t*swarm_period < 30:
+                    lr = 5e-3
+                elif t*swarm_period < 40:
+                    lr = 1e-3
+                lr2 = 5e-2 #lr
                 
                 # if t*swarm_period < 10:
                 #     lr = 1e-1

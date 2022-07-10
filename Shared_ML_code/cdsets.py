@@ -84,321 +84,321 @@ class RML(Dataset):
         return self.x_data[i], self.y_data[i]
 
 
-# # class MLP2(nn.Module):
-# #     def __init__(self,dim_in,dim_hidden,dim_out):
-# #         super(MLP2,self).__init__()
-# #         self.layer_input = nn.Linear(dim_in,dim_hidden)
-# #         self.relu = nn.ReLU()
-# #         self.dropout = nn.Dropout()
-# #         self.layer_hidden = nn.Linear(dim_hidden,dim_out)
-# #         self.softmax = nn.Softmax(dim=1)
-# #         # self.sigmoid = nn.Sigmoid()
+# class MLP2(nn.Module):
+#     def __init__(self,dim_in,dim_hidden,dim_out):
+#         super(MLP2,self).__init__()
+#         self.layer_input = nn.Linear(dim_in,dim_hidden)
+#         self.relu = nn.ReLU()
+#         self.dropout = nn.Dropout()
+#         self.layer_hidden = nn.Linear(dim_hidden,dim_out)
+#         self.softmax = nn.Softmax(dim=1)
+#         # self.sigmoid = nn.Sigmoid()
         
-# #     def forward(self,x):
-# #         x = self.layer_input(x)
-# #         x = self.dropout(x)
-# #         x = self.relu(x)
-# #         x = self.layer_hidden(x)
-# #         # return self.sigmoid(x)
-# #         return self.softmax(x)
+#     def forward(self,x):
+#         x = self.layer_input(x)
+#         x = self.dropout(x)
+#         x = self.relu(x)
+#         x = self.layer_hidden(x)
+#         # return self.sigmoid(x)
+#         return self.softmax(x)
 
-# class CNNR(nn.Module):
-#     def __init__(self,nchannels,nclasses):
-#         super(CNNR, self).__init__()
-#         self.conv1 = nn.Conv2d(nchannels, 16, kernel_size=(2,5))#2, 1)
-#         self.conv2 = nn.Conv2d(16, 32, kernel_size=(1,4)) #2, 1)
-#         self.fc1 = nn.Linear(3872, 128)
-#         self.fc2 = nn.Linear(128, nclasses)
+class CNNR(nn.Module):
+    def __init__(self,nchannels,nclasses):
+        super(CNNR, self).__init__()
+        self.conv1 = nn.Conv2d(nchannels, 16, kernel_size=(2,5))#2, 1)
+        self.conv2 = nn.Conv2d(16, 32, kernel_size=(1,4)) #2, 1)
+        self.fc1 = nn.Linear(3872, 128)
+        self.fc2 = nn.Linear(128, nclasses)
 
-#         # self.conv1 = nn.Conv2d(nchannels,256,kernel_size=(2,5))
-#         # self.conv2 = nn.Conv2d(256,128,kernel_size=(1,4))
-#         # self.conv3 = nn.Conv2d(128,64,kernel_size=(1,3))
-#         # self.conv4 = nn.Conv2d(64,64,kernel_size=(1,3))
-#         # self.drop = nn.Dropout(0.2)
+        # self.conv1 = nn.Conv2d(nchannels,256,kernel_size=(2,5))
+        # self.conv2 = nn.Conv2d(256,128,kernel_size=(1,4))
+        # self.conv3 = nn.Conv2d(128,64,kernel_size=(1,3))
+        # self.conv4 = nn.Conv2d(64,64,kernel_size=(1,3))
+        # self.drop = nn.Dropout(0.2)
         
-#         # self.fc1 = nn.Linear(7488, 128)
-#         # self.fc2 = nn.Linear(128, 10)
+        # self.fc1 = nn.Linear(7488, 128)
+        # self.fc2 = nn.Linear(128, 10)
         
-#     def forward(self, x):
-#         x = self.conv1(x)
-#         x = nn.ReLU()(x)
-#         # x = nn.MaxPool2d(2, 1)(x)
-#         x = self.conv2(x)
-#         x = nn.ReLU()(x)
-#         # x = nn.MaxPool2d(2, 1)(x)
-#         x = torch.flatten(x, 1)
-#         x = self.fc1(x)
-#         x = nn.ReLU()(x)
-#         x = self.fc2(x)
-#         output = F.softmax(x, dim=1)
-#         # x = nn.ReLU()(self.conv1(x))
-#         # # x = self.drop(x)
-#         # x = nn.ReLU()(self.conv2(x))
-#         # # x = self.drop(x)
-#         # x = nn.ReLU()(self.conv3(x))
-#         # # x = self.drop(x)        
-#         # x = nn.ReLU()(self.conv4(x))
-#         # # x = self.drop(x)
-#         # x = torch.flatten(x,1)
-#         # x = nn.ReLU()(self.fc1(x))
-#         # x = self.fc2(x)
-#         # output = F.softmax(x,dim=1)
-#         return output
+    def forward(self, x):
+        x = self.conv1(x)
+        x = nn.ReLU()(x)
+        # x = nn.MaxPool2d(2, 1)(x)
+        x = self.conv2(x)
+        x = nn.ReLU()(x)
+        # x = nn.MaxPool2d(2, 1)(x)
+        x = torch.flatten(x, 1)
+        x = self.fc1(x)
+        x = nn.ReLU()(x)
+        x = self.fc2(x)
+        output = F.softmax(x, dim=1)
+        # x = nn.ReLU()(self.conv1(x))
+        # # x = self.drop(x)
+        # x = nn.ReLU()(self.conv2(x))
+        # # x = self.drop(x)
+        # x = nn.ReLU()(self.conv3(x))
+        # # x = self.drop(x)        
+        # x = nn.ReLU()(self.conv4(x))
+        # # x = self.drop(x)
+        # x = torch.flatten(x,1)
+        # x = nn.ReLU()(self.fc1(x))
+        # x = self.fc2(x)
+        # output = F.softmax(x,dim=1)
+        return output
 
-# class segmentdataset(Dataset):
-#     def __init__(self,dataset,indexes):
-#         self.dataset = dataset
-#         self.indexes = indexes
-#     def __len__(self):
-#         return len(self.indexes)
-#     def __getitem__(self,item):
-#         image,label = self.dataset[self.indexes[item]]
-#         return image,label
+class segmentdataset(Dataset):
+    def __init__(self,dataset,indexes):
+        self.dataset = dataset
+        self.indexes = indexes
+    def __len__(self):
+        return len(self.indexes)
+    def __getitem__(self,item):
+        image,label = self.dataset[self.indexes[item]]
+        return image,label
     
-# class LocalUpdate(object):
-#     def __init__(self,device,bs,lr,epochs,dataset=None,indexes=None):
-#         self.device = device
-#         self.bs = bs
-#         self.lr = lr
-#         self.dataset = dataset
-#         self.indexes = indexes
-#         self.epochs = epochs
-#         self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=bs,shuffle=True)
-#         # self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=len(indexes),shuffle=True)
-#         self.loss_func = nn.CrossEntropyLoss()
+class LocalUpdate(object):
+    def __init__(self,device,bs,lr,epochs,dataset=None,indexes=None):
+        self.device = device
+        self.bs = bs
+        self.lr = lr
+        self.dataset = dataset
+        self.indexes = indexes
+        self.epochs = epochs
+        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=bs,shuffle=True)
+        # self.ldr_train = DataLoader(segmentdataset(dataset,indexes),batch_size=len(indexes),shuffle=True)
+        self.loss_func = nn.CrossEntropyLoss()
         
-#     def train(self,net):
-#         net.train()
-#         optimizer = torch.optim.SGD(net.parameters(),lr=self.lr)#, momentum=0.5,weight_decay=1e-4) #l2 penalty
-#         epoch_loss = []
-#         for epoch in range(self.epochs):
-#             batch_loss = []
+    def train(self,net):
+        net.train()
+        optimizer = torch.optim.SGD(net.parameters(),lr=self.lr)#, momentum=0.5,weight_decay=1e-4) #l2 penalty
+        epoch_loss = []
+        for epoch in range(self.epochs):
+            batch_loss = []
             
-#             for batch_indx,(images,labels) in enumerate(self.ldr_train):
-#                 images,labels = images.to(self.device),labels.to(self.device)
-#                 labels = labels.type(torch.long)
-#                 net.zero_grad()
-#                 log_probs = net(images)
-#                 loss = self.loss_func(log_probs,labels)
-#                 loss.backward() #this computes the gradient
-#                 optimizer.step()
-#                 batch_loss.append(loss.item())
-#             epoch_loss.append(sum(batch_loss)/len(batch_loss))
-#         return net,net.state_dict(),(sum(batch_loss)/len(batch_loss))
+            for batch_indx,(images,labels) in enumerate(self.ldr_train):
+                images,labels = images.to(self.device),labels.to(self.device)
+                labels = labels.type(torch.long)
+                net.zero_grad()
+                log_probs = net(images)
+                loss = self.loss_func(log_probs,labels)
+                loss.backward() #this computes the gradient
+                optimizer.step()
+                batch_loss.append(loss.item())
+            epoch_loss.append(sum(batch_loss)/len(batch_loss))
+        return net,net.state_dict(),(sum(batch_loss)/len(batch_loss))
 
-# class SGD_PFL(Optimizer):
-#     r"""Implements stochastic gradient descent (optionally with momentum).
+class SGD_PFL(Optimizer):
+    r"""Implements stochastic gradient descent (optionally with momentum).
 
-#     Nesterov momentum is based on the formula from
-#     `On the importance of initialization and momentum in deep learning`__.
+    Nesterov momentum is based on the formula from
+    `On the importance of initialization and momentum in deep learning`__.
 
-#     Args:
-#         params (iterable): iterable of parameters to optimize or dicts defining
-#             parameter groups
-#         lr (float): learning rate
-#         momentum (float, optional): momentum factor (default: 0)
-#         weight_decay (float, optional): weight decay (L2 penalty) (default: 0)
-#         dampening (float, optional): dampening for momentum (default: 0)
-#         nesterov (bool, optional): enables Nesterov momentum (default: False)
+    Args:
+        params (iterable): iterable of parameters to optimize or dicts defining
+            parameter groups
+        lr (float): learning rate
+        momentum (float, optional): momentum factor (default: 0)
+        weight_decay (float, optional): weight decay (L2 penalty) (default: 0)
+        dampening (float, optional): dampening for momentum (default: 0)
+        nesterov (bool, optional): enables Nesterov momentum (default: False)
 
-#     Example:
-#         >>> optimizer = torch.optim.SGD(model.parameters(), lr=0.1, momentum=0.9)
-#         >>> optimizer.zero_grad()
-#         >>> loss_fn(model(input), target).backward()
-#         >>> optimizer.step()
+    Example:
+        >>> optimizer = torch.optim.SGD(model.parameters(), lr=0.1, momentum=0.9)
+        >>> optimizer.zero_grad()
+        >>> loss_fn(model(input), target).backward()
+        >>> optimizer.step()
 
-#     __ http://www.cs.toronto.edu/%7Ehinton/absps/momentum.pdf
+    __ http://www.cs.toronto.edu/%7Ehinton/absps/momentum.pdf
 
-#     .. note::
-#         The implementation of SGD with Momentum/Nesterov subtly differs from
-#         Sutskever et. al. and implementations in some other frameworks.
+    .. note::
+        The implementation of SGD with Momentum/Nesterov subtly differs from
+        Sutskever et. al. and implementations in some other frameworks.
 
-#         Considering the specific case of Momentum, the update can be written as
+        Considering the specific case of Momentum, the update can be written as
 
-#         .. math::
-#                   v_{t+1} = \mu * v_{t} + g_{t+1} \\
-#                   p_{t+1} = p_{t} - lr * v_{t+1}
+        .. math::
+                  v_{t+1} = \mu * v_{t} + g_{t+1} \\
+                  p_{t+1} = p_{t} - lr * v_{t+1}
 
-#         where p, g, v and :math:`\mu` denote the parameters, gradient,
-#         velocity, and momentum respectively.
+        where p, g, v and :math:`\mu` denote the parameters, gradient,
+        velocity, and momentum respectively.
 
-#         This is in contrast to Sutskever et. al. and
-#         other frameworks which employ an update of the form
+        This is in contrast to Sutskever et. al. and
+        other frameworks which employ an update of the form
 
-#         .. math::
-#               v_{t+1} = \mu * v_{t} + lr * g_{t+1} \\
-#               p_{t+1} = p_{t} - v_{t+1}
+        .. math::
+              v_{t+1} = \mu * v_{t} + lr * g_{t+1} \\
+              p_{t+1} = p_{t} - v_{t+1}
 
-#         The Nesterov version is analogously modified.
-#     """
+        The Nesterov version is analogously modified.
+    """
 
-#     def __init__(self, params, lr=required, momentum=0, dampening=0,
-#                   weight_decay=0, nesterov=False):
-#         if lr is not required and lr < 0.0:
-#             raise ValueError("Invalid learning rate: {}".format(lr))
-#         if momentum < 0.0:
-#             raise ValueError("Invalid momentum value: {}".format(momentum))
-#         if weight_decay < 0.0:
-#             raise ValueError("Invalid weight_decay value: {}".format(weight_decay))
+    def __init__(self, params, lr=required, momentum=0, dampening=0,
+                  weight_decay=0, nesterov=False):
+        if lr is not required and lr < 0.0:
+            raise ValueError("Invalid learning rate: {}".format(lr))
+        if momentum < 0.0:
+            raise ValueError("Invalid momentum value: {}".format(momentum))
+        if weight_decay < 0.0:
+            raise ValueError("Invalid weight_decay value: {}".format(weight_decay))
 
-#         defaults = dict(lr=lr, momentum=momentum, dampening=dampening,
-#                         weight_decay=weight_decay, nesterov=nesterov)
-#         if nesterov and (momentum <= 0 or dampening != 0):
-#             raise ValueError("Nesterov momentum requires a momentum and zero dampening")
-#         super(SGD_PFL, self).__init__(params, defaults)
+        defaults = dict(lr=lr, momentum=momentum, dampening=dampening,
+                        weight_decay=weight_decay, nesterov=nesterov)
+        if nesterov and (momentum <= 0 or dampening != 0):
+            raise ValueError("Nesterov momentum requires a momentum and zero dampening")
+        super(SGD_PFL, self).__init__(params, defaults)
 
-#     def __setstate__(self, state):
-#         super(SGD_PFL, self).__setstate__(state)
-#         for group in self.param_groups:
-#             group.setdefault('nesterov', False)
+    def __setstate__(self, state):
+        super(SGD_PFL, self).__setstate__(state)
+        for group in self.param_groups:
+            group.setdefault('nesterov', False)
 
-#     def step(self, closure=None):
-#         """Performs a single optimization step.
+    def step(self, closure=None):
+        """Performs a single optimization step.
 
-#         Arguments:
-#             closure (callable, optional): A closure that reevaluates the model
-#                 and returns the loss.
-#         """
-#         loss = None
-#         if closure is not None:
-#             loss = closure()
+        Arguments:
+            closure (callable, optional): A closure that reevaluates the model
+                and returns the loss.
+        """
+        loss = None
+        if closure is not None:
+            loss = closure()
 
-#         for group in self.param_groups:
-#             weight_decay = group['weight_decay']
-#             momentum = group['momentum']
-#             dampening = group['dampening']
-#             nesterov = group['nesterov']
+        for group in self.param_groups:
+            weight_decay = group['weight_decay']
+            momentum = group['momentum']
+            dampening = group['dampening']
+            nesterov = group['nesterov']
 
-#             ## updates the parameters
-#             for p in group['params']:
-#                 if p.grad is None:
-#                     continue
-#                 d_p = p.grad.data
-#                 if weight_decay != 0:
-#                     d_p.add_(weight_decay, p.data)
-#                 if momentum != 0:
-#                     param_state = self.state[p]
-#                     if 'momentum_buffer' not in param_state:
-#                         buf = param_state['momentum_buffer'] = torch.clone(d_p).detach()
-#                     else:
-#                         buf = param_state['momentum_buffer']
-#                         buf.mul_(momentum).add_(1 - dampening, d_p)
-#                     if nesterov:
-#                         d_p = d_p.add(momentum, buf)
-#                     else:
-#                         d_p = buf
+            ## updates the parameters
+            for p in group['params']:
+                if p.grad is None:
+                    continue
+                d_p = p.grad.data
+                if weight_decay != 0:
+                    d_p.add_(weight_decay, p.data)
+                if momentum != 0:
+                    param_state = self.state[p]
+                    if 'momentum_buffer' not in param_state:
+                        buf = param_state['momentum_buffer'] = torch.clone(d_p).detach()
+                    else:
+                        buf = param_state['momentum_buffer']
+                        buf.mul_(momentum).add_(1 - dampening, d_p)
+                    if nesterov:
+                        d_p = d_p.add(momentum, buf)
+                    else:
+                        d_p = buf
                 
                 
-#                 # this one sort of works
-#                 # d_p = torch.where(torch.isnan(d_p), torch.zeros_like(d_p), d_p)
-#                 p.data.add_(-group['lr'], d_p)
+                # this one sort of works
+                # d_p = torch.where(torch.isnan(d_p), torch.zeros_like(d_p), d_p)
+                p.data.add_(-group['lr'], d_p)
 
-#         return loss
+        return loss
 
 
 
-# class LocalUpdate_trad_FO(object): #MLP 1e-3; CNN 1e-2
-#     def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None):
-#         self.device = device
-#         self.bs = bs
-#         self.lr1 = lr1
-#         self.lr2 = lr2
-#         self.dataset = dataset
-#         self.indexes = indexes
-#         self.epochs = epochs
-#         ###
-#         # prev ldr_train with bs/3, rather than all data
-#         ###
-#         # self.ind_split = int(len(indexes)/3)
-#         # self.ind1 = random.sample(indexes,self.ind_split)
-#         # self.ind2 = random.sample(indexes,self.ind_split)
-#         # self.ldr_train = DataLoader(segmentdataset(dataset,self.ind1),\
-#         #             batch_size=self.ind_split,shuffle=True)
-#         # self.ldr_train2 = DataLoader(segmentdataset(dataset,self.ind2),\
-#         #             batch_size=self.ind_split,shuffle=True)
+class LocalUpdate_trad_FO(object): #MLP 1e-3; CNN 1e-2
+    def __init__(self,device,bs,lr1,lr2,epochs,dataset=None,indexes=None):
+        self.device = device
+        self.bs = bs
+        self.lr1 = lr1
+        self.lr2 = lr2
+        self.dataset = dataset
+        self.indexes = indexes
+        self.epochs = epochs
+        ###
+        # prev ldr_train with bs/3, rather than all data
+        ###
+        # self.ind_split = int(len(indexes)/3)
+        # self.ind1 = random.sample(indexes,self.ind_split)
+        # self.ind2 = random.sample(indexes,self.ind_split)
+        # self.ldr_train = DataLoader(segmentdataset(dataset,self.ind1),\
+        #             batch_size=self.ind_split,shuffle=True)
+        # self.ldr_train2 = DataLoader(segmentdataset(dataset,self.ind2),\
+        #             batch_size=self.ind_split,shuffle=True)
         
-#         self.ldr_train = DataLoader(segmentdataset(dataset,indexes),\
-#                     batch_size=int(self.bs/3),shuffle=True)
-#         self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),\
-#                     batch_size=int(self.bs/3),shuffle=True)
+        self.ldr_train = DataLoader(segmentdataset(dataset,indexes),\
+                    batch_size=int(self.bs/3),shuffle=True)
+        self.ldr_train2 = DataLoader(segmentdataset(dataset,indexes),\
+                    batch_size=int(self.bs/3),shuffle=True)
         
             
-#         self.loss_func = nn.CrossEntropyLoss() #works for MLP
-#         # self.loss_func = nn.NLLLoss() #still fails for CNN
+        self.loss_func = nn.CrossEntropyLoss() #works for MLP
+        # self.loss_func = nn.NLLLoss() #still fails for CNN
         
-#     def train(self,net):
-#         net.train()
-#         optimizer = SGD_PFL(net.parameters(),lr=self.lr1)#, momentum=0.5,weight_decay=1e-4)
-#         # optimizer2 = torch.optim.SGD(net.parameters(),lr=self.lr2, momentum=0.5,weight_decay=1e-4)
+    def train(self,net):
+        net.train()
+        optimizer = SGD_PFL(net.parameters(),lr=self.lr1)#, momentum=0.5,weight_decay=1e-4)
+        # optimizer2 = torch.optim.SGD(net.parameters(),lr=self.lr2, momentum=0.5,weight_decay=1e-4)
         
-#         epoch_loss = []
-#         for epoch in range(self.epochs):
-#             batch_loss = []
+        epoch_loss = []
+        for epoch in range(self.epochs):
+            batch_loss = []
             
-#             # calculate the meta-function of SGD
-#             temp = deepcopy(net.state_dict())
-#             # print('start of LocalUpdate_HF_PFL')
-#             # print(temp['fc2.bias'])
+            # calculate the meta-function of SGD
+            temp = deepcopy(net.state_dict())
+            # print('start of LocalUpdate_HF_PFL')
+            # print(temp['fc2.bias'])
             
-#             temp_params = [] #temp_params = deepcopy(net.parameters())
-#             for i,j in enumerate(net.parameters()):
-#                 temp_params.append(deepcopy(j))
-#             temp_params_dict = deepcopy(net.state_dict())
+            temp_params = [] #temp_params = deepcopy(net.parameters())
+            for i,j in enumerate(net.parameters()):
+                temp_params.append(deepcopy(j))
+            temp_params_dict = deepcopy(net.state_dict())
             
-#             ## inner params obtain - step size - eta_1
-#             for batch_indx,(images,labels) in enumerate(self.ldr_train):
-#                 images,labels = images.to(self.device),labels.to(self.device)
-#                 labels = labels.type(torch.long)
-#                 net.zero_grad()
-#                 log_probs = net(images)
-#                 loss = self.loss_func(log_probs,labels)
-#                 batch_loss.append(loss.item()) # init batch loss
-#                 loss.backward()
-#                 optimizer.step()
+            ## inner params obtain - step size - eta_1
+            for batch_indx,(images,labels) in enumerate(self.ldr_train):
+                images,labels = images.to(self.device),labels.to(self.device)
+                labels = labels.type(torch.long)
+                net.zero_grad()
+                log_probs = net(images)
+                loss = self.loss_func(log_probs,labels)
+                batch_loss.append(loss.item()) # init batch loss
+                loss.backward()
+                optimizer.step()
             
-#             # this produces the intermediate parameters - needed inner for all three terms
-#             temp_w_inner = deepcopy(net.state_dict()) #used to find intermediate loss            
-#             temp_w_inner_params = []
-#             for i,j in enumerate(net.parameters()):
-#                 temp_w_inner_params.append(deepcopy(j))
-#             # print('w inner result')
-#             # print(temp_w_inner['fc2.bias'])
+            # this produces the intermediate parameters - needed inner for all three terms
+            temp_w_inner = deepcopy(net.state_dict()) #used to find intermediate loss            
+            temp_w_inner_params = []
+            for i,j in enumerate(net.parameters()):
+                temp_w_inner_params.append(deepcopy(j))
+            # print('w inner result')
+            # print(temp_w_inner['fc2.bias'])
             
-#             ## need three gradients
-#             # grad 1: D_outer
-#             for batch_indx,(images,labels) in enumerate(self.ldr_train2):
-#                 lr2_result = []
+            ## need three gradients
+            # grad 1: D_outer
+            for batch_indx,(images,labels) in enumerate(self.ldr_train2):
+                lr2_result = []
                 
-#                 images,labels = images.to(self.device),labels.to(self.device)
-#                 labels = labels.type(torch.long)
-#                 net.zero_grad()#, net_pos.zero_grad(), net_neg.zero_grad()
-#                 log_probs = net(images)
-#                 loss = self.loss_func(log_probs,labels)           
-#                 loss.backward()
+                images,labels = images.to(self.device),labels.to(self.device)
+                labels = labels.type(torch.long)
+                net.zero_grad()#, net_pos.zero_grad(), net_neg.zero_grad()
+                log_probs = net(images)
+                loss = self.loss_func(log_probs,labels)           
+                loss.backward()
                 
-#                 # manual grad calc here
-#                 temp_inner_params = [tval for tval in net.parameters()] #deepcopy(net.parameters())
-#                 for p1,p2 in enumerate(temp_inner_params): #the initial starting params
-#                     # this is w_i(t) = w_i(t-1) - lr2 * grad
-#                     lr2_result.append(temp_params[p1]-self.lr2 * p2.grad)  
-#                     # this becomes new temp_params
+                # manual grad calc here
+                temp_inner_params = [tval for tval in net.parameters()] #deepcopy(net.parameters())
+                for p1,p2 in enumerate(temp_inner_params): #the initial starting params
+                    # this is w_i(t) = w_i(t-1) - lr2 * grad
+                    lr2_result.append(temp_params[p1]-self.lr2 * p2.grad)  
+                    # this becomes new temp_params
                     
-#                 # load in new params, and continue mini batch process
-#                 # update temp_params (which are the original parameters)
-#                 p_count = 0
-#                 for p_key in temp_params_dict.keys():
-#                     temp_params_dict[p_key] = lr2_result[p_count]
-#                     p_count += 1
-#                 net.load_state_dict(temp_params_dict)
-#                 temp_params = [val for val in net.parameters()]
+                # load in new params, and continue mini batch process
+                # update temp_params (which are the original parameters)
+                p_count = 0
+                for p_key in temp_params_dict.keys():
+                    temp_params_dict[p_key] = lr2_result[p_count]
+                    p_count += 1
+                net.load_state_dict(temp_params_dict)
+                temp_params = [val for val in net.parameters()]
                 
 
-#             # print('everything put together params')
-#             # print(net.state_dict()['fc2.bias'])
+            # print('everything put together params')
+            # print(net.state_dict()['fc2.bias'])
             
-#             epoch_loss.append(sum(batch_loss)/len(batch_loss))
+            epoch_loss.append(sum(batch_loss)/len(batch_loss))
             
-#         return net,net.state_dict(),(sum(batch_loss)/len(batch_loss))
+        return net,net.state_dict(),(sum(batch_loss)/len(batch_loss))
 
 def test_img2(net_g, datatest,bs,indexes,device=torch.device('cpu')):
     net_g.eval()
@@ -452,57 +452,49 @@ if __name__ == '__main__':
     #         plt.plot(temp)
     #         # plt.plot(dtrain[train[i][j]][0])
 
-    # device = torch.device('cuda')
-    # d_in = 2*128
-    # # d_in = 128
-    # d_h = 64
-    # d_out = 10
-    # # global_net = MLP2(d_in,d_h,d_out).to(device)
-    # global_net = CNNR(1,4).to(device)
-    # # lr = 1e-1 #works better for MLP
+    device = torch.device('cuda')
+    d_in = 2*128
+    # d_in = 128
+    d_h = 64
+    d_out = 10
+    # global_net = MLP2(d_in,d_h,d_out).to(device)
+    global_net = CNNR(1,4).to(device)
+    # lr = 1e-1 #works better for MLP
 
-    # for i in range(100):
-    #     if i < 10:
-    #         lr = 5e-2
-    #     elif i < 20:
-    #         lr = 1e-2
-    #     elif i < 30:
-    #         lr = 5e-3
-    #     elif i < 40:
-    #         lr = 1e-3
-    #     elif i < 50:
-    #         lr = 5e-4
-    #     else:
-    #         lr = 5e-4
+    for i in range(30): #range(100)
+        # if i < 10:
+        #     lr = 5e-2
+        # elif i < 20:
+        #     lr = 1e-2
+        # elif i < 30:
+        #     lr = 5e-3
+        # elif i < 40:
+        #     lr = 1e-3
+        # elif i < 50:
+        #     lr = 5e-4
+        # else:
+        #     lr = 5e-4
         
-    #     # if i < 5:
-    #     #     lr = 1e-1
-    #     # elif i < 10:
-    #     #     lr = 1e-2
-    #     # elif i < 15:
-    #     #     lr = 1e-3
-    #     # elif i < 20:
-    #     #     lr = 1e-4
-    #     # elif i < 25:
-    #     #     lr = 1e-5
-    #     # else:
-    #     #     lr = 1e-6
-    #     lr2 = 5e-2
+        lr = 1e-2
+        lr2 = 5e-2
         
-    #     t_obj = LocalUpdate(device,bs=12,lr=lr,epochs=1,\
-    #                 dataset=dtrain,indexes=range(dtrain.y_data.shape[0]))
-    #     # t_obj = LocalUpdate_trad_FO(device,bs=12,lr1=lr,lr2=lr,epochs=1,\
-    #     #             dataset=dtrain,indexes=range(dtrain.y_data.shape[0]))
-    #     _,w,loss = t_obj.train(net=global_net)
-    #     # print(w['layer_hidden.bias'])
-    #     global_net.load_state_dict(w)
+        t_obj = LocalUpdate(device,bs=12,lr=lr,epochs=1,\
+                    dataset=dtrain,indexes=range(dtrain.y_data.shape[0]))
+        # t_obj = LocalUpdate_trad_FO(device,bs=12,lr1=lr,lr2=lr,epochs=1,\
+        #             dataset=dtrain,indexes=range(dtrain.y_data.shape[0]))
+        _,w,loss = t_obj.train(net=global_net)
+        # print(w['layer_hidden.bias'])
+        global_net.load_state_dict(w)
         
-    #     c_acc, c_loss = \
-    #         test_img2(global_net,dtest,\
-    #         bs=12,indexes=range(dtest.y_data.shape[0]),device=device)
+        c_acc, c_loss = \
+            test_img2(global_net,dtest,\
+            bs=12,indexes=range(dtest.y_data.shape[0]),device=device)
     
-    #     print(c_acc,c_loss)
+        print(c_acc,c_loss)
 
 
-
+    ## save the parameters as a starting point
+    pwd = os.path.dirname(cwd)
+    with open(pwd+'/data/CNN_mlradio_w','wb') as f:
+        pickle.dump(w,f)
 
