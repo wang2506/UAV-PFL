@@ -503,27 +503,25 @@ for save_type in [settings.iid_style]:
         print('initial loss measurement')
         print(init_loss)
         
-        # input('a')
-        
         for t in range(int(total_time/swarm_period)):
             if settings.data_style == 'mlradio':
-                # if t*swarm_period < 10:
-                #     lr = 1e-1
-                # elif t*swarm_period < 20:
-                #     lr = 5e-2
-                # elif t*swarm_period < 30:
-                #     lr = 1e-2
-                # elif t*swarm_period < 40:
-                #     lr = 5e-3
-            
                 if t*swarm_period < 10:
-                    lr = 5e-2
-                elif t*swarm_period < 20:
                     lr = 1e-2
-                elif t*swarm_period < 30:
+                elif t*swarm_period < 20:
                     lr = 5e-3
+                elif t*swarm_period < 30:
+                    lr = 1e-3
                 elif t*swarm_period < 40:
-                    lr = 1e-3                
+                    lr = 5e-4
+            
+                # if t*swarm_period < 10:
+                #     lr = 5e-2
+                # elif t*swarm_period < 20:
+                #     lr = 1e-2
+                # elif t*swarm_period < 30:
+                #     lr = 5e-3
+                # elif t*swarm_period < 40:
+                #     lr = 1e-3                
             
                 # if t*swarm_period < 10:
                 #     lr = 1e-1

@@ -461,7 +461,7 @@ if __name__ == '__main__':
     global_net = CNNR(1,4).to(device)
     # lr = 1e-1 #works better for MLP
 
-    for i in range(30): #range(100)
+    for i in range(20): #range(100)
         # if i < 10:
         #     lr = 5e-2
         # elif i < 20:
