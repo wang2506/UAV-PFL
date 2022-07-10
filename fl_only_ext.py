@@ -503,7 +503,7 @@ for save_type in [settings.iid_style]:
         print('initial loss measurement')
         print(init_loss)
         
-        input('a')
+        # input('a')
         
         for t in range(int(total_time/swarm_period)):
             if settings.data_style == 'mlradio':
