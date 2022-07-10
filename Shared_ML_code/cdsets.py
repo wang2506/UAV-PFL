@@ -461,7 +461,7 @@ if __name__ == '__main__':
     global_net = CNNR(1,4).to(device)
     # lr = 1e-1 #works better for MLP
 
-    for i in range(20): #range(100)
+    for i in range(10): #range(100)
         # if i < 10:
         #     lr = 5e-2
         # elif i < 20:
@@ -478,10 +478,10 @@ if __name__ == '__main__':
         lr = 1e-2
         lr2 = 5e-2
         
-        t_obj = LocalUpdate(device,bs=12,lr=lr,epochs=1,\
-                    dataset=dtrain,indexes=range(dtrain.y_data.shape[0]))
-        # t_obj = LocalUpdate_trad_FO(device,bs=12,lr1=lr,lr2=lr,epochs=1,\
+        # t_obj = LocalUpdate(device,bs=12,lr=lr,epochs=1,\
         #             dataset=dtrain,indexes=range(dtrain.y_data.shape[0]))
+        t_obj = LocalUpdate_trad_FO(device,bs=12,lr1=lr,lr2=lr,epochs=1,\
+                    dataset=dtrain,indexes=range(dtrain.y_data.shape[0]))
         _,w,loss = t_obj.train(net=global_net)
         # print(w['layer_hidden.bias'])
         global_net.load_state_dict(w)
