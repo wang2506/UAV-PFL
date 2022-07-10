@@ -38,7 +38,7 @@ torch_seed = 1
 torch.manual_seed(torch_seed)
 
 if settings.comp == 'gpu':
-    device = torch.device('cuda:0')
+    device = torch.device('cuda')#':0')
 else:
     device = torch.device('cpu')
 
@@ -339,10 +339,10 @@ for save_type in [settings.iid_style]:
             nclasses = 4 #10
             global_net = CNNR(nchannels,nclasses).to(device)
             try:
-                with open(cwd+'/data/CNNR_new_w','rb') as f:
+                with open(cwd+'/data/CNN_mlradio_w','rb') as f:
                     default_w = pickle.load(f)        
                 global_net.load_state_dict(default_w)
-                print('successful default param import')
+                # print('successful default param import')
             except:
                 raise TypeError('no valid default_w for mlradio')
                 # default_w = deepcopy(global_net.state_dict())
@@ -502,6 +502,8 @@ for save_type in [settings.iid_style]:
         print(init_acc)
         print('initial loss measurement')
         print(init_loss)
+        
+        input('a')
         
         for t in range(int(total_time/swarm_period)):
             if settings.data_style == 'mlradio':
