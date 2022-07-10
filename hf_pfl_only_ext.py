@@ -342,6 +342,7 @@ for save_type in [settings.iid_style]:
                 with open(cwd+'/data/CNN_mlradio_w','rb') as f:
                     default_w = pickle.load(f)        
                 global_net.load_state_dict(default_w)
+                print('successful default param import')                
             except:
                 raise TypeError('no valid default_w for mlradio')
                 # default_w = deepcopy(global_net.state_dict())
