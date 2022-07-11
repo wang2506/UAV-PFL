@@ -42,7 +42,7 @@ dtest_c10 = torchvision.datasets.CIFAR10('./data/cifar/',train=False,download=Tr
 # dtrain_celeba = torchvision.datasets.CelebA('./data/celeba/',split='test',target_type='identity',\
 #                                         download=False)
 
-dtrain_rml = dataset_train = RML(ldir='./data/radio_ml/',train=True)
+dtrain_rml = RML(ldir='./data/radio_ml/',train=True,plot=True)
 
 # %% plot the datasets
 import matplotlib.pyplot as plt

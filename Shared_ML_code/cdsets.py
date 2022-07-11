@@ -20,7 +20,7 @@ from torch.optim.optimizer import Optimizer, required
 from copy import deepcopy
 
 class RML(Dataset):
-    def __init__(self,ldir,train=True):
+    def __init__(self,ldir,train=True,plot=False):
         db_vec = [0,2,4,6,8,10,12,14,16,18] #
         train_x,train_y = [],[]
         test_x,test_y = [],[]
@@ -39,10 +39,16 @@ class RML(Dataset):
             for index, label in enumerate(in_y):
                 test[label].append(index)    
                 train[label].append(index)
-
-            in_x = np.concatenate([in_x[train[0]],in_x[train[1]],in_x[train[2]],in_x[train[3]]])
-            in_y = np.concatenate([in_y[train[0]],in_y[train[1]],in_y[train[2]],in_y[train[3]]])
-            
+                
+            if plot == False:
+                in_x = np.concatenate([in_x[train[0]],in_x[train[1]],in_x[train[2]],in_x[train[3]]])
+                in_y = np.concatenate([in_y[train[0]],in_y[train[1]],in_y[train[2]],in_y[train[3]]])
+            elif plot == True:
+                in_x = np.concatenate([in_x[train[0]],in_x[train[1]],in_x[train[2]],in_x[train[3]],\
+                            in_x[train[4]],in_x[train[5]] ])
+                in_y = np.concatenate([in_y[train[0]],in_y[train[1]],in_y[train[2]],in_y[train[3]],\
+                            in_y[train[4]],in_y[train[5]] ])
+                
             x_train, x_test, y_train, y_test = \
                 train_test_split(in_x, in_y, test_size=0.20, random_state=(25), shuffle=True)
             
