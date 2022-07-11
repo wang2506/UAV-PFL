@@ -174,8 +174,12 @@ params_to_bits = 1e4 #2
 # %% HFL and HNPFL settings
 if settings.data_style == 'mnist':
     avg_qty = 2500 # MNIST
-else:
+elif settings.data_style == 'fmnist':
     avg_qty = 3500 # FMNIST
+elif settings.data_style == 'cifar10':
+    avg_qty = 3500
+elif settings.data_style == 'mlradio':
+    avg_qty = 4500 
 
 data_qty = np.random.normal(avg_qty,avg_qty/10, size=(total_uavs)).astype(int)
 
@@ -255,7 +259,7 @@ if settings.data_style == 'mnist':
     g_hnpfl = np.array([4, 8, 14, 25])*energy_iter
     g_hfl = np.array([8, 16, 26, 32])*energy_iter
     
-else:
+elif settings.data_style == 'fmnist':
     # acc thresh = 45%
     s_hnpfl = np.array([4,6,11,20])*energy_iter
     s_hfl = np.array([9,12,19,31])*energy_iter
@@ -263,6 +267,16 @@ else:
     g_hnpfl = np.array([4,7,13,20])*energy_iter
     g_hfl = np.array([9,12,20,32])*energy_iter
 
+elif settings.data_style == 'cifar10':
+    # acc thresh = 40%
+    s_hnpfl = np.array([6,6,7,12])*energy_iter
+    s_hfl = np.array([40,40,40,40])*energy_iter
+
+    g_hnpfl = np.array([6,6,7,12])*energy_iter
+    g_hfl = np.array([40,40,40,40])*energy_iter    
+
+# elif settings.data_style == 'mlradio':
+    
 
 # %% calculate for swarm aggs, before calculating for global aggs
 ## treat standard hovering as approximately the same energy cost as travelling to AP

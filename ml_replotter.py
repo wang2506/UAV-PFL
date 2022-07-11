@@ -42,8 +42,12 @@ full_fl_loss_ratios = []
 full_pfl_loss_ratios = []
 
 ## initial values
-init_acc = 10.5
-init_loss = 2.302232319
+if data_source != 'mlradio':
+    init_acc = 10.5
+    init_loss = 2.302232319
+elif data_source == 'mlradio':
+    init_acc = 26.625
+    init_loss = 1.3848909507989884
 
 nn_style = 'CNN'
 # nn_style = 'CNN2'
@@ -51,8 +55,12 @@ nn_style = 'CNN'
 ratio_vec = [1,2,4,8]
 
 # tseed = None
-tseed = 1
-# tseed = 2
+if data_source == 'cifar10':
+    tseed = 2
+elif data_source == 'mlradio':
+    tseed = 1
+else:
+    tseed = None
 for ratio in [1,2,4,8]:
     ## reload data
     total_fl_accs, total_pfl_accs = [], []
@@ -182,7 +190,7 @@ elif data_source == 'fmnist':
 elif data_source == 'cifar10':
     tylab = ['1.2','1.4','1.6','1.8','2.0','2.2']
 elif data_source == 'mlradio':
-    tylab = ['0.5','0.75','1.00','1.25','1.50','1.75','2.00','2.25']
+    tylab = ['0.6','0.7','0.8','0.9','1.0','1.1','1.2','1.3']
 
 txlab = ['−10', '0', '10', '20', '30', '40', '50']
 ax2[ind].set_xticklabels(txlab,fontsize=12)
@@ -250,7 +258,7 @@ elif data_source =='fmnist':
 elif data_source == 'cifar10':
     tylab = ['0','10','20','30','40','50']
 elif data_source == 'mlradio':
-    tylab = ['0','20','40','60','80'] 
+    tylab = np.arange(20,100,10)#['20','60','70','80','90'] 
     
 ax2[ind].set_xticklabels(txlab,fontsize=12)
 ax2[ind].set_yticklabels(tylab,fontsize=12)
@@ -272,7 +280,7 @@ leg2 = ax2[0].legend(h[0::2],l[0::2],bbox_to_anchor=(-0.1,1.02,2.2,0.2),\
 ax2[0].add_artist(leg1)
 plt.subplots_adjust(top=0.8,wspace=0.15,hspace=0.15)
 
-# plt.savefig(cwd+'/ml_plots/mild_'+data_source+'_ovr_swarms.pdf',bbox_inches='tight')
+plt.savefig(cwd+'/ml_plots/mild_'+data_source+'_ovr_global.pdf',bbox_inches='tight')
 # plt.savefig(cwd+'/ml_plots/mild_'+data_source+'_ovr_swarms_temp.pdf',bbox_inches='tight')
 
 
@@ -288,16 +296,16 @@ full_pfl_ratios = []
 full_fl_loss_ratios = []
 full_pfl_loss_ratios = []
 
-## initial values
-init_acc = 10.5
-init_loss = 2.302232319
+# ## initial values
+# init_acc = 10.5
+# init_loss = 2.302232319
 
 # data_source = 'mnist'
 # data_source = 'fmnist'
 
 # nn_style = 'CNN2'
 # nn_style = 'MLP'
-nn_style = 'CNN'
+# nn_style = 'CNN'
 ratio_vec = [1,2,4,8]
 for ratio in [1,2,4,8]:
     ## reload data
@@ -424,7 +432,7 @@ elif data_source =='fmnist':
 elif data_source == 'cifar10':
     tylab = ['1.0','1.2','1.4','1.6','1.8','2.0','2.2'] 
 elif data_source == 'mlradio':
-    tylab = ['0.5','0.75','1.00','1.25','1.50','1.75','2.00','2.25']
+    tylab = ['0.6','0.7','0.8','0.9','1.0','1.1','1.2','1.3']
 
 ax2[ind].set_xticklabels(txlab,fontsize=12)
 ax2[ind].set_yticklabels(tylab,fontsize=12)
@@ -492,13 +500,12 @@ elif data_source == 'fmnist':
 elif data_source == 'cifar10':
     tylab = ['0','10','20','30','40','50']
 elif data_source == 'mlradio':
-    tylab = ['0','20','40','60','80'] 
+    tylab = np.arange(20,100,10)
     
 ax2[ind].set_xticklabels(txlab,fontsize=12)
 ax2[ind].set_yticklabels(tylab,fontsize=12)
 
 ax2[ind].grid(True)
-
 
 h,l = ax2[0].get_legend_handles_labels()
 kw = dict(ncol=4,loc = 'lower center',frameon=False)
@@ -511,6 +518,6 @@ leg2 = ax2[0].legend(h[0::2],l[0::2],bbox_to_anchor=(-0.1,1.02,2.2,0.2),\
 ax2[0].add_artist(leg1)
 plt.subplots_adjust(top=0.8,wspace=0.15,hspace=0.15)
 
-# plt.savefig(cwd+'/ml_plots/mild_'+data_source+'_ovr_global.pdf',bbox_inches='tight')
+plt.savefig(cwd+'/ml_plots/mild_'+data_source+'_ovr_swarms.pdf',bbox_inches='tight')
 # plt.savefig(cwd+'/ml_plots/mild_'+data_source+'_ovr_global_temp.pdf',bbox_inches='tight')
 

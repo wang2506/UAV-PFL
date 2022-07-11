@@ -442,6 +442,7 @@ for theta in theta_vec:#[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
     
     B, eta_1, mu = 500, 1e-3, 10 #500
     sigma_j_H,sigma_j_G = 50, 50 ##sigma_j_H greatly affects data?
+    ## gamma_u_F = 0.1, gamma_u_G = 0.05
     gamma_u_F, gamma_F = 10, 10
     
     ## need to approximate delta_u
