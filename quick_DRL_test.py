@@ -31,9 +31,6 @@ import time
 # seed = 6
 # seed = 3
 seed = 4
-np.random.seed(seed)
-random.seed(seed)
-rng = np.random.default_rng(seed=seed)
 
 start = time.time()
 # %% parser function
@@ -97,8 +94,17 @@ parser.add_argument('--dynamic',type=bool,default=False,\
 # parser.add_argument('--dynamic_drift',type=bool,default=False,\
                     # help='dynamic model drift')
 
+parser.add_argument('--brt',type=str,default='medium',\
+                    choices=['medium','high','low'],\
+                    help='Battery Recharge Threshold')
+parser.add_argument('--seed',type=int,default=4)
 
 args = parser.parse_args()
+
+seed = args.seed
+np.random.seed(seed)
+random.seed(seed)
+rng = np.random.default_rng(seed=seed)
 
 # %% DQN object 
 
@@ -921,7 +927,13 @@ cluster_bat_drain = np.array([3,5,5,6,2,1])
 init_battery_levels = (48600* np.ones(args.U_swarms)).tolist()  #(2000* np.ones(args.U_swarms)).tolist() #70600
 max_battery_levels = deepcopy(init_battery_levels)
 
-min_battery_levels = (8440*np.ones(args.U_swarms)).tolist() # initialize full battery
+if args.brt == 'medium':
+    brt = 8440#*np.ones(args.U_swarms)).tolist() # initialize full battery
+elif args.brt == 'high':
+    brt = 16880
+elif args.brt == 'low':
+    brt = 4220
+min_battery_levels = (brt*np.ones(args.U_swarms)).tolist()
 
 Ts = [180,220,260]
 taus1 = [1,2]
@@ -1186,32 +1198,37 @@ for e in range(episodes):
                     # save data
                     with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'reward'\
                               +'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
-                            str(args.greed_style)+'_rng_thresh_'+ str(args.rng_thresh),\
+                            str(args.greed_style)+'_rng_thresh_'+ str(args.rng_thresh)+\
+                            '_'+args.brt,\
                             'wb') as f:
                         pk.dump(reward_storage,f)
                     # ml reward only data
                     with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+\
                               'ml_reward_only'+'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
-                            str(args.greed_style)+'_rng_thresh_'+ str(args.rng_thresh),\
+                            str(args.greed_style)+'_rng_thresh_'+ str(args.rng_thresh)+\
+                            '_'+args.brt,\
                             'wb') as f:
                         pk.dump(ml_reward_only_storage,f)                        
                     #+'_extra'
                     #str(fig_no)+
                     with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'battery'\
                               +'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
-                            str(args.greed_style)+'_rng_thresh_'+ str(args.rng_thresh),\
+                            str(args.greed_style)+'_rng_thresh_'+ str(args.rng_thresh)+\
+                            '_'+args.brt,\
                             'wb') as f:
                         pk.dump(battery_storage,f)
                     #str(fig_no)+
                     with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'all_states'\
                               +'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
-                            str(args.greed_style)+'_rng_thresh_'+ str(args.rng_thresh),\
+                            str(args.greed_style)+'_rng_thresh_'+ str(args.rng_thresh)+\
+                            '_'+args.brt,\
                             'wb') as f:
                         pk.dump(state_save,f)
                     
                     with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'visit_freq_large'+\
                               '_'+str(args.g_discount)+'_greedy_'+\
-                            str(args.greed_style)+'_rng_thresh_'+ str(args.rng_thresh),\
+                            str(args.greed_style)+'_rng_thresh_'+ str(args.rng_thresh)+\
+                            '_'+args.brt,\
                             'wb') as f:
                         pk.dump(freq_visits,f)
                     
@@ -1219,27 +1236,32 @@ for e in range(episodes):
                     # save data
                     with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'reward'\
                               +'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
-                            str(args.greed_style),'wb') as f:
+                            str(args.greed_style)+\
+                            '_'+args.brt,'wb') as f:
                         pk.dump(reward_storage,f)
                     with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+\
                               'ml_reward_only'+'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
-                            str(args.greed_style),'wb') as f:
+                            str(args.greed_style)+\
+                            '_'+args.brt,'wb') as f:
                         pk.dump(ml_reward_only_storage,f)                        
                     #+'_extra'
                     #str(fig_no)+
                     with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'battery'\
                               +'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
-                            str(args.greed_style),'wb') as f:
+                            str(args.greed_style)+\
+                            '_'+args.brt,'wb') as f:
                         pk.dump(battery_storage,f)
                     #str(fig_no)+
                     with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(args.ep_greed)+'_'+'all_states'\
                               +'test_large'+'_'+str(args.g_discount)+'_greedy_'+\
-                            str(args.greed_style),'wb') as f:
+                            str(args.greed_style)+\
+                            '_'+args.brt,'wb') as f:
                         pk.dump(state_save,f)
                     
                     with open(cwd+'/drl_results/seed_'+str(seed)+str(args.ep_greed)+'_'+'visit_freq_large'+\
                               '_'+str(args.g_discount)+'_greedy_'+\
-                            str(args.greed_style),'wb') as f:
+                            str(args.greed_style)+\
+                            '_'+args.brt,'wb') as f:
                         pk.dump(freq_visits,f)
             
             else:
@@ -1248,85 +1270,69 @@ for e in range(episodes):
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'reward'\
                               +'test_large'+'_'+str(args.g_discount)\
-                            +'_tanh_mse_dynamic','wb') as f:
+                            +'_tanh_mse_dynamic'+\
+                            '_'+args.brt,'wb') as f:
                         pk.dump(reward_storage,f)
                     #+'_extra'
                     #str(fig_no)+
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'battery'\
                               +'test_large'+'_'+str(args.g_discount)\
-                            +'_tanh_mse_dynamic','wb') as f:
+                            +'_tanh_mse_dynamic'+\
+                            '_'+args.brt,'wb') as f:
                         pk.dump(battery_storage,f)
                     #str(fig_no)+
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'all_states'\
                               +'test_large'+'_'+str(args.g_discount)\
-                            +'_tanh_mse_dynamic','wb') as f:
+                            +'_tanh_mse_dynamic'+\
+                            '_'+args.brt,'wb') as f:
                         pk.dump(state_save,f)
                     
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'visit_freq_large'+\
                               '_'+str(args.g_discount)\
-                            +'_tanh_mse_dynamic','wb') as f:
+                            +'_tanh_mse_dynamic'+\
+                            '_'+args.brt,'wb') as f:
                         pk.dump(freq_visits,f)
                 else:
                     # save data
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'reward'\
                               +'test_large'+'_'+str(args.g_discount)\
-                            +'_tanh_mse','wb') as f:
+                            +'_tanh_mse'+\
+                            '_'+args.brt,'wb') as f:
                         pk.dump(reward_storage,f)
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+\
                               'ml_reward_only'+'test_large'+'_'+str(args.g_discount)\
-                            +'_tanh_mse','wb') as f:
+                            +'_tanh_mse'+\
+                            '_'+args.brt,'wb') as f:
                         pk.dump(ml_reward_only_storage,f)                        
                     #+'_extra'
                     #str(fig_no)+
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'battery'\
                               +'test_large'+'_'+str(args.g_discount)\
-                            +'_tanh_mse','wb') as f:
+                            +'_tanh_mse'+\
+                            '_'+args.brt,'wb') as f:
                         pk.dump(battery_storage,f)
                     #str(fig_no)+
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'all_states'\
                               +'test_large'+'_'+str(args.g_discount)\
-                            +'_tanh_mse','wb') as f:
+                            +'_tanh_mse'+\
+                            '_'+args.brt,'wb') as f:
                         pk.dump(state_save,f)
                     
                     with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'visit_freq_large'+\
                               '_'+str(args.g_discount)\
-                            +'_tanh_mse','wb') as f:
+                            +'_tanh_mse'+\
+                            '_'+args.brt,'wb') as f:
                         pk.dump(freq_visits,f)
                         
             
-            # with open(cwd+'/data/'+str(fig_no)+'_30_epsilon_10000_lr_small_states','wb') as f:
-            #     pk.dump(state_set_all,f)
-            # print(time.time()-start)
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-
-
-
-
-
-
 
 
 
