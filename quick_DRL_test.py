@@ -102,6 +102,7 @@ parser.add_argument('--seed',type=int,default=4)
 args = parser.parse_args()
 
 seed = args.seed
+print('seed:'+str(seed))
 np.random.seed(seed)
 random.seed(seed)
 rng = np.random.default_rng(seed=seed)
