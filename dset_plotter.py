@@ -65,8 +65,8 @@ for i in range(4):
     temp_rml = dtrain_rml.x_data[np.where(rml_targets == i)[0][0]]
     rml_imgs.append(temp_rml[0,0,:])#[20:80])
 
-fig,ax = plt.subplots(4,4,figsize=(5,3.5),dpi=500)
-
+fig,ax = plt.subplots(4,4,figsize=(5,3.5),dpi=500)#,bbox_inches='tight')
+fig.tight_layout(pad=-1.5)
 for i,j in enumerate(range(0,4,1)):
     ax[0,i].imshow(m_imgs[j][0],cmap='gray')
     ax[0,i].set_xticks([])
@@ -83,10 +83,12 @@ for i,j in enumerate(range(0,4,1)):
 
     ax[3,i].plot(rml_imgs[j])
     ax[3,i].grid(True)    
-    ax[3,i].set_xticks([])
-    ax[3,i].set_yticks([])
+    ax[3,i].set_xticks([0,50,100])
+    ax[3,i].set_yticks([-0.4,0,+0.4])
+    if i > 0:
+        ax[3,i].set_yticklabels([])
 
-    ax[3,i].set_xlabel('Label:'+str(j))    
+    ax[3,i].set_xlabel('Label:'+str(j))
 
 ax[0,0].set_ylabel('MNIST')
 ax[1,0].set_ylabel('FMNIST')

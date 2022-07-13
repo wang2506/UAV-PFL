@@ -269,11 +269,11 @@ elif settings.data_style == 'fmnist':
 
 elif settings.data_style == 'cifar10':
     # acc thresh = 40%
-    s_hnpfl = np.array([6,6,7,12])*energy_iter
-    s_hfl = np.array([40,40,40,40])*energy_iter
+    s_hnpfl = np.array([3,4,4,5])*energy_iter
+    s_hfl = np.array([6,6,9,14])*energy_iter
 
-    g_hnpfl = np.array([6,6,7,12])*energy_iter
-    g_hfl = np.array([40,40,40,40])*energy_iter    
+    g_hnpfl = np.array([3,4,4,5])*energy_iter
+    g_hfl = np.array([6,6,9,14])*energy_iter    
 
 # elif settings.data_style == 'mlradio':
     

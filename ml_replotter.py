@@ -26,7 +26,7 @@ data_loc = cwd+'/data/'
 data_source = 'mnist'
 data_source = 'fmnist'
 data_source = 'cifar10'
-data_source = 'mlradio'
+# data_source = 'mlradio'
 lwd = 2.5
 
 # %% plot 2 ratio plots with taus1 = 1
@@ -50,7 +50,7 @@ elif data_source == 'mlradio':
     init_loss = 1.3848909507989884
 
 nn_style = 'CNN'
-# nn_style = 'CNN2'
+nn_style = 'CNN2'
 # nn_style = 'MLP'
 ratio_vec = [1,2,4,8]
 
@@ -280,7 +280,7 @@ leg2 = ax2[0].legend(h[0::2],l[0::2],bbox_to_anchor=(-0.1,1.02,2.2,0.2),\
 ax2[0].add_artist(leg1)
 plt.subplots_adjust(top=0.8,wspace=0.15,hspace=0.15)
 
-plt.savefig(cwd+'/ml_plots/mild_'+data_source+'_ovr_global.pdf',bbox_inches='tight')
+# plt.savefig(cwd+'/ml_plots/mild_'+data_source+'_ovr_global.pdf',bbox_inches='tight')
 # plt.savefig(cwd+'/ml_plots/mild_'+data_source+'_ovr_swarms_temp.pdf',bbox_inches='tight')
 
 
@@ -518,6 +518,6 @@ leg2 = ax2[0].legend(h[0::2],l[0::2],bbox_to_anchor=(-0.1,1.02,2.2,0.2),\
 ax2[0].add_artist(leg1)
 plt.subplots_adjust(top=0.8,wspace=0.15,hspace=0.15)
 
-plt.savefig(cwd+'/ml_plots/mild_'+data_source+'_ovr_swarms.pdf',bbox_inches='tight')
+# plt.savefig(cwd+'/ml_plots/mild_'+data_source+'_ovr_swarms.pdf',bbox_inches='tight')
 # plt.savefig(cwd+'/ml_plots/mild_'+data_source+'_ovr_global_temp.pdf',bbox_inches='tight')
 
