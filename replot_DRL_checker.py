@@ -37,107 +37,156 @@ plt.figure(1)
 # f1,ax1 = plt.subplots(1,2,figsize=(10,4))#(9.6,4)) #10,4
 f1,ax1 = plt.subplots(1,3,figsize=(9,4))
 
-for ep_start in [0.7]:#[0.6,0.8]:
-    for gamma in [0.7]: #0.6,0.7]:#[0.7,0.8]:
-        for nn_style in ['RNN']:#['MLP','RNN']:
-        # with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'+str(gamma)\
-        #     +'_dynamic','rb') as f:
-        #     data = pickle.load(f)
-        
-            if nn_style == 'MLP':
-                with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'+str(gamma)\
-                    +'_dynamic','rb') as f:
-                    data = pickle.load(f)
-                data_fixer = moving_average(data,1000)
-                ax1[0].plot(data_fixer,label='MLP' \
-                    ,linestyle='dotted', \
-                        color = 'magenta',linewidth=lwd)                    
-            elif nn_style == 'RNN':
-                datas = 0
-                for seed in [1,3,4]:
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)+'_'+'reward'\
-                            +'test_large'+'_'+str(gamma)+'_tanh_mse', \
-                            'rb') as f:
+colors = ['darkblue','darkgreen','purple']
+bat_state = 'medium'
+
+# vary_ep = True
+vary_ep = False
+
+# vary_g = True
+vary_g = False
+
+vary_bat = True
+# vary_bat = False
+
+if vary_ep == True:
+    ep_vec = [0.6,0.7,0.8]
+else:
+    ep_vec = [0.7]
+
+if vary_g == True:
+    g_vec = [0.6,0.7,0.8]
+else:
+    g_vec = [0.7]
+
+if vary_bat == True:
+    bat_vec = ['low','medium','high']
+else:
+    bat_vec = ['medium']
+
+for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
+    for ind_g,gamma in enumerate(g_vec):#[0.7]):
+        for ind_bat,bat_state in enumerate(bat_vec):
+            for nn_style in ['RNN']:#['MLP','RNN']:
+            
+                if nn_style == 'MLP':
+                    with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'+str(gamma)\
+                        +'_dynamic','rb') as f:
                         data = pickle.load(f)
-                    datas += np.array(data)/3
-                data_fixer = moving_average(datas,1000)
-                
-                ax1[0].plot(data_fixer,label='Our Method' \
-                    ,linestyle='solid', \
-                        color = 'darkblue',linewidth=lwd)
-
-
+                    data_fixer = moving_average(data,1000)
+                    ax1[0].plot(data_fixer,label='MLP' \
+                        ,linestyle='dotted', \
+                            color = 'magenta',linewidth=lwd)                    
+                elif nn_style == 'RNN':
+                    datas = 0
+                    for seed in [1,3,4]:
+                        with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)+'_'+'reward'\
+                                +'test_large'+'_'+str(gamma)+'_tanh_mse'\
+                                +'_'+bat_state, \
+                                'rb') as f:
+                            data = pickle.load(f)
+                        datas += np.array(data)/3
+                    data_fixer = moving_average(datas,1000)
+                    
+                    if vary_ep == True:
+                        ax1[0].plot(data_fixer,label='Ours '+r'$\epsilon=$'+str(ep_start) \
+                            ,linestyle='solid', \
+                                color = colors[ind_ep],linewidth=lwd)
+                    elif vary_g == True:
+                        ax1[0].plot(data_fixer,label='Ours '+r'$\gamma=$'+str(gamma) \
+                            ,linestyle='solid', \
+                                color = colors[ind_g],linewidth=lwd)
+                    elif vary_bat == True:
+                        ax1[0].plot(data_fixer,label='Recharge '+bat_state.capitalize() \
+                            ,linestyle='solid', \
+                                color = colors[ind_bat],linewidth=lwd)
+                        
 ax1[0].set_title(r'(a)',fontsize=20,y=-0.35) # Reward Over Time
 ax1[0].grid(True)
 ax1[0].set_xlabel('Epoch',fontsize=20)
 ax1[0].set_ylabel('Reward',fontsize=20)
 
 # plots for battery
-for ep_start in [0.7]:#[0.6,0.8]:
-    for gamma in [0.7]:#[0.6,0.7]:#[0.7,0.8]:
-        for nn_style in ['RNN']:#['MLP','RNN']:
-        # with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'+str(gamma)\
-        #           +'_dynamic','rb') as f:
-        #     data_b = pickle.load(f)
-        
-        # with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)\
-        #         +'_batterytest_large_'+str(gamma)+'_tanh_mse', \
-        #         'rb') as f:
-        #     data_b = pickle.load(f)
-    
-            if nn_style == 'MLP':
-                with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'+str(gamma)\
-                    +'_dynamic','rb') as f:
-                    data_b = pickle.load(f)
-                data_b2 = [mean(i) for i in data_b]
-                data_b2 = moving_average(data_b2,1000)
-                ax1[1].plot(data_b2,label='MLP' \
-                    ,linestyle='dotted', \
-                        color = 'magenta',linewidth=lwd)                    
-            elif nn_style == 'RNN':
-                datas_b = 0
-                for seed in [1,3,4]:
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)\
-                        +'_batterytest_large_'+str(gamma)+'_tanh_mse', \
-                            'rb') as f:
-                        data_b = pickle.load(f)    
-                    datas_b += np.array(data_b)/3
-                data_b2 = [mean(i) for i in datas_b]
-                data_b2 = moving_average(data_b2,1000)
-                ax1[1].plot(data_b2,label='Our Method' \
-                    ,linestyle='solid', \
-                        color = 'darkblue',linewidth=lwd)
+for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
+    for ind_g,gamma in enumerate(g_vec):#[0.7]):
+        for ind_bat,bat_state in enumerate(bat_vec):
+            for nn_style in ['RNN']:#['MLP','RNN']:
+                if nn_style == 'MLP':
+                    with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'+str(gamma)\
+                        +'_dynamic','rb') as f:
+                        data_b = pickle.load(f)
+                    data_b2 = [mean(i) for i in data_b]
+                    data_b2 = moving_average(data_b2,1000)
+                    ax1[1].plot(data_b2,label='MLP' \
+                        ,linestyle='dotted', \
+                            color = 'magenta',linewidth=lwd)                    
+                elif nn_style == 'RNN':
+                    datas_b = 0
+                    for seed in [1,3,4]:
+                        with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)\
+                            +'_batterytest_large_'+str(gamma)+'_tanh_mse'\
+                                +'_'+bat_state, \
+                                'rb') as f:
+                            data_b = pickle.load(f)    
+                        datas_b += np.array(data_b)/3
+                    data_b2 = [mean(i) for i in datas_b]
+                    data_b2 = moving_average(data_b2,1000)
+
+                    if vary_ep == True:
+                        ax1[1].plot(data_b2,label='Ours '+r'$\epsilon=$'+str(ep_start) \
+                            ,linestyle='solid', \
+                                color = colors[ind_ep],linewidth=lwd)
+                    elif vary_g == True:
+                        ax1[1].plot(data_b2,label='Ours '+r'$\gamma=$'+str(gamma) \
+                            ,linestyle='solid', \
+                                color = colors[ind_g],linewidth=lwd)
+                    elif vary_bat == True:
+                        ax1[1].plot(data_b2,label='Ours Recharge '+bat_state.capitalize() \
+                            ,linestyle='solid', \
+                                color = colors[ind_bat],linewidth=lwd)
 
 ax1[1].set_title('(b)',fontsize=20,y=-0.35) # Battery Over Time',fontsize=15,y=-0.24)
 ax1[1].grid(True)
 ax1[1].set_xlabel('Epoch',fontsize=20)
 ax1[1].set_ylabel('Avg Battery Level (kJ)',fontsize=20)
 
-for ep_start in [0.7]:#[0.6,0.8]:
-    for gamma in [0.7]:#[0.6,0.7]:#[0.7,0.8]:
-        for nn_style in ['RNN']:#['MLP','RNN']:
-    
-            if nn_style == 'MLP':
-                with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(ep_start)\
-                +'_ml_reward_onlytest_large_'+str(gamma), \
-                'rb') as f:
-                    data_ml = pickle.load(f)
-                data_ml2 = moving_average(data_ml,1000)
-                ax1[2].plot(data_ml2,label='MLP' \
-                    ,linestyle='dotted', \
-                        color = 'magenta',linewidth=lwd)                    
-            elif nn_style == 'RNN':
-                datas_ml = 0
-                for seed in [1,3,4]:
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)\
-                        +'_ml_reward_onlytest_large_'+str(gamma)+'_tanh_mse', \
-                            'rb') as f:
-                        data_ml = pickle.load(f)  
-                    datas_ml += np.array(data_ml)/3
-                data_ml2 = moving_average(datas_ml,1000)
-                ax1[2].plot(data_ml2,label='Our Method' \
-                    ,linestyle='solid', \
-                        color = 'darkblue',linewidth=lwd)
+for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
+    for ind_g,gamma in enumerate(g_vec):#[0.7]):
+        for ind_bat,bat_state in enumerate(bat_vec):
+            for nn_style in ['RNN']:#['MLP','RNN']:
+        
+                if nn_style == 'MLP':
+                    with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(ep_start)\
+                    +'_ml_reward_onlytest_large_'+str(gamma), \
+                    'rb') as f:
+                        data_ml = pickle.load(f)
+                    data_ml2 = moving_average(data_ml,1000)
+                    ax1[2].plot(data_ml2,label='MLP' \
+                        ,linestyle='dotted', \
+                            color = 'magenta',linewidth=lwd)                    
+                elif nn_style == 'RNN':
+                    datas_ml = 0
+                    for seed in [1,3,4]:
+                        with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)\
+                            +'_ml_reward_onlytest_large_'+str(gamma)+'_tanh_mse'\
+                                +'_'+bat_state, \
+                                'rb') as f:
+                            data_ml = pickle.load(f)  
+                        datas_ml += np.array(data_ml)/3
+                    data_ml2 = moving_average(datas_ml,1000)
+
+                    if vary_ep == True:
+                        ax1[2].plot(data_ml2,label='Ours '+r'$\epsilon=$'+str(ep_start) \
+                            ,linestyle='solid', \
+                                color = colors[ind_ep],linewidth=lwd)
+                    elif vary_g == True:
+                        ax1[2].plot(data_ml2,label='Ours '+r'$\gamma=$'+str(gamma) \
+                            ,linestyle='solid', \
+                                color = colors[ind_g],linewidth=lwd)
+                    elif vary_bat == True:
+                        ax1[2].plot(data_ml2,label='Ours Recharge '+bat_state.capitalize() \
+                            ,linestyle='solid', \
+                                color = colors[ind_bat],linewidth=lwd)
 
 # ax1[1].set_title('b)',fontsize=20,y=-0.32) # Battery Over Time',fontsize=15,y=-0.24)
 ax1[2].set_title('(c)',fontsize=20,y=-0.35) # Battery Over Time',fontsize=15,y=-0.24)
@@ -228,11 +277,12 @@ for ep_start in [0.7]:#[0.6,0.8]:
 ax1[0].set_ylim([100,700])
 
 h,l = ax1[0].get_legend_handles_labels()
-kw = dict(ncol=5,loc = 'lower center',frameon=False)
-leg1 = ax1[0].legend(h[:],l[:],bbox_to_anchor=(-0.46,0.95,4.6,0.2),\
-                mode='expand',fontsize=18,**kw)
-# leg2 = ax1[0].legend(h[2:],l[2:],bbox_to_anchor=(-0.42,1.05,4.4,0.2),\
-#                 mode='expand',fontsize=18,**kw2)
+kw = dict(ncol=3,loc = 'lower center',frameon=False)
+kw2 = dict(ncol=3,loc = 'lower center',frameon=False)
+leg1 = ax1[0].legend(h[:3],l[:3],bbox_to_anchor=(-0.42,0.95,4.6,0.2),\
+                fontsize=18,**kw) # mode='expand',
+leg2 = ax1[0].legend(h[3:],l[3:],bbox_to_anchor=(-0.42,1.05,4.6,0.2),\
+                fontsize=18,**kw2)
 ax1[0].add_artist(leg1)
 # ax1[0].add_artist(leg2)
 # ax1[1].set_yticklabels(['36','36','38','40','42','44','46'])
@@ -240,15 +290,19 @@ ax1[0].add_artist(leg1)
 # ax1[1].set_yticklabels(['25','30','35','40','45'])
 # ax1[1].set_yticklabels(['27.5','30','32.5','35','37.5','40','42.5','45','47.5'])
 ax1[1].set_yticklabels(['25','30','35','40','45'])
-f1.tight_layout()
+f1.tight_layout()#pad=1.5)
+f1.subplots_adjust(wspace=0.6)
 
 ax1[0].tick_params(axis='both', which='major', labelsize=18)
 ax1[1].tick_params(axis='both', which='major', labelsize=18)
 ax1[2].tick_params(axis='both', which='major', labelsize=18)
-# f1.savefig(cwd+'/drl_plots/RNN_drl_ovr_comp.pdf',dpi=1000, bbox_inches='tight')
 
-# f1.savefig(cwd+'/drl_plots/testml.pdf',dpi=1000, bbox_inches='tight')
-
+if vary_ep == True:
+    f1.savefig(cwd+'/drl_plots/RNN_drl_ovr_comp_epsilon.pdf',dpi=1000, bbox_inches='tight')
+elif vary_g == True:
+    f1.savefig(cwd+'/drl_plots/RNN_drl_ovr_comp_gamma.pdf',dpi=1000, bbox_inches='tight')
+elif vary_bat == True:
+    f1.savefig(cwd+'/drl_plots/RNN_drl_ovr_comp_bat.pdf',dpi=1000, bbox_inches='tight')
 
 # %% replot the paper
 
