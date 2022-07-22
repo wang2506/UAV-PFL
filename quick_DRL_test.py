@@ -95,7 +95,7 @@ parser.add_argument('--dynamic',type=bool,default=False,\
                     # help='dynamic model drift')
 
 parser.add_argument('--brt',type=str,default='medium',\
-                    choices=['medium','high','low','vhigh'],\
+                    choices=['medium','high','low','vhigh','vhigh2'],\
                     help='Battery Recharge Threshold')
 parser.add_argument('--seed',type=int,default=4)
 
@@ -936,6 +936,8 @@ elif args.brt == 'low':
     brt = 4220
 elif args.brt == 'vhigh':
     brt = 8440*3
+elif args.brt == 'vhigh2':
+    brt = 8440*5
 
 min_battery_levels = (brt*np.ones(args.U_swarms)).tolist()
 
