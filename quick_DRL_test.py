@@ -936,7 +936,7 @@ elif args.brt == 'low':
     brt = 4220
 elif args.brt == 'vhigh':
     brt = 8440*3
-    
+
 min_battery_levels = (brt*np.ones(args.U_swarms)).tolist()
 
 Ts = [180,220,260]

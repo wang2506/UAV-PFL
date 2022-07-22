@@ -26,7 +26,7 @@ data_loc = cwd+'/data/'
 data_source = 'mnist'
 data_source = 'fmnist'
 data_source = 'cifar10'
-# data_source = 'mlradio'
+data_source = 'mlradio'
 lwd = 2.5
 
 # %% plot 2 ratio plots with taus1 = 1
@@ -50,7 +50,7 @@ elif data_source == 'mlradio':
     init_loss = 1.3848909507989884
 
 nn_style = 'CNN'
-nn_style = 'CNN2'
+# nn_style = 'CNN2'
 # nn_style = 'MLP'
 ratio_vec = [1,2,4,8]
 
@@ -176,7 +176,11 @@ for i in range(len(ratio_vec)): #3
             label='HN-PFL '+ r'$\tau^{\mathsf{G}}_s = 8$',\
             color='black',linestyle='dashdot',linewidth=lwd)
 
-ax2[ind].set_title('a) '+data_source.upper()+' Classification Loss',y=-0.3,fontsize=14)
+if data_source != 'mlradio':
+    ax2[ind].set_title('a) '+data_source.upper()+' Classification Loss',y=-0.3,fontsize=14)
+else:
+    ax2[ind].set_title('a) '+'RADIOML'+' Classification Loss',y=-0.3,fontsize=14)
+
 ax2[ind].set_ylabel('Log Loss',fontsize=13)
 ax2[ind].set_xlabel('Local Iteration',fontsize=13)
 
@@ -249,7 +253,10 @@ for i in range(len(ratio_vec)):
             color='black',linestyle='dashdot',linewidth=lwd)#,marker='x')
 
 
-ax2[ind].set_title('b) '+data_source.upper()+' Classification Accuracy',y=-0.3,fontsize=14)
+if data_source != 'mlradio':
+    ax2[ind].set_title('b) '+data_source.upper()+' Classification Accuracy',y=-0.3,fontsize=14)
+else:
+    ax2[ind].set_title('b) '+'RADIOML'+' Classification Accuracy',y=-0.3,fontsize=14)    
 
 if data_source == 'mnist':
     tylab = ['0', '20', '40', '60', '80', '100']
@@ -421,7 +428,10 @@ for i in range(len(ratio_vec)): #3
             label='HN-PFL '+r'$\tau^{\mathsf{L}}_s = 8$ ',\
             color='black',linestyle='dashdot',linewidth=lwd)
 
-ax2[ind].set_title('a) '+data_source.upper()+' Classification Loss',y=-0.3,fontsize=14)
+if data_source != 'mlradio':
+    ax2[ind].set_title('a) '+data_source.upper()+' Classification Loss',y=-0.3,fontsize=14)
+else:
+    ax2[ind].set_title('a) '+'RADIOML'+' Classification Loss',y=-0.3,fontsize=14)
 ax2[ind].set_ylabel('Log Loss',fontsize=13)
 ax2[ind].set_xlabel('Local Iteration',fontsize=13)
 
@@ -489,7 +499,10 @@ for i in range(len(ratio_vec)):
             label='HN-PFL '+r'$\tau^{\mathsf{L}}_s = 8$ ',\
             color='black',linestyle='dashdot',linewidth=lwd)#,marker='x')
 
-ax2[ind].set_title('b) '+data_source.upper()+' Classification Accuracy',y=-0.3,fontsize=14)
+if data_source != 'mlradio':
+    ax2[ind].set_title('b) '+data_source.upper()+' Classification Accuracy',y=-0.3,fontsize=14)
+else:
+    ax2[ind].set_title('b) '+'RADIOML'+' Classification Accuracy',y=-0.3,fontsize=14)    
 ax2[ind].set_ylabel('Classification Accuracy (%)',fontsize=13)
 ax2[ind].set_xlabel('Local Iteration',fontsize=13)
 

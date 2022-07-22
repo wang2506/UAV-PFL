@@ -268,15 +268,20 @@ elif settings.data_style == 'fmnist':
     g_hfl = np.array([9,12,20,32])*energy_iter
 
 elif settings.data_style == 'cifar10':
-    # acc thresh = 40%
+    # acc thresh = 25%
     s_hnpfl = np.array([3,4,4,5])*energy_iter
     s_hfl = np.array([6,6,9,14])*energy_iter
 
     g_hnpfl = np.array([3,4,4,5])*energy_iter
     g_hfl = np.array([6,6,9,14])*energy_iter    
 
-# elif settings.data_style == 'mlradio':
-    
+elif settings.data_style == 'mlradio':
+    # acc thresh = 80%
+    s_hnpfl = np.array([3,5,6,12])*energy_iter
+    s_hfl = np.array([10,12,15,25])*energy_iter
+
+    g_hnpfl = np.array([3,5,7,13])*energy_iter
+    g_hfl = np.array([10,13,16,25])*energy_iter    
 
 # %% calculate for swarm aggs, before calculating for global aggs
 ## treat standard hovering as approximately the same energy cost as travelling to AP

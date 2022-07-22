@@ -60,7 +60,8 @@ else:
     g_vec = [0.7]
 
 if vary_bat == True:
-    bat_vec = ['low','medium','high']
+    bat_vec = ['medium','high','vhigh'] #'low',
+    bat_vec2 = ['low','medium','high']
 else:
     bat_vec = ['medium']
 
@@ -97,7 +98,7 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                             ,linestyle='solid', \
                                 color = colors[ind_g],linewidth=lwd)
                     elif vary_bat == True:
-                        ax1[0].plot(data_fixer,label='Recharge '+bat_state.capitalize() \
+                        ax1[0].plot(data_fixer,label='RT '+bat_vec2[ind_bat].capitalize() \
                             ,linestyle='solid', \
                                 color = colors[ind_bat],linewidth=lwd)
                         
@@ -141,7 +142,7 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                             ,linestyle='solid', \
                                 color = colors[ind_g],linewidth=lwd)
                     elif vary_bat == True:
-                        ax1[1].plot(data_b2,label='Ours Recharge '+bat_state.capitalize() \
+                        ax1[1].plot(data_b2,label='Ours Recharge '+bat_vec2[ind_bat].capitalize() \
                             ,linestyle='solid', \
                                 color = colors[ind_bat],linewidth=lwd)
 
@@ -184,7 +185,7 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                             ,linestyle='solid', \
                                 color = colors[ind_g],linewidth=lwd)
                     elif vary_bat == True:
-                        ax1[2].plot(data_ml2,label='Ours Recharge '+bat_state.capitalize() \
+                        ax1[2].plot(data_ml2,label='Ours Recharge '+bat_vec2[ind_bat].capitalize() \
                             ,linestyle='solid', \
                                 color = colors[ind_bat],linewidth=lwd)
 
