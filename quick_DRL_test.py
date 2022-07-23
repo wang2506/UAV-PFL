@@ -931,13 +931,15 @@ max_battery_levels = deepcopy(init_battery_levels)
 if args.brt == 'medium':
     brt = 8440#*np.ones(args.U_swarms)).tolist() # initialize full battery
 elif args.brt == 'high':
-    brt = 16880
+    brt = 8440*2 #16880
 elif args.brt == 'low':
     brt = 4220
 elif args.brt == 'vhigh':
     brt = 8440*3
 elif args.brt == 'vhigh2':
     brt = 8440*5
+elif args.brt == 'vhigh3':
+    brt = 8440*4
 
 min_battery_levels = (brt*np.ones(args.U_swarms)).tolist()
 

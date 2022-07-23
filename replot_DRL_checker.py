@@ -60,7 +60,7 @@ else:
     g_vec = [0.7]
 
 if vary_bat == True:
-    bat_vec = ['medium','high','vhigh'] #'low',
+    bat_vec = ['medium','vhigh','vhigh2']#'high','vhigh'] #'low',
     bat_vec2 = ['low','medium','high']
 else:
     bat_vec = ['medium']
@@ -275,7 +275,7 @@ for ep_start in [0.7]:#[0.6,0.8]:
         # plt.savefig(cwd+'/drl_plots/freq_no_recharge.pdf',dpi=1000, bbox_inches='tight')
 
 
-ax1[0].set_ylim([100,700])
+ax1[0].set_ylim([-500,700])
 
 h,l = ax1[0].get_legend_handles_labels()
 kw = dict(ncol=3,loc = 'lower center',frameon=False)
@@ -298,12 +298,12 @@ ax1[0].tick_params(axis='both', which='major', labelsize=18)
 ax1[1].tick_params(axis='both', which='major', labelsize=18)
 ax1[2].tick_params(axis='both', which='major', labelsize=18)
 
-if vary_ep == True:
-    f1.savefig(cwd+'/drl_plots/RNN_drl_ovr_comp_epsilon.pdf',dpi=1000, bbox_inches='tight')
-elif vary_g == True:
-    f1.savefig(cwd+'/drl_plots/RNN_drl_ovr_comp_gamma.pdf',dpi=1000, bbox_inches='tight')
-elif vary_bat == True:
-    f1.savefig(cwd+'/drl_plots/RNN_drl_ovr_comp_bat.pdf',dpi=1000, bbox_inches='tight')
+# if vary_ep == True:
+#     f1.savefig(cwd+'/drl_plots/RNN_drl_ovr_comp_epsilon.pdf',dpi=1000, bbox_inches='tight')
+# elif vary_g == True:
+#     f1.savefig(cwd+'/drl_plots/RNN_drl_ovr_comp_gamma.pdf',dpi=1000, bbox_inches='tight')
+# elif vary_bat == True:
+#     f1.savefig(cwd+'/drl_plots/RNN_drl_ovr_comp_bat.pdf',dpi=1000, bbox_inches='tight')
 
 # %% replot the paper
 
