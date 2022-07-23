@@ -95,7 +95,7 @@ parser.add_argument('--dynamic',type=bool,default=False,\
                     # help='dynamic model drift')
 
 parser.add_argument('--brt',type=str,default='medium',\
-                    choices=['medium','high','low','vhigh','vhigh2'],\
+                    choices=['medium','high','low','vhigh','vhigh2','vhigh3'],\
                     help='Battery Recharge Threshold')
 parser.add_argument('--seed',type=int,default=4)
 
