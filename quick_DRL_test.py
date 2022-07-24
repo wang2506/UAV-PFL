@@ -850,7 +850,6 @@ for ind,move_vec in enumerate(move_dists):
 #scaling * 
 temp_energy = move_dists/min_speed_uav * (c1 * (min_speed_uav**3) + c2/min_speed_uav)
 
-
 ## return to prev
 # cluster_bat_drain = np.array([3,5,5,6,2,1])
 if args.cap == 'low':
