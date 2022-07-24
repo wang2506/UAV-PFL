@@ -707,8 +707,6 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
             elif args.pen == 'low':
                 penalty += 10
             current_reward = 0 #force zero out current reward if ANY battery runs out
-            print(penalty)
-            input('stop')
     current_reward -= penalty
     
     ## calculate the next state
