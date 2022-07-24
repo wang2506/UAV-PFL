@@ -31,11 +31,13 @@ lwd = 2
 ep_start = 0.6
 # seed = 2
 seed = 1
+seed_vec = [1,3,4]
+# seed_vec = [1]
 # gamma = 0.8 #gamma = 0.7 by default
 plt.figure(1)
 
 # f1,ax1 = plt.subplots(1,2,figsize=(10,4))#(9.6,4)) #10,4
-f1,ax1 = plt.subplots(1,3,figsize=(9,4))
+f1,ax1 = plt.subplots(1,3,figsize=(9,3.3)) #(9,4)
 
 colors = ['darkblue','darkgreen','purple']
 bat_state = 'medium'
@@ -60,10 +62,16 @@ else:
     g_vec = [0.7]
 
 if vary_bat == True:
-    bat_vec = ['medium','vhigh','vhigh2']#'high','vhigh'] #'low',
+    # bat_vec = ['medium','vhigh','vhigh3']#'high','vhigh'] #'low',
+    bat_vec = ['medium','vhigh','vhigh2']
+    # bat_vec = ['medium','high','vhigh']
+    # bat_vec = ['low','high','vhigh3']
+    # bat_vec = ['low','medium','high']
     bat_vec2 = ['low','medium','high']
 else:
     bat_vec = ['medium']
+
+mv_window = 1000
 
 for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
     for ind_g,gamma in enumerate(g_vec):#[0.7]):
@@ -80,14 +88,14 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                             color = 'magenta',linewidth=lwd)                    
                 elif nn_style == 'RNN':
                     datas = 0
-                    for seed in [1,3,4]:
+                    for seed in seed_vec:
                         with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)+'_'+'reward'\
                                 +'test_large'+'_'+str(gamma)+'_tanh_mse'\
                                 +'_'+bat_state, \
                                 'rb') as f:
                             data = pickle.load(f)
-                        datas += np.array(data)/3
-                    data_fixer = moving_average(datas,1000)
+                        datas += np.array(data)/len(seed_vec)
+                    data_fixer = moving_average(datas,mv_window)
                     
                     if vary_ep == True:
                         ax1[0].plot(data_fixer,label='Ours '+r'$\epsilon=$'+str(ep_start) \
@@ -123,15 +131,15 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                             color = 'magenta',linewidth=lwd)                    
                 elif nn_style == 'RNN':
                     datas_b = 0
-                    for seed in [1,3,4]:
+                    for seed in seed_vec:
                         with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)\
                             +'_batterytest_large_'+str(gamma)+'_tanh_mse'\
                                 +'_'+bat_state, \
                                 'rb') as f:
                             data_b = pickle.load(f)    
-                        datas_b += np.array(data_b)/3
+                        datas_b += np.array(data_b)/len(seed_vec)
                     data_b2 = [mean(i) for i in datas_b]
-                    data_b2 = moving_average(data_b2,1000)
+                    data_b2 = moving_average(data_b2,mv_window)
 
                     if vary_ep == True:
                         ax1[1].plot(data_b2,label='Ours '+r'$\epsilon=$'+str(ep_start) \
@@ -167,14 +175,14 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                             color = 'magenta',linewidth=lwd)                    
                 elif nn_style == 'RNN':
                     datas_ml = 0
-                    for seed in [1,3,4]:
+                    for seed in seed_vec:
                         with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)\
                             +'_ml_reward_onlytest_large_'+str(gamma)+'_tanh_mse'\
                                 +'_'+bat_state, \
                                 'rb') as f:
                             data_ml = pickle.load(f)  
-                        datas_ml += np.array(data_ml)/3
-                    data_ml2 = moving_average(datas_ml,1000)
+                        datas_ml += np.array(data_ml)/len(seed_vec)
+                    data_ml2 = moving_average(datas_ml,mv_window)
 
                     if vary_ep == True:
                         ax1[2].plot(data_ml2,label='Ours '+r'$\epsilon=$'+str(ep_start) \
@@ -275,7 +283,7 @@ for ep_start in [0.7]:#[0.6,0.8]:
         # plt.savefig(cwd+'/drl_plots/freq_no_recharge.pdf',dpi=1000, bbox_inches='tight')
 
 
-ax1[0].set_ylim([-500,700])
+ax1[0].set_ylim([100,700])
 
 h,l = ax1[0].get_legend_handles_labels()
 kw = dict(ncol=3,loc = 'lower center',frameon=False)
@@ -286,11 +294,14 @@ leg2 = ax1[0].legend(h[3:],l[3:],bbox_to_anchor=(-0.42,1.05,4.6,0.2),\
                 fontsize=18,**kw2)
 ax1[0].add_artist(leg1)
 # ax1[0].add_artist(leg2)
-# ax1[1].set_yticklabels(['36','36','38','40','42','44','46'])
-# ax1[1].set_yticklabels(['25','27.5','30','32.5','35','37.5','40','42.5','45','47.5'])
-# ax1[1].set_yticklabels(['25','30','35','40','45'])
-# ax1[1].set_yticklabels(['27.5','30','32.5','35','37.5','40','42.5','45','47.5'])
-ax1[1].set_yticklabels(['25','30','35','40','45'])
+
+if vary_ep == True:
+    ax1[1].set_yticklabels(['25','30','35','40','45'])
+elif vary_g == True:
+    ax1[1].set_yticklabels(['10','20','30','40']) #['15','20','25','30','35','40','45'])
+# elif vary_bat == True:
+#     ax1[1].set_yticklabels(['20','25','30','35','40','45'])
+
 f1.tight_layout()#pad=1.5)
 f1.subplots_adjust(wspace=0.6)
 

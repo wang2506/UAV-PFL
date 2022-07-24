@@ -98,6 +98,10 @@ parser.add_argument('--brt',type=str,default='medium',\
                     choices=['medium','high','low','vhigh','vhigh2','vhigh3'],\
                     help='Battery Recharge Threshold')
 parser.add_argument('--seed',type=int,default=4)
+parser.add_argument('--pen',type=str,default='high',\
+                    choices=['high','medium','low'])
+parser.add_argument('--cap',type=str,default='low',\
+                    choices=['low','medium','high'])
 
 args = parser.parse_args()
 
@@ -636,85 +640,6 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
             index_counter += 1
             #fixed indexing because 3rd is energy, and final is consumption
     
-    # this comment block is working DRL reward caclulation code
-    # it just doesn't follow our formulation exactly
-    ## build reward vector/matrix
-    # reward_vec = np.zeros(shape=len(test_DQN.U)).tolist()
-    # index_counter = 0
-    # for i,j in enumerate(reward_vec):
-    #     if new_positions[i] < 8:
-    #         ## this previous working result
-    #         reward_vec[i] = 1000*60/ historical_data[index_counter][0][-1] #1000*10
-    #         # this should be [index_counter][1][-1]
-            
-    #         # reward_vec[i] = historical_data[index_counter][0][-1]
-    #         index_counter += 1
-    
-    # current_reward = 0
-    # cluster_bat_drains = 0
-    # for i,j in enumerate(new_positions): #next_state_set 
-    #     # print(i,j)
-    #     # travel cost
-    #     battery_status[i] -= travel_energy[current_swarm_pos[i],j]
-        
-    #     ## filter for device cluster or recharge station
-    #     if j < 8: #len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
-    #         battery_status[i] -= cluster_bat_drain[i] #[j] # drain by cluster needs
-    #         cluster_bat_drains += cluster_bat_drain[i]
-            
-    #         ## reward function calculated based on elapsed time x cluster factor
-    #         if battery_status[i] > min_battery_levels[i] :#0: #min thresh
-                
-    #             # model drift is now just a penalty term 
-    #             # if cluster_expectations[j]*next_state_visits[j] < cluster_limits[j]:
-    #             #     current_reward += cluster_expectations[j]*next_state_visits[j]
-    #             # else:
-    #             #     current_reward += cluster_limits[j]
-                
-    #             current_reward += reward_vec[i] #from gradient
-                
-    #     else: #it is a recharge station
-    #         battery_status[i] = 48600#2000 #100 #reset to 100%
-
-    #     #previously was cluster_expectations[j] * next_state_visits[j]
-    #     next_state_visits[j] = 0 # zero out since now it will be visited
-    
-    
-    # # #c1= c2, c3 =0.1 , C is 50
-    # # grad_decay = 0
-    # # for i,j in enumerate(next_state_visits):
-    # #     if i < len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
-            
-    # #         # if j * 0.25 * cluster_expectations[i] > 0.5 * cluster_limits[i]:
-    # #         #     penalty += 0.5* cluster_limits[i]
-    # #         # else:
-    # #         #     penalty += j * 0.25 * cluster_expectations[i]
-    
-    # #         if j * 0.5* cluster_expectations[i] > 0.5*cluster_limits[i]:
-    # #             grad_decay += cluster_limits[i]
-    # #         else:
-    # #             grad_decay += j * 0.5* cluster_expectations[i]
-    
-    # # current_reward = 1e4/(0.05*current_reward + 0.2*grad_decay + 0.005*cluster_bat_drains)
-    
-    # ## calculate penalty for not visiting certain nodes (25% of their nominal value)
-    # penalty = 0
-    
-    # # old DRL reward calc 
-    # for i,j in enumerate(next_state_visits):
-    #     if i < len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
-            
-    #         # if j * 0.25 * cluster_expectations[i] > 0.5 * cluster_limits[i]:
-    #         #     penalty += 0.5* cluster_limits[i]
-    #         # else:
-    #         #     penalty += j * 0.25 * cluster_expectations[i]
-    
-    #         if j * 0.5* cluster_expectations[i] > 0.5*cluster_limits[i]:
-    #             penalty += cluster_limits[i]
-    #         else:
-    #             penalty += j * 0.5* cluster_expectations[i]
-    
-    
     # new way to calculate reward as per equation (58) of the paper
     C = 100000 #O(100) or O(1000) try both
     c1 = 0.2 #O(1)
@@ -732,16 +657,15 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
             index_counter += 1
     
     # calculate the energy movement costs - also update the visitations vector
-    em_hold = 0
+    em_hold = 0 
     for i,j in enumerate(new_positions): #next_state_set 
         # travel cost
         battery_status[i] -= travel_energy[current_swarm_pos[i],j]
-        em_hold += c3*travel_energy[current_swarm_pos[i],j]
-        
+        em_hold += c3*travel_energy[current_swarm_pos[i],j]        
         ## filter for device cluster or recharge station
         if j < 8: #len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
             battery_status[i] -= cluster_bat_drain[i] #[j] # drain by cluster needs
-
+            
         else: #it is a recharge station
             battery_status[i] = 48600#2000 #100 #reset to 100%
 
@@ -776,11 +700,15 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     penalty = 0
     for i,j in enumerate(battery_status):
         if j < min_battery_levels[i]: #0:
-            penalty += 1000 #20000
-            # penalty += 20000
+            if args.pen == 'high':
+                penalty += 1000 #20000
+            elif args.pen == 'medium':
+                penalty += 100
+            elif args.pen == 'low':
+                penalty += 10
             current_reward = 0 #force zero out current reward if ANY battery runs out
-            # bat_penalty = 1000
-            
+            print(penalty)
+            input('stop')
     current_reward -= penalty
     
     ## calculate the next state
@@ -924,8 +852,15 @@ temp_energy = move_dists/min_speed_uav * (c1 * (min_speed_uav**3) + c2/min_speed
 
 
 ## return to prev
-cluster_bat_drain = np.array([3,5,5,6,2,1])
-init_battery_levels = (48600* np.ones(args.U_swarms)).tolist()  #(2000* np.ones(args.U_swarms)).tolist() #70600
+# cluster_bat_drain = np.array([3,5,5,6,2,1])
+if args.cap == 'low':
+    cap_level = 48600
+elif args.cap == 'medium':
+    cap_level = 48600*2
+elif args.cap == 'high':
+    cap_level = 48600*3
+
+init_battery_levels = (cap_level* np.ones(args.U_swarms)).tolist()  #(2000* np.ones(args.U_swarms)).tolist() #70600
 max_battery_levels = deepcopy(init_battery_levels)
 
 if args.brt == 'medium':
@@ -1305,13 +1240,13 @@ for e in range(episodes):
                         pk.dump(freq_visits,f)
                 else:
                     # save data
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
+                    with open(cwd+'/drl_results/RNN/'+'cap_'+args.cap+'/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'reward'\
                               +'test_large'+'_'+str(args.g_discount)\
                             +'_tanh_mse'+\
                             '_'+args.brt,'wb') as f:
                         pk.dump(reward_storage,f)
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
+                    with open(cwd+'/drl_results/RNN/'+'cap_'+args.cap+'/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+\
                               'ml_reward_only'+'test_large'+'_'+str(args.g_discount)\
                             +'_tanh_mse'+\
@@ -1319,21 +1254,21 @@ for e in range(episodes):
                         pk.dump(ml_reward_only_storage,f)                        
                     #+'_extra'
                     #str(fig_no)+
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
+                    with open(cwd+'/drl_results/RNN/'+'cap_'+args.cap+'/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'battery'\
                               +'test_large'+'_'+str(args.g_discount)\
                             +'_tanh_mse'+\
                             '_'+args.brt,'wb') as f:
                         pk.dump(battery_storage,f)
                     #str(fig_no)+
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
+                    with open(cwd+'/drl_results/RNN/'+'cap_'+args.cap+'/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'all_states'\
                               +'test_large'+'_'+str(args.g_discount)\
                             +'_tanh_mse'+\
                             '_'+args.brt,'wb') as f:
                         pk.dump(state_save,f)
                     
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
+                    with open(cwd+'/drl_results/RNN/'+'cap_'+args.cap+'/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'visit_freq_large'+\
                               '_'+str(args.g_discount)\
                             +'_tanh_mse'+\
