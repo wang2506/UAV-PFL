@@ -89,13 +89,14 @@ parser.add_argument('--rng_thresh',type=float,default=0.2,\
 
 parser.add_argument('--dynamic',type=bool,default=False,\
                     help='Dynamic model drifts')
-    
+
 # hard coded perviously, need to backtrack to get this automated
 # parser.add_argument('--dynamic_drift',type=bool,default=False,\
                     # help='dynamic model drift')
 
 parser.add_argument('--brt',type=str,default='medium',\
-                    choices=['medium','high','low','vhigh','vhigh2','vhigh3'],\
+                    choices=['debug','medium','high','low',\
+                             'vhigh','vhigh2','vhigh3'],\
                     help='Battery Recharge Threshold')
 parser.add_argument('--seed',type=int,default=4)
 parser.add_argument('--pen',type=str,default='high',\
@@ -667,7 +668,14 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
             battery_status[i] -= cluster_bat_drain[i] #[j] # drain by cluster needs
             
         else: #it is a recharge station
-            battery_status[i] = 48600#2000 #100 #reset to 100%
+            if args.cap == 'low':
+                cap_level = 48600
+            elif args.cap == 'medium':
+                cap_level = 48600*2
+            elif args.cap == 'high':
+                cap_level = 48600*3
+            battery_status[i] = cap_level
+            # battery_status[i] = 48600#2000 #100 #reset to 100%
 
         #previously was cluster_expectations[j] * next_state_visits[j]
         next_state_visits[j] = 0 # zero out since now it will be visited    
@@ -872,6 +880,8 @@ elif args.brt == 'vhigh2':
     brt = 8440*5
 elif args.brt == 'vhigh3':
     brt = 8440*4
+elif args.brt == 'debug':
+    brt = -1e8
 
 min_battery_levels = (brt*np.ones(args.U_swarms)).tolist()
 
