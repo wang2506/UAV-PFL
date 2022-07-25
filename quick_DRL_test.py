@@ -666,7 +666,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
         ## filter for device cluster or recharge station
         if j < 8: #len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
             battery_status[i] -= cluster_bat_drain[i] #[j] # drain by cluster needs
-            
+        
         else: #it is a recharge station
             if args.cap == 'low':
                 cap_level = 48600
@@ -1061,7 +1061,6 @@ for e in range(episodes):
                     
                     test_DQN.store(prev_state_set,action_set,reward1,state_set1,\
                                    action2=action_set2, reward2=reward2, next_state2 = state_set2)
-                
         
         ## printing check up
         if timestep % 10 == 0:
