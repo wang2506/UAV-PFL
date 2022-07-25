@@ -1247,8 +1247,8 @@ for e in range(episodes):
                         pk.dump(freq_visits,f)
                 else:
                     # save data
-                    #tfolder = 'cap_'+args.cap
-                    tfolder = 'pen_'+args.pen
+                    tfolder = 'cap_'+args.cap
+                    # tfolder = 'pen_'+args.pen
                     with open(cwd+'/drl_results/RNN/'+tfolder+'/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'reward'\
                               +'test_large'+'_'+str(args.g_discount)\
