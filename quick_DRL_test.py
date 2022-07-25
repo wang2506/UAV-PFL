@@ -585,7 +585,7 @@ test_DQN.target_network.summary()
 
 def reward_state_calc(test_DQN,current_state,current_action,current_action_space,\
         cluster_expectations,cluster_limits,min_battery_levels,historical_results,\
-        travel_energy,current_swarm_pos):
+        travel_energy,current_swarm_pos,args=args):
     
     ## calculate current_state + current_action expected gain  
 
@@ -1120,6 +1120,9 @@ for e in range(episodes):
         
         
         if timestep % 100 == 0:
+            print('battery levels:')
+            print(battery_storage)
+            
             print('saving results into file')
             # print(test_DQN.q_net.get_weights()[-1])
             
