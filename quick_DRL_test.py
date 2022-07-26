@@ -729,7 +729,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     for i,j in enumerate(current_swarm_pos):
         if j == 8 or j == 9 :
             if new_positions[i] == 8 or new_positions[i] == 9:
-                current_reward -= 100 #1e5 #high penalty
+                current_reward -= 1e6 #1e5 #high penalty
     
     ## calculate the next state
     ## needs to be rebuilt
