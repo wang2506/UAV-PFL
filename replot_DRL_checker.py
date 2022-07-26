@@ -32,7 +32,8 @@ ep_start = 0.6
 # seed = 2
 seed = 1
 # seed_vec = [1,3,4]
-seed_vec = [1]
+# seed_vec = [1]
+seed_vec = [4]
 # gamma = 0.8 #gamma = 0.7 by default
 plt.figure(1)
 
@@ -71,30 +72,31 @@ if vary_bat == True:
 else:
     bat_vec = ['medium']
 
-vary_cap = True
-#vary_cap = False
+# vary_cap = True
+# #vary_cap = False
 
-if vary_cap == True:
-    cap_vec = ['low','medium','high']
-else:
-    cap_vec = ['low']
+# if vary_cap == True:
+#     cap_vec = ['low','medium','high']
+# else:
+#     cap_vec = ['low']
 
 # vary_pen = True
-# # vary_pen = False
+vary_pen = False
 
-# if vary_pen == True:
-#     pen_vec = ['low','medium','high']
-# else:
-#     pen_vec = ['low']
+if vary_pen == True:
+    pen_vec = ['low','medium','high']
+else:
+    pen_vec = ['high']
     
-mv_window = 1 #1000
+mv_window = 1000
+tests = True
 
 for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
     for ind_g,gamma in enumerate(g_vec):#[0.7]):
         # for ind_bat,bat_state in enumerate(bat_vec):
         ind_bat = 0 
-        for ind_cap,cap in enumerate(cap_vec):
-        # for ind_pen,pen in enumerate(pen_vec):
+        # for ind_cap,cap in enumerate(cap_vec):
+        for ind_pen,pen in enumerate(pen_vec):
             for nn_style in ['RNN']:#['MLP','RNN']:
             
                 if nn_style == 'MLP':
@@ -113,11 +115,12 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                         #         +'_'+bat_state, \
                         #         'rb') as f:
                         #     data = pickle.load(f)
-                        with open(cwd+'/drl_results/RNN/'+'cap_'+cap\
-                        # with open(cwd+'/drl_results/RNN/'+'pen_'+pen\
+                        # with open(cwd+'/drl_results/RNN/'+'cap_'+cap\
+                        with open(cwd+'/drl_results/RNN/'+'pen_'+pen\
                                   +'/seed_'+str(seed)+'_'+str(ep_start)+'_'+'reward'\
                                 +'test_large'+'_'+str(gamma)+'_tanh_mse'\
-                                +'_'+bat_state, \
+                                +'_debug',\
+                                    # +'_'+bat_state, \
                                 'rb') as f:
                             data = pickle.load(f)                        
                         datas += np.array(data)/len(seed_vec)
@@ -135,14 +138,14 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                         ax1[0].plot(data_fixer,label='RT '+bat_vec2[ind_bat].capitalize() \
                             ,linestyle='solid', \
                                 color = colors[ind_bat],linewidth=lwd)
-                    elif vary_cap == True:
-                        ax1[0].plot(data_fixer,label='Capacity '+cap.capitalize() \
-                            ,linestyle='solid', \
-                                color = colors[ind_cap],linewidth=lwd)                        
-                    # elif vary_pen == True:
-                    #     ax1[0].plot(data_fixer,label='Penalty '+pen.capitalize() \
+                    # elif vary_cap == True:
+                    #     ax1[0].plot(data_fixer,label='Capacity '+cap.capitalize() \
                     #         ,linestyle='solid', \
-                    #             color = colors[ind_pen],linewidth=lwd)
+                    #             color = colors[ind_cap],linewidth=lwd)                        
+                    elif vary_pen == False: #True:
+                        ax1[0].plot(data_fixer,label='Penalty '+pen.capitalize() \
+                            ,linestyle='solid', \
+                                color = colors[ind_pen],linewidth=lwd)
 
 ax1[0].set_title(r'(a)',fontsize=20,y=-0.35) # Reward Over Time
 ax1[0].grid(True)
@@ -154,8 +157,8 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
     for ind_g,gamma in enumerate(g_vec):#[0.7]):
         # for ind_bat,bat_state in enumerate(bat_vec):
         ind_bat = 0 
-        for ind_cap,cap in enumerate(cap_vec):
-        # for ind_pen,pen in enumerate(pen_vec):
+        # for ind_cap,cap in enumerate(cap_vec):
+        for ind_pen,pen in enumerate(pen_vec):
             for nn_style in ['RNN']:#['MLP','RNN']:
                 if nn_style == 'MLP':
                     with open(cwd+'/data/new10_'+str(ep_start)+'_batterytest_large_'+str(gamma)\
@@ -174,11 +177,12 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                         #         +'_'+bat_state, \
                         #         'rb') as f:
                         #     data_b = pickle.load(f)
-                        with open(cwd+'/drl_results/RNN/'+'cap_'+cap\
-                        # with open(cwd+'/drl_results/RNN/'+'pen_'+pen\
+                        # with open(cwd+'/drl_results/RNN/'+'cap_'+cap\
+                        with open(cwd+'/drl_results/RNN/'+'pen_'+pen\
                                   +'/seed_'+str(seed)+'_'+str(ep_start)+'_batterytest_large_'\
                                 +str(gamma)+'_tanh_mse'\
-                                +'_'+bat_state, \
+                                +'_debug',\
+                                    # +'_'+bat_state, \
                                 'rb') as f:
                             data_b = pickle.load(f)                              
                         datas_b += np.array(data_b)/len(seed_vec)
@@ -197,26 +201,29 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                         ax1[1].plot(data_b2,label='Ours Recharge '+bat_vec2[ind_bat].capitalize() \
                             ,linestyle='solid', \
                                 color = colors[ind_bat],linewidth=lwd)
-                    elif vary_cap == True:
-                        ax1[1].plot(data_b2,label='Capacity '+cap.capitalize() \
-                            ,linestyle='solid', \
-                                color = colors[ind_cap],linewidth=lwd)       
-                    # elif vary_pen == True:
-                    #     ax1[1].plot(data_b2,label='Penalty '+pen.capitalize()  \
+                    # elif vary_cap == True:
+                    #     ax1[1].plot(data_b2,label='Capacity '+cap.capitalize() \
                     #         ,linestyle='solid', \
-                    #             color = colors[ind_pen],linewidth=lwd)
+                    #             color = colors[ind_cap],linewidth=lwd)       
+                    elif vary_pen == False: #True:
+                        ax1[1].plot(data_b2,label='Penalty '+pen.capitalize()  \
+                            ,linestyle='solid', \
+                                color = colors[ind_pen],linewidth=lwd)
 
 ax1[1].set_title('(b)',fontsize=20,y=-0.35) # Battery Over Time',fontsize=15,y=-0.24)
 ax1[1].grid(True)
 ax1[1].set_xlabel('Epoch',fontsize=20)
-ax1[1].set_ylabel('Avg Battery Level (kJ)',fontsize=20)
+if tests == True:
+    ax1[1].set_ylabel('Avg Battery Level ',fontsize=20)
+else:
+    ax1[1].set_ylabel('Avg Battery Level (kJ)',fontsize=20)
 
 for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
     for ind_g,gamma in enumerate(g_vec):#[0.7]):
         # for ind_bat,bat_state in enumerate(bat_vec):
         ind_bat = 0 
-        for ind_cap,cap in enumerate(cap_vec):
-        # for ind_pen,pen in enumerate(pen_vec):
+        # for ind_cap,cap in enumerate(cap_vec):
+        for ind_pen,pen in enumerate(pen_vec):
             for nn_style in ['RNN']:#['MLP','RNN']:
                 if nn_style == 'MLP':
                     with open(cwd+'/drl_results/seed_'+str(seed)+'_'+str(ep_start)\
@@ -235,11 +242,12 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                         #         +'_'+bat_state, \
                         #         'rb') as f:
                         #     data_ml = pickle.load(f)  
-                        with open(cwd+'/drl_results/RNN/'+'cap_'+cap\
-                        # with open(cwd+'/drl_results/RNN/'+'pen_'+pen\
+                        # with open(cwd+'/drl_results/RNN/'+'cap_'+cap\
+                        with open(cwd+'/drl_results/RNN/'+'pen_'+pen\
                                   +'/seed_'+str(seed)+'_'+str(ep_start)+'_ml_reward_onlytest_large_'\
                                 +str(gamma)+'_tanh_mse'\
-                                +'_'+bat_state, \
+                                +'_debug',\
+                                    # +'_'+bat_state, \
                                 'rb') as f:
                             data_ml = pickle.load(f)                            
                         datas_ml += np.array(data_ml)/len(seed_vec)
@@ -257,14 +265,14 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                         ax1[2].plot(data_ml2,label='Ours Recharge '+bat_vec2[ind_bat].capitalize() \
                             ,linestyle='solid', \
                                 color = colors[ind_bat],linewidth=lwd)
-                    elif vary_cap == True:
-                        ax1[2].plot(data_ml2,label='Capacity '+cap.capitalize() \
-                            ,linestyle='solid', \
-                                color = colors[ind_cap],linewidth=lwd)     
-                    # elif vary_pen == True:
-                    #     ax1[2].plot(data_ml2,label='Penalty '+pen.capitalize()  \
+                    # elif vary_cap == True:
+                    #     ax1[2].plot(data_ml2,label='Capacity '+cap.capitalize() \
                     #         ,linestyle='solid', \
-                    #             color = colors[ind_pen],linewidth=lwd)
+                    #             color = colors[ind_cap],linewidth=lwd)     
+                    elif vary_pen == False: #True:
+                        ax1[2].plot(data_ml2,label='Penalty '+pen.capitalize()  \
+                            ,linestyle='solid', \
+                                color = colors[ind_pen],linewidth=lwd)
 
 # ax1[1].set_title('b)',fontsize=20,y=-0.32) # Battery Over Time',fontsize=15,y=-0.24)
 ax1[2].set_title('(c)',fontsize=20,y=-0.35) # Battery Over Time',fontsize=15,y=-0.24)
