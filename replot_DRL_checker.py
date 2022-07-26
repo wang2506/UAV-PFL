@@ -88,7 +88,7 @@ if vary_pen == True:
 else:
     pen_vec = ['high']
     
-mv_window = 1000
+mv_window = 100#1000
 tests = True
 # tests = False
 

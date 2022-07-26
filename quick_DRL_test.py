@@ -94,7 +94,7 @@ parser.add_argument('--dynamic',type=bool,default=False,\
 # parser.add_argument('--dynamic_drift',type=bool,default=False,\
                     # help='dynamic model drift')
 
-parser.add_argument('--brt',type=str,default='debug',\
+parser.add_argument('--brt',type=str,default='debug2',\
                     choices=['debug','debug2','medium','high','low',\
                              'vhigh','vhigh2','vhigh3'],\
                     help='Battery Recharge Threshold')
@@ -682,8 +682,8 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     
     ## zero out recharging stations in next_state_visits 
     ## DEBUG flag here
-    next_state_visits[-1] = 0
-    next_state_visits[-2] = 0
+    # next_state_visits[-1] = 0
+    # next_state_visits[-2] = 0
     
     # determine G(s)
     gs_hold = 0
@@ -720,15 +720,16 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
             elif args.pen == 'low':
                 penalty += 10
             current_reward = 0 #force zero out current reward if ANY battery runs out
+            
     current_reward -= penalty
     
     ## if swarm was at a recharging station previously, and stays at one, incur a penalty
     # compare current_swarm_pos and new_positions
-    if args.brt == 'debug2':
-        for i,j in enumerate(current_swarm_pos):
-            if j == 8 or j == 9 :
-                if new_positions[i] == 8 or new_positions[i] == 9:
-                    current_reward -= 1e5 #high penalty
+    # if args.brt == 'debug2':
+    for i,j in enumerate(current_swarm_pos):
+        if j == 8 or j == 9 :
+            if new_positions[i] == 8 or new_positions[i] == 9:
+                current_reward -= 100 #1e5 #high penalty
     
     ## calculate the next state
     ## needs to be rebuilt
@@ -815,7 +816,8 @@ if args.dynamic == True:
 else:
     ## static model drift
     cluster_expectations = 25*np.random.rand(args.Clusters) #20
-    cluster_limits = 20*cluster_expectations #3
+    # cluster_limits = 20*cluster_expectations #3 - vary epsilon + gamma use this one
+    cluster_limits = 2*cluster_expectations
 
 
 # calculate real movement costs from cluster to cluster to recharge station
@@ -1211,14 +1213,15 @@ for e in range(episodes):
                 else:
                     # save data
                     # tfolder = 'cap_'+args.cap
-                    tfolder = 'pen_'+args.pen
-                    with open(cwd+'/drl_results/RNN/'+tfolder+'/seed_'+str(seed)+'_'\
+                    # tfolder = 'pen_'+args.pen
+                    #'+tfolder+'/
+                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'reward'\
                               +'test_large'+'_'+str(args.g_discount)\
                             +'_tanh_mse'+\
                             '_'+args.brt,'wb') as f:
                         pk.dump(reward_storage,f)
-                    with open(cwd+'/drl_results/RNN/'+tfolder+'/seed_'+str(seed)+'_'\
+                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+\
                               'ml_reward_only'+'test_large'+'_'+str(args.g_discount)\
                             +'_tanh_mse'+\
@@ -1226,28 +1229,27 @@ for e in range(episodes):
                         pk.dump(ml_reward_only_storage,f)                        
                     #+'_extra'
                     #str(fig_no)+
-                    with open(cwd+'/drl_results/RNN/'+tfolder+'/seed_'+str(seed)+'_'\
+                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'battery'\
                               +'test_large'+'_'+str(args.g_discount)\
                             +'_tanh_mse'+\
                             '_'+args.brt,'wb') as f:
                         pk.dump(battery_storage,f)
                     #str(fig_no)+
-                    with open(cwd+'/drl_results/RNN/'+tfolder+'/seed_'+str(seed)+'_'\
+                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'all_states'\
                               +'test_large'+'_'+str(args.g_discount)\
                             +'_tanh_mse'+\
                             '_'+args.brt,'wb') as f:
                         pk.dump(state_save,f)
                     
-                    with open(cwd+'/drl_results/RNN/'+tfolder+'/seed_'+str(seed)+'_'\
+                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'visit_freq_large'+\
                               '_'+str(args.g_discount)\
                             +'_tanh_mse'+\
                             '_'+args.brt,'wb') as f:
                         pk.dump(freq_visits,f)
                     
-            
 
 
 
