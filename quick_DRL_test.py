@@ -94,8 +94,8 @@ parser.add_argument('--dynamic',type=bool,default=False,\
 # parser.add_argument('--dynamic_drift',type=bool,default=False,\
                     # help='dynamic model drift')
 
-parser.add_argument('--brt',type=str,default='medium',\
-                    choices=['debug','medium','high','low',\
+parser.add_argument('--brt',type=str,default='debug',\
+                    choices=['debug','debug2','medium','high','low',\
                              'vhigh','vhigh2','vhigh3'],\
                     help='Battery Recharge Threshold')
 parser.add_argument('--seed',type=int,default=4)
@@ -680,6 +680,11 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
         #previously was cluster_expectations[j] * next_state_visits[j]
         next_state_visits[j] = 0 # zero out since now it will be visited    
     
+    ## zero out recharging stations in next_state_visits 
+    ## DEBUG flag here
+    next_state_visits[-1] = 0
+    next_state_visits[-2] = 0
+    
     # determine G(s)
     gs_hold = 0
     for i,j in enumerate(next_state_visits):
@@ -716,6 +721,15 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
                 penalty += 10
             current_reward = 0 #force zero out current reward if ANY battery runs out
     current_reward -= penalty
+    
+    ## if swarm was at a recharging station previously, and stays at one, incur a penalty
+    # compare current_swarm_pos and new_positions
+    if args.brt == 'debug2':
+        for i,j in enumerate(current_swarm_pos):
+            if j == 8 or j == 9 :
+                if new_positions[i] == 8 or new_positions[i] == 9:
+                    current_reward -= 1000 #large penalty
+    
     
     ## calculate the next state
     ## needs to be rebuilt
@@ -880,7 +894,7 @@ elif args.brt == 'vhigh2':
     brt = 8440*5
 elif args.brt == 'vhigh3':
     brt = 8440*4
-elif args.brt == 'debug':
+elif args.brt == 'debug' or args.brt == 'debug2':
     brt = -1e8
 
 min_battery_levels = (brt*np.ones(args.U_swarms)).tolist()
@@ -980,12 +994,14 @@ for e in range(episodes):
                 
                 #general base start
                 freq_visits[timestep] = deepcopy(freq_visits[timestep-1])
-                for freq_val in np.where(np.array(current_state_set[-13:-3]) == 0.0)[0]:
-                    freq_visits[timestep][freq_val] = \
-                        freq_visits[timestep-1][freq_val] + 1
+                for freq_val in next_swarm_pos:
+                    freq_visits[timestep][freq_val] += 1
+                # for freq_val in np.where(np.array(current_state_set[-13:-3]) == 0.0)[0]:
+                #     freq_visits[timestep][freq_val] = \
+                #         freq_visits[timestep-1][freq_val] + 1
                 
-                # freq_visits[timestep] = freq_visits[timestep-1] + \
-                #     np.array(current_state_set[-13:-3])
+                # # freq_visits[timestep] = freq_visits[timestep-1] + \
+                # #     np.array(current_state_set[-13:-3])
                 
                 prev_action_set = deepcopy(action_set)
                 
@@ -1006,61 +1022,20 @@ for e in range(episodes):
                 
                 ## store experiences
                 test_DQN.store(current_state_set,action_set,rewards,state_set)
-            
+                
+                # print(current_state_set)
+                # print(state_set)
+                # print(next_swarm_pos)                
+                
             reward_DQN[0,0,timestep] = rewards
             
         else:
-            if timestep != 0 and timestep % 2 == 0:
-                ep_greed1 = np.max([args.ep_min, args.ep_greed*(1-10**(-3))**(timestep-1)])
-                ep_greed2 = np.max([args.ep_min, args.ep_greed*(1-10**(-3))**timestep])
-                
-                if timestep == 2:
-                    # action_set = test_DQN.calc_action(state=init_state_set, \
-                                                      # args=args,ep_greed =ep_greed1)
-                    # random initial actions
-                    action_set = np.random.randint(0,len(action_space))
-                    
-                    reward1, state_set1 = reward_state_calc(test_DQN,init_state_set,\
-                                        action_set, action_space,cluster_expectations)
-                    
-                    current_state_set = deepcopy(state_set1)
-                    
-                    # action_set2 = test_DQN.calc_action(state=current_state_set, \
-                                                       # args=args,ep_greed = ep_greed2)
-                                                       
-                    action_set2 = np.random.randint(0,len(action_space))
-                    
-                    reward2, state_set2 = reward_state_calc(test_DQN,state_set1,\
-                                        action_set2, action_space, cluster_expectations)
-                        
-                    test_DQN.store(init_state_set,action_set,reward1,state_set1,\
-                                   action2=action_set2, reward2=reward2, next_state2 = state_set2)
-                    
-                else:
-                    # print(timestep)
-                    # print('state_set1 check')
-                    # print(state_set1)
-                    # print('state_set1 end')
-                    prev_state_set = deepcopy(state_set2)                    
-                    
-                    state_set = [state_set1,state_set2] #needs the previous two instances
-                    
-                    action_set = test_DQN.calc_action(state=state_set, args=args, \
-                                            ep_greed = ep_greed1)
-                    
-                    reward1, state_set1 = reward_state_calc(test_DQN,state_set2,\
-                                        action_set, action_space,cluster_expectations)
-                
-                    state_set = [state_set2,state_set1] #temporal remap
-                    
-                    action_set2 = test_DQN.calc_action(state=state_set, \
-                                                       args=args,ep_greed = ep_greed2)
-                    
-                    reward2, state_set2 = reward_state_calc(test_DQN,state_set1,\
-                                        action_set2, action_space, cluster_expectations)
-                    
-                    test_DQN.store(prev_state_set,action_set,reward1,state_set1,\
-                                   action2=action_set2, reward2=reward2, next_state2 = state_set2)
+            print('wrong training setting')
+
+        # print('freq_visits:')
+        # print(freq_visits[timestep])
+        # if timestep%10 == 0:
+        #     input('a')
         
         ## printing check up
         if timestep % 10 == 0:
@@ -1071,13 +1046,7 @@ for e in range(episodes):
                       'reward ML only = {:.2f}'.format(temp_ml_reward),
                       'epsilon = {:.2f}'.format(args.ep_greed)
                       )
-            else:
-                if timestep != 0 and timestep % 2 == 0:
-                    print('timestep='+str(timestep),
-                          'reward_DQN1 ={:.2f}'.format(reward1),
-                          'reward_DQN2 ={:.2f}'.format(reward2),
-                          'epsilon = {:.2f}'.format(ep_greed2)
-                          )
+
             # print(test_DQN.q_net.get_weights())
 
 
@@ -1111,17 +1080,10 @@ for e in range(episodes):
             
             battery_storage.append(state_set[ state_set_bat1 : state_set_bat2 ])
             
-        else: 
-            if timestep != 0 and timestep % 2 == 0:
-                reward_storage.append(reward1)
-                reward_storage.append(reward2)
         # state_set_all.append(state_set)
         
         
-        if timestep % 100 == 0:
-            print('battery levels:')
-            print(battery_storage)
-            
+        if timestep % 100 == 0:            
             print('saving results into file')
             # print(test_DQN.q_net.get_weights()[-1])
             
@@ -1249,8 +1211,8 @@ for e in range(episodes):
                         pk.dump(freq_visits,f)
                 else:
                     # save data
-                    tfolder = 'cap_'+args.cap
-                    # tfolder = 'pen_'+args.pen
+                    # tfolder = 'cap_'+args.cap
+                    tfolder = 'pen_'+args.pen
                     with open(cwd+'/drl_results/RNN/'+tfolder+'/seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'reward'\
                               +'test_large'+'_'+str(args.g_discount)\
