@@ -378,8 +378,8 @@ for ep_start in [0.7]:#[0.6,0.8]:
         # plt.savefig(cwd+'/drl_plots/freq_no_recharge.pdf',dpi=1000, bbox_inches='tight')
 
 
-ax1[0].set_ylim([300,800])
-ax1[1].set_ylim([20000,49000])
+# ax1[0].set_ylim([300,800])
+# ax1[1].set_ylim([20000,49000])
 
 h,l = ax1[0].get_legend_handles_labels()
 kw = dict(ncol=3,loc = 'lower center',frameon=False)
@@ -416,87 +416,87 @@ ax1[2].tick_params(axis='both', which='major', labelsize=18)
 
 seed = 1
 # %% visit frequency plotter
-for ep_start in [0.7]:#[0.6,0.8]:
-    for gamma in [0.7]:#[0.7,0.8]:
-        # with open(cwd+'/data/new10'+str(ep_start)+'_visit_freq_large_'\
-        #           +str(gamma)+'_dynamic','rb') as f:
-        #     freqs = pickle.load(f)
+# for ep_start in [0.7]:#[0.6,0.8]:
+#     for gamma in [0.7]:#[0.7,0.8]:
+#         # with open(cwd+'/data/new10'+str(ep_start)+'_visit_freq_large_'\
+#         #           +str(gamma)+'_dynamic','rb') as f:
+#         #     freqs = pickle.load(f)
 
-        with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
-                  +str(ep_start)+'_visit_freq_large_'\
-                  +str(gamma)+'_tanh_mse_dynamic','rb') as f:
-            freqs = pickle.load(f)
+#         with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
+#                   +str(ep_start)+'_visit_freq_large_'\
+#                   +str(gamma)+'_tanh_mse_dynamic','rb') as f:
+#             freqs = pickle.load(f)
 
-        # The dynamic model drift is linear
+#         # The dynamic model drift is linear
         
-        # extract freqs in intervals of 1000
-        ## because timestep%100, last batch is at timestep 9800
-        # final_freq = freqs[9800] - freqs[8800]
-        # mid_freq2 = freqs[6800] - freqs[5800]
-        # mid_freq = freqs[3800] - freqs[2800]
-        # init_freq = freqs[1800] - freqs[800]
+#         # extract freqs in intervals of 1000
+#         ## because timestep%100, last batch is at timestep 9800
+#         # final_freq = freqs[9800] - freqs[8800]
+#         # mid_freq2 = freqs[6800] - freqs[5800]
+#         # mid_freq = freqs[3800] - freqs[2800]
+#         # init_freq = freqs[1800] - freqs[800]
         
-        # timestep%100, only after first 100 has passed, 29800 is the final one
-        final_freq = freqs[29800] - freqs[28800]
-        # mid_freq2 = freqs[18800] - freqs[17800]
-        # mid_freq2 = freqs[24800] - freqs[23800]
-        mid_freq = freqs[15800] - freqs[14800]
-        init_freq = freqs[1800] - freqs[800]
+#         # timestep%100, only after first 100 has passed, 29800 is the final one
+#         final_freq = freqs[29800] - freqs[28800]
+#         # mid_freq2 = freqs[18800] - freqs[17800]
+#         # mid_freq2 = freqs[24800] - freqs[23800]
+#         mid_freq = freqs[15800] - freqs[14800]
+#         init_freq = freqs[1800] - freqs[800]
         
-        x = np.arange(len(final_freq))  # the label locations
-        width = 0.6 #0.8  # the width of the bars
+#         x = np.arange(len(final_freq))  # the label locations
+#         width = 0.6 #0.8  # the width of the bars
         
-        # setup double axes
-        cats = 3 #4 #cats = categories
-        plt.figure(3)
-        fig, ax = plt.subplots(1,1,figsize=(4,2))
-        rects_init = ax.bar(x - 1.02*width/cats, init_freq/1000, width=width/cats, \
-            label='1000-2000',edgecolor='black',color='goldenrod')
-        rects_mid1 = ax.bar(x - 0*width/cats, mid_freq/1000, width=width/cats, \
-            label='15000-16000',edgecolor='black',color='forestgreen')
-        # rects_mid2 = ax.bar(x + 0.5*width/cats, mid_freq2, width=width/cats, \
-        #     label='5000-6000',edgecolor='black',color='royalblue')
-        rects_final = ax.bar(x + 1.02*width/cats, final_freq/1000, width=width/cats, \
-            label='29000-30000',edgecolor='black',color='darkmagenta')
+#         # setup double axes
+#         cats = 3 #4 #cats = categories
+#         plt.figure(3)
+#         fig, ax = plt.subplots(1,1,figsize=(4,2))
+#         rects_init = ax.bar(x - 1.02*width/cats, init_freq/1000, width=width/cats, \
+#             label='1000-2000',edgecolor='black',color='goldenrod')
+#         rects_mid1 = ax.bar(x - 0*width/cats, mid_freq/1000, width=width/cats, \
+#             label='15000-16000',edgecolor='black',color='forestgreen')
+#         # rects_mid2 = ax.bar(x + 0.5*width/cats, mid_freq2, width=width/cats, \
+#         #     label='5000-6000',edgecolor='black',color='royalblue')
+#         rects_final = ax.bar(x + 1.02*width/cats, final_freq/1000, width=width/cats, \
+#             label='29000-30000',edgecolor='black',color='darkmagenta')
 
-        # plt.title('Hist frequences with recharge stations')
-        ax.set_axisbelow(True)
-        ax.grid(True)
-        ax.set_ylabel('Visit Rate (Visits/Epoch)',fontsize=11)
-        #' Rate (Freq/1k Epochs)',fontsize=11) #visit frequency
-        ax.legend(fontsize=4)
+#         # plt.title('Hist frequences with recharge stations')
+#         ax.set_axisbelow(True)
+#         ax.grid(True)
+#         ax.set_ylabel('Visit Rate (Visits/Epoch)',fontsize=11)
+#         #' Rate (Freq/1k Epochs)',fontsize=11) #visit frequency
+#         ax.legend(fontsize=4)
         
-        loc = mpl.ticker.MultipleLocator(base=1.0)
-        ax.xaxis.set_major_locator(loc)
+#         loc = mpl.ticker.MultipleLocator(base=1.0)
+#         ax.xaxis.set_major_locator(loc)
         
-        ax_ticks = ['C:'+str(i) for i in range(9)]
-        ax_ticks += ['R:'+str(i+1) for i in range(2)]
-        ax.set_xticklabels(ax_ticks) #this thing always drops the index 0 for some reason
-        ax.tick_params(axis='both', which='major', labelsize=10)
+#         ax_ticks = ['C:'+str(i) for i in range(9)]
+#         ax_ticks += ['R:'+str(i+1) for i in range(2)]
+#         ax.set_xticklabels(ax_ticks) #this thing always drops the index 0 for some reason
+#         ax.tick_params(axis='both', which='major', labelsize=10)
         
-        h,l = ax.get_legend_handles_labels()
-        kw = dict(ncol=4,loc = 'lower center',frameon=False)
-        # kw2 = dict(ncol=3,loc = 'lower center',frameon=False)
-        #(x, y, width, height)
-        leg1 = ax.legend(h[:],l[:],bbox_to_anchor=(-0.05,0.98,1.05,0.2),\
-                        mode='expand',fontsize=9,**kw)
-        # leg2 = ax1[0].legend(h[0::2],l[0::2],bbox_to_anchor=(0.1,1.11,1.8,0.2),\
-                                # mode='expand',fontsize='large',**kw)
-        ax.add_artist(leg1)
+#         h,l = ax.get_legend_handles_labels()
+#         kw = dict(ncol=4,loc = 'lower center',frameon=False)
+#         # kw2 = dict(ncol=3,loc = 'lower center',frameon=False)
+#         #(x, y, width, height)
+#         leg1 = ax.legend(h[:],l[:],bbox_to_anchor=(-0.05,0.98,1.05,0.2),\
+#                         mode='expand',fontsize=9,**kw)
+#         # leg2 = ax1[0].legend(h[0::2],l[0::2],bbox_to_anchor=(0.1,1.11,1.8,0.2),\
+#                                 # mode='expand',fontsize='large',**kw)
+#         ax.add_artist(leg1)
 
-        rect = patches.Rectangle((1.62,0),0.78,500/1000,linewidth=1.5,edgecolor='red',facecolor='none')
-        rect2 = patches.Rectangle((2.62,0),0.78,300/1000,linewidth=1.5,edgecolor='black',facecolor='none')
+#         rect = patches.Rectangle((1.62,0),0.78,500/1000,linewidth=1.5,edgecolor='red',facecolor='none')
+#         rect2 = patches.Rectangle((2.62,0),0.78,300/1000,linewidth=1.5,edgecolor='black',facecolor='none')
         
-        ax.add_patch(rect)
-        ax.add_patch(rect2)
+#         ax.add_patch(rect)
+#         ax.add_patch(rect2)
         
-        # ax.text(0.5,620,'Max ',fontsize=9)
-        # ax.text(5.5,620,'Min Model Drift',fontsize=9)
-        ax.text(1.2,520/1000,'Max MD', fontsize=9)
-        ax.text(2.5,320/1000,'Min MD',fontsize=9)
-        ax.text(2.5,1150/1000, 'Epoch Range:',fontsize=11)
+#         # ax.text(0.5,620,'Max ',fontsize=9)
+#         # ax.text(5.5,620,'Min Model Drift',fontsize=9)
+#         ax.text(1.2,520/1000,'Max MD', fontsize=9)
+#         ax.text(2.5,320/1000,'Min MD',fontsize=9)
+#         ax.text(2.5,1150/1000, 'Epoch Range:',fontsize=11)
         
-        # plt.savefig(cwd+'/drl_plots/RNN_freq_recharge.pdf',dpi=1000, bbox_inches='tight')
+#         # plt.savefig(cwd+'/drl_plots/RNN_freq_recharge.pdf',dpi=1000, bbox_inches='tight')
 
 
 
