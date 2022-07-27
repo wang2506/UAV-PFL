@@ -67,7 +67,8 @@ if vary_bat == True:
     # bat_vec = ['medium','vhigh','vhigh2']
     # bat_vec = ['medium','high','vhigh']
     # bat_vec = ['low','high','vhigh3']
-    bat_vec = ['low','medium','high']
+    # bat_vec = ['low','medium','high']
+    bat_vec = ['low','medium','hlow']
     bat_vec2 = ['low','medium','high']
 else:
     bat_vec = ['medium']

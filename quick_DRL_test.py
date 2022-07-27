@@ -96,7 +96,7 @@ parser.add_argument('--dynamic',type=bool,default=False,\
 
 parser.add_argument('--brt',type=str,default='debug2',\
                     choices=['debug','debug2','medium','high','low',\
-                             'vhigh','vhigh2','vhigh3'],\
+                             'vhigh','vhigh2','vhigh3','hlow'],\
                     help='Battery Recharge Threshold')
 parser.add_argument('--seed',type=int,default=4)
 parser.add_argument('--pen',type=str,default='high',\
@@ -891,6 +891,8 @@ elif args.brt == 'high':
     brt = 8440*2 #16880
 elif args.brt == 'low':
     brt = 4220
+elif args.brt == 'hlow':
+    brt = 4220*3
 elif args.brt == 'vhigh':
     brt = 8440*3
 elif args.brt == 'vhigh2':
