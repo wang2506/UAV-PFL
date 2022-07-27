@@ -893,6 +893,8 @@ elif args.brt == 'low':
     brt = 4220
 elif args.brt == 'hlow':
     brt = 4220*3
+elif args.brt == 'vlow':
+    brt = 2110
 elif args.brt == 'vhigh':
     brt = 8440*3
 elif args.brt == 'vhigh2':

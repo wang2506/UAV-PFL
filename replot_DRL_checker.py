@@ -67,8 +67,8 @@ if vary_bat == True:
     # bat_vec = ['medium','vhigh','vhigh2']
     # bat_vec = ['medium','high','vhigh']
     # bat_vec = ['low','high','vhigh3']
-    # bat_vec = ['low','medium','high']
-    bat_vec = ['low','medium','hlow']
+    bat_vec = ['low','medium','high']
+    # bat_vec = ['low','medium','hlow']
     bat_vec2 = ['low','medium','high']
 else:
     bat_vec = ['medium']
@@ -330,36 +330,36 @@ for ep_start in [0.7]:#[0.6,0.8]:
             g_bat2 = moving_average(g_bat2,1000)            
             g_ml2 = moving_average(g_ml,1000)
             
-        #     if greed_style == 0:
-        #         # print('temp')
-        #         # ax1[0].plot(g_reward2,label='S.H.',color='saddlebrown',\
-        #         #     linewidth = lwd) #Sequential Heuristic
+            # if greed_style == 0:
+            #     # print('temp')
+            #     ax1[0].plot(g_reward2,label='S.H.',color='saddlebrown',\
+            #         linewidth = lwd) #Sequential Heuristic
 
-        #         # ax1[1].plot(g_bat2,label='S.H.',color='saddlebrown',\
-        #         #     linewidth = lwd) #Sequential Heuristic
+            #     ax1[1].plot(g_bat2,label='S.H.',color='saddlebrown',\
+            #         linewidth = lwd) #Sequential Heuristic
                     
-        #         ax1[2].plot(g_ml2,label='S.H.',color='saddlebrown',\
-        #             linewidth = lwd)
+            #     ax1[2].plot(g_ml2,label='S.H.',color='saddlebrown',\
+            #         linewidth = lwd)
                     
-        #     elif greed_style == 1:
-        #         # ax1[0].plot(g_reward2,label='G.M.D.',color='slategrey',\
-        #         #     linewidth = lwd) #Greedy Minimum Distance
+            # elif greed_style == 1:
+            #     ax1[0].plot(g_reward2,label='G.M.D.',color='slategrey',\
+            #         linewidth = lwd) #Greedy Minimum Distance
 
-        #         # ax1[1].plot(g_bat2,label='G.M.D.',color='slategrey',\
-        #         #     linewidth = lwd)
+            #     ax1[1].plot(g_bat2,label='G.M.D.',color='slategrey',\
+            #         linewidth = lwd)
                     
-        #         ax1[2].plot(g_ml2,label='G.M.D.',color='slategrey',\
-        #             linewidth = lwd)                    
-        #     else:
-        #         # ax1[0].plot(g_reward2,label='T.M.D.',color='darkorange',\
-        #         #     linewidth = lwd) # T.M.D. - threshold minimum distance
+            #     ax1[2].plot(g_ml2,label='G.M.D.',color='slategrey',\
+            #         linewidth = lwd)                    
+            # else:
+            #     ax1[0].plot(g_reward2,label='T.M.D.',color='darkorange',\
+            #         linewidth = lwd) # T.M.D. - threshold minimum distance
 
-        #         # ax1[1].plot(g_bat2,label='T.M.D.',color='darkorange',\
-        #         #     linewidth = lwd) # T.M.D.
+            #     ax1[1].plot(g_bat2,label='T.M.D.',color='darkorange',\
+            #         linewidth = lwd) # T.M.D.
                 
-        #         ax1[2].plot(g_ml2,label='T.M.D.',color='darkorange',\
-        #             linewidth = lwd)                                     
-        # # plt.savefig(cwd+'/drl_plots/freq_no_recharge.pdf',dpi=1000, bbox_inches='tight')
+            #     ax1[2].plot(g_ml2,label='T.M.D.',color='darkorange',\
+            #         linewidth = lwd)                                     
+        # plt.savefig(cwd+'/drl_plots/freq_no_recharge.pdf',dpi=1000, bbox_inches='tight')
 
 
 # ax1[0].set_ylim([300,800])
