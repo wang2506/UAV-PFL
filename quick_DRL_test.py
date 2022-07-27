@@ -532,48 +532,6 @@ class DQN:
                     target[0][action] = reward + self.g_discount * np.amax(t)
                     
                 self.q_net.fit(state,target,epochs=1,verbose=0)
-        
-        # elif args.RNN == True:
-            
-            
-        
-        else: #follows the format of linear
-            ## this is bugged ##TODO
-            for item in minibatch:
-                # print('item printing')
-                # print(item)
-                # print(item[-1])
-                
-                # raise NameError('Int')
-                
-                ## bugged
-                if type(item[0][0]) == np.ndarray:
-                    item[0][0] = item[0][0].tolist()
-                
-                if type(item[0][-1]) == np.ndarray:
-                    item[0][-1] = item[0][-1].tolist()
-                    
-                state = [item[0][0], item[0][-1][0] ]
-                # print('state check')
-                # print(state)
-                
-                state = np.reshape(state,[1,self.input_size[0],self.input_size[1]])
-                
-                next_state = [item[-1][0],item[-1][-1]]
-                # print('next state check')
-                # print(next_state)
-                
-                next_state = np.reshape(next_state,[1,self.input_size[0],self.input_size[1]])
-                
-                target = self.q_net.predict(state) #item is [args.cnn_range, args.U_swarms + args.Clusters]
-                
-                ## terminated training later
-                
-                t = self.target_network.predict(next_state)
-                target[0][item[-1][1]] = item[-1][-2] + self.g_discount * np.amax(t)
-                
-                self.q_net.fit(state,target,epochs=1,verbose=0)
-                
 
 # %% confirmation testing
 test_DQN = DQN(args)
@@ -656,7 +614,9 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
             reward_vec[i] = c1*historical_data[index_counter][1][-1] #1000*10
             # this should be [index_counter][1][-1]
             index_counter += 1
-    
+        else:
+            reward_vec[i] = 100000 #because of division, this leads to a C/C\approx 1 reward
+            
     # calculate the energy movement costs - also update the visitations vector
     em_hold = 0 
     for i,j in enumerate(new_positions): #next_state_set 
@@ -688,13 +648,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     # determine G(s)
     gs_hold = 0
     for i,j in enumerate(next_state_visits):
-        if i < len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster
-            
-            # if j * 0.25 * cluster_expectations[i] > 0.5 * cluster_limits[i]:
-            #     penalty += 0.5* cluster_limits[i]
-            # else:
-            #     penalty += j * 0.25 * cluster_expectations[i]
-    
+        if i < len(next_state_visits) - len(test_DQN.recharge_points): # it is a device cluster    
             if j * cluster_expectations[i] > cluster_limits[i]:
                 gs_hold += c2*cluster_limits[i]
             else:
@@ -726,10 +680,10 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     ## if swarm was at a recharging station previously, and stays at one, incur a penalty
     # compare current_swarm_pos and new_positions
     # if args.brt == 'debug2':
-    for i,j in enumerate(current_swarm_pos):
-        if j == 8 or j == 9 :
-            if new_positions[i] == 8 or new_positions[i] == 9:
-                current_reward -= 100 #1e5 #high penalty
+    # for i,j in enumerate(current_swarm_pos):
+    #     if j == 8 or j == 9 :
+    #         if new_positions[i] == 8 or new_positions[i] == 9:
+    #             current_reward -= 100 #1e5 #high penalty
     
     ## calculate the next state
     ## needs to be rebuilt
@@ -818,8 +772,8 @@ else:
     ## reset seed in numpy random
     np.random.seed(args.seed)
     cluster_expectations = 25*np.random.rand(args.Clusters) #20
-    # cluster_limits = 20*cluster_expectations #3 - vary epsilon + gamma use this one
-    cluster_limits = 2*cluster_expectations
+    cluster_limits = 20*cluster_expectations #3 - vary epsilon + gamma use this one
+    # cluster_limits = 2*cluster_expectations
 
 
 # calculate real movement costs from cluster to cluster to recharge station

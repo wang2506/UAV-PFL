@@ -40,7 +40,7 @@ plt.figure(1)
 # f1,ax1 = plt.subplots(1,2,figsize=(10,4))#(9.6,4)) #10,4
 f1,ax1 = plt.subplots(1,3,figsize=(9,3.3)) #(9,4)
 
-colors = ['darkblue','darkgreen','purple']
+colors = ['darkblue','darkgreen','purple','yellow','brown','red','cyan']
 bat_state = 'medium'
 
 # vary_ep = True
@@ -50,7 +50,7 @@ vary_ep = False
 vary_g = False
 
 vary_bat = True
-# vary_bat = False
+vary_bat = False
 
 if vary_ep == True:
     ep_vec = [0.6,0.7,0.8]
@@ -69,10 +69,13 @@ if vary_bat == True:
     # bat_vec = ['low','high','vhigh3']
     # bat_vec = ['low','medium','high']
     # bat_vec = ['low','hlow','high']
-    bat_vec = ['vlow','low','hlow']#'medium']
-    bat_vec2 = ['low','medium','high']
+    # bat_vec = ['vlow','medium','high']#'low','hlow']#'medium']
+    bat_vec = ['vlow','low','hlow','medium','high','vhigh']
+    # bat_vec2 = ['low','medium','high']
+    bat_vec2 = bat_vec
 else:
-    bat_vec = ['medium']
+    # bat_vec = ['medium']
+    bat_vec = ['debug']
 
 # vary_cap = True
 # #vary_cap = False
@@ -141,6 +144,10 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                         ax1[0].plot(data_fixer,label='RT '+bat_vec2[ind_bat].capitalize() \
                             ,linestyle='solid', \
                                 color = colors[ind_bat],linewidth=lwd)
+                    else:
+                        ax1[0].plot(data_fixer,label='RT '+bat_vec[ind_bat].capitalize() \
+                            ,linestyle='solid', \
+                                color = colors[ind_bat],linewidth=lwd)                        
                     # elif vary_cap == True:
                     #     ax1[0].plot(data_fixer,label='Capacity '+cap.capitalize() \
                     #         ,linestyle='solid', \
@@ -204,6 +211,10 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                         ax1[1].plot(data_b2,label='Ours Recharge '+bat_vec2[ind_bat].capitalize() \
                             ,linestyle='solid', \
                                 color = colors[ind_bat],linewidth=lwd)
+                    else:
+                        ax1[1].plot(data_b2,label='RT '+bat_vec[ind_bat].capitalize() \
+                            ,linestyle='solid', \
+                                color = colors[ind_bat],linewidth=lwd)                              
                     # elif vary_cap == True:
                     #     ax1[1].plot(data_b2,label='Capacity '+cap.capitalize() \
                     #         ,linestyle='solid', \
@@ -268,6 +279,10 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                         ax1[2].plot(data_ml2,label='Ours Recharge '+bat_vec2[ind_bat].capitalize() \
                             ,linestyle='solid', \
                                 color = colors[ind_bat],linewidth=lwd)
+                    else:
+                        ax1[2].plot(data_ml2,label='RT '+bat_vec[ind_bat].capitalize() \
+                            ,linestyle='solid', \
+                                color = colors[ind_bat],linewidth=lwd)                                
                     # elif vary_cap == True:
                     #     ax1[2].plot(data_ml2,label='Capacity '+cap.capitalize() \
                     #         ,linestyle='solid', \
@@ -363,7 +378,8 @@ for ep_start in [0.7]:#[0.6,0.8]:
         # plt.savefig(cwd+'/drl_plots/freq_no_recharge.pdf',dpi=1000, bbox_inches='tight')
 
 
-# ax1[0].set_ylim([300,800])
+ax1[0].set_ylim([300,800])
+ax1[1].set_ylim([20000,49000])
 
 h,l = ax1[0].get_legend_handles_labels()
 kw = dict(ncol=3,loc = 'lower center',frameon=False)
