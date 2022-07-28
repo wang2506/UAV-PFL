@@ -1178,13 +1178,13 @@ for e in range(episodes):
                     # tfolder = 'cap_'+args.cap
                     # tfolder = 'pen_'+args.pen
                     #'+tfolder+'/
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
+                    with open(cwd+'/drl_results/RNN/2e2seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'reward'\
                               +'test_large'+'_'+str(args.g_discount)\
                             +'_tanh_mse'+\
                             '_'+args.brt,'wb') as f:
                         pk.dump(reward_storage,f)
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
+                    with open(cwd+'/drl_results/RNN/2e2seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+\
                               'ml_reward_only'+'test_large'+'_'+str(args.g_discount)\
                             +'_tanh_mse'+\
@@ -1192,21 +1192,21 @@ for e in range(episodes):
                         pk.dump(ml_reward_only_storage,f)                        
                     #+'_extra'
                     #str(fig_no)+
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
+                    with open(cwd+'/drl_results/RNN/2e2seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'battery'\
                               +'test_large'+'_'+str(args.g_discount)\
                             +'_tanh_mse'+\
                             '_'+args.brt,'wb') as f:
                         pk.dump(battery_storage,f)
                     #str(fig_no)+
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
+                    with open(cwd+'/drl_results/RNN/2e2seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'all_states'\
                               +'test_large'+'_'+str(args.g_discount)\
                             +'_tanh_mse'+\
                             '_'+args.brt,'wb') as f:
                         pk.dump(state_save,f)
                     
-                    with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'\
+                    with open(cwd+'/drl_results/RNN/2e2seed_'+str(seed)+'_'\
                               +str(args.ep_greed)+'_'+'visit_freq_large'+\
                               '_'+str(args.g_discount)\
                             +'_tanh_mse'+\
