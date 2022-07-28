@@ -72,6 +72,7 @@ if vary_bat == True:
     # bat_vec = ['vlow','medium','high']#'low','hlow']#'medium']
     # bat_vec = ['vlow','low','hlow','medium','high','vhigh']
     # bat_vec2 = ['low','medium','high']
+    # bat_vec = ['low']
     bat_vec2 = bat_vec
 else:
     # bat_vec = ['medium']
@@ -115,7 +116,7 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                 elif nn_style == 'RNN':
                     datas = 0
                     for seed in seed_vec:
-                        with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)+'_'+'reward'\
+                        with open(cwd+'/drl_results/RNN/2e2seed_'+str(seed)+'_'+str(ep_start)+'_'+'reward'\
                                 +'test_large'+'_'+str(gamma)+'_tanh_mse'\
                                 +'_'+bat_state, \
                                 'rb') as f:
@@ -181,7 +182,7 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                 elif nn_style == 'RNN':
                     datas_b = 0
                     for seed in seed_vec:
-                        with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)\
+                        with open(cwd+'/drl_results/RNN/2e2seed_'+str(seed)+'_'+str(ep_start)\
                             +'_batterytest_large_'+str(gamma)+'_tanh_mse'\
                                 +'_'+bat_state, \
                                 'rb') as f:
@@ -250,7 +251,7 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                 elif nn_style == 'RNN':
                     datas_ml = 0
                     for seed in seed_vec:
-                        with open(cwd+'/drl_results/RNN/seed_'+str(seed)+'_'+str(ep_start)\
+                        with open(cwd+'/drl_results/RNN/2e2seed_'+str(seed)+'_'+str(ep_start)\
                             +'_ml_reward_onlytest_large_'+str(gamma)+'_tanh_mse'\
                                 +'_'+bat_state, \
                                 'rb') as f:
@@ -377,7 +378,7 @@ for ep_start in [0.7]:#[0.6,0.8]:
         # plt.savefig(cwd+'/drl_plots/freq_no_recharge.pdf',dpi=1000, bbox_inches='tight')
 
 
-# ax1[0].set_ylim([300,800])
+ax1[0].set_ylim([100,600])
 # ax1[1].set_ylim([20000,49000])
 
 h,l = ax1[0].get_legend_handles_labels()
