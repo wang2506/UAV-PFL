@@ -615,7 +615,8 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
             # this should be [index_counter][1][-1]
             index_counter += 1
         else:
-            reward_vec[i] = 100000 #because of division, this leads to a C/C\approx 1 reward
+            # reward_vec[i] = 100000 #because of division, this leads to a C/C\approx 1 reward
+            reward_vec[i] = 2e2
             
     # calculate the energy movement costs - also update the visitations vector
     em_hold = 0 
@@ -849,6 +850,8 @@ elif args.brt == 'hlow':
     brt = 4220*3
 elif args.brt == 'vlow':
     brt = 2110
+elif args.brt == 'vvlow':
+    brt = 1055
 elif args.brt == 'vhigh':
     brt = 8440*3
 elif args.brt == 'vhigh2':

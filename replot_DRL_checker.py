@@ -50,7 +50,7 @@ vary_ep = False
 vary_g = False
 
 vary_bat = True
-vary_bat = False
+# vary_bat = False
 
 if vary_ep == True:
     ep_vec = [0.6,0.7,0.8]
@@ -67,10 +67,10 @@ if vary_bat == True:
     # bat_vec = ['medium','vhigh','vhigh2']
     # bat_vec = ['medium','high','vhigh']
     # bat_vec = ['low','high','vhigh3']
-    # bat_vec = ['low','medium','high']
+    bat_vec = ['low','medium','high']
     # bat_vec = ['low','hlow','high']
     # bat_vec = ['vlow','medium','high']#'low','hlow']#'medium']
-    bat_vec = ['vlow','low','hlow','medium','high','vhigh']
+    # bat_vec = ['vlow','low','hlow','medium','high','vhigh']
     # bat_vec2 = ['low','medium','high']
     bat_vec2 = bat_vec
 else:
@@ -104,7 +104,6 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
         # for ind_cap,cap in enumerate(cap_vec):
         # for ind_pen,pen in enumerate(pen_vec):
             for nn_style in ['RNN']:#['MLP','RNN']:
-            
                 if nn_style == 'MLP':
                     with open(cwd+'/data/new10_'+str(ep_start)+'_rewardtest_large_'+str(gamma)\
                         +'_dynamic','rb') as f:
