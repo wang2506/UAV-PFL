@@ -857,9 +857,9 @@ elif args.brt == 'vvlow':
 elif args.brt == 'vhigh':
     brt = 8440*3
 elif args.brt == 'vhigh2':
-    brt = 8440*5
-elif args.brt == 'vhigh3':
     brt = 8440*4
+elif args.brt == 'vhigh3':
+    brt = 8440*5
 elif args.brt == 'debug' or args.brt == 'debug2':
     brt = -1e8
 
