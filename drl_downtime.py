@@ -8,7 +8,6 @@ import numpy as np
 import pickle as pk
 import os
 
-
 vary_bat = True
 # vary_bat = False
 
@@ -17,13 +16,14 @@ g_discount = 0.7
 
 if vary_bat == True:
     # bat_vec = ['medium','high','vhigh'] #'low',
-    bat_vec = ['low','medium','high']
+    # bat_vec = ['low','medium','high']
+    bat_vec = ['vlow','low','medium','high','vhigh']
     # bat_vec2 = ['low','medium','high']
 else:
     bat_vec = ['medium']
 
 # seeds = [1]#,3,4]
-seeds = [4]
+seeds = [1,3,4]
 cwd = os.getcwd()
 
 all_brt_freqs = {}
@@ -37,10 +37,19 @@ for ind_b,brt in enumerate(bat_vec):
             freq_visits = pk.load(f)
             
         if ind_s == 0: #3 swarms, 1000 epochs
-            # brt_freqs = sum((freq_visits[29000]-freq_visits[28000])[-2:])/1000/len(seeds)/3
-            brt_freqs = sum((freq_visits[20000]-freq_visits[19000])[-2:])/1000/len(seeds)/3            
+            brt_freqs = sum((freq_visits[29000]-freq_visits[28000])[-2:])/1000/len(seeds)/3
+            # brt_freqs = sum((freq_visits[20000]-freq_visits[19000])[-2:])/1000/len(seeds)/3            
         else:
-            # brt_freqs += sum((freq_visits[29000]-freq_visits[28000])[-2:])/1000/len(seeds)/3
-            brt_freqs = sum((freq_visits[20000]-freq_visits[19000])[-2:])/1000/len(seeds)/3                   
+            brt_freqs += sum((freq_visits[29000]-freq_visits[28000])[-2:])/1000/len(seeds)/3
+            # brt_freqs = sum((freq_visits[20000]-freq_visits[19000])[-2:])/1000/len(seeds)/3                   
     
     all_brt_freqs[brt] = brt_freqs
+
+
+
+
+
+
+
+
+
