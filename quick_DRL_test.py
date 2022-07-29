@@ -82,7 +82,7 @@ parser.add_argument('--DQN_update_period',type=int,default=20,\
 # parameters to find a greedy baseline
 parser.add_argument('--greed_base',type=bool,default=True,\
                     help='greedy baseline calculation')
-parser.add_argument('--greed_style',type=int,default=0,\
+parser.add_argument('--greed_style',type=int,default=1,\
                     help='0: graph greed, 1: min dist, 2: rng min dist')
 parser.add_argument('--rng_thresh',type=float,default=0.2,\
                     help='rng min dist threshold')
@@ -94,7 +94,7 @@ parser.add_argument('--dynamic',type=bool,default=False,\
 # parser.add_argument('--dynamic_drift',type=bool,default=False,\
                     # help='dynamic model drift')
 
-parser.add_argument('--brt',type=str,default='debug2',\
+parser.add_argument('--brt',type=str,default='debug',\
                     choices=['debug','debug2','medium','high','low',\
                              'vhigh','vhigh2','vhigh3','hlow','vlow','vvlow'],\
                     help='Battery Recharge Threshold')
@@ -222,7 +222,7 @@ class DQN:
         print(self.workers_per_swarm)
         print(self.coordinators_per_swarm)
         print(self.devices_per_cluster)
-                
+        
     ##########################################################################
     ## utilities
     def store(self,state,action,reward,next_state,args=args,\
@@ -353,7 +353,7 @@ class DQN:
                 # go recharge
                 nrg_temp = state[-16:-13]
                 for ind_nrg,nrg_temp_inst in enumerate(nrg_temp):
-                    if nrg_temp_inst < 8440:
+                    if nrg_temp_inst < 8440*5:
                         if 7 not in pos_temp_new:
                             pos_temp_new[ind_nrg] = 7
                             pos_temp2[ind_nrg] = 7
@@ -396,7 +396,7 @@ class DQN:
                 # go recharge
                 nrg_temp = state[-16:-13]
                 for ind_nrg,nrg_temp_inst in enumerate(nrg_temp):
-                    if nrg_temp_inst < 12660: #8440: #this needs margin
+                    if nrg_temp_inst < 8440*5:#12660: #8440: #this needs margin
                         if min_md_pt_recharge[pos_temp2[ind_nrg]] \
                             not in pos_temp_new:
                             pos_temp_new[ind_nrg] = \
@@ -449,7 +449,7 @@ class DQN:
                 # go recharge
                 nrg_temp = state[-16:-13]
                 for ind_nrg,nrg_temp_inst in enumerate(nrg_temp):
-                    if nrg_temp_inst < 12660: #8440: #this needs margin
+                    if nrg_temp_inst < 8440*5: #12660: #8440: #this needs margin
                         if min_md_pt_recharge[pos_temp2[ind_nrg]] \
                             not in pos_temp_new:
                             pos_temp_new[ind_nrg] = \
@@ -619,7 +619,8 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
             reward_vec[i] = 2e2
             # reward_vec[i] = 1e2
             # reward_vec[i] = 1e3
-            
+    
+    # print(reward_vec)
     # calculate the energy movement costs - also update the visitations vector
     em_hold = 0 
     for i,j in enumerate(new_positions): #next_state_set 
@@ -642,7 +643,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
 
         #previously was cluster_expectations[j] * next_state_visits[j]
         next_state_visits[j] = 0 # zero out since now it will be visited    
-    
+    # print(em_hold)
     ## zero out recharging stations in next_state_visits 
     ## DEBUG flag here
     # next_state_visits[-1] = 0
@@ -656,10 +657,13 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
                 gs_hold += c2*cluster_limits[i]
             else:
                 gs_hold += j*c2*cluster_expectations[i]
-    
+    # print(gs_hold)
     # add the value together
     current_reward = C/(sum(reward_vec)+em_hold+gs_hold)
     ml_reward_only = C/(sum(reward_vec)+gs_hold)
+    print(ml_reward_only)
+    # print('current reward')
+    # print(current_reward)    
     # print('check the reward calc')
     # print(sum(reward_vec))
     # print(em_hold)
@@ -668,6 +672,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     # check for battery failures (cannot afford to lose any UAVs)
     # bat_penalty = 0
     penalty = 0
+    # print(min_battery_levels)
     for i,j in enumerate(battery_status):
         if j < min_battery_levels[i]: #0:
             if args.pen == 'high':
@@ -679,7 +684,8 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
             current_reward = 0 #force zero out current reward if ANY battery runs out
             
     current_reward -= penalty
-    
+    print('current reward')
+    print(current_reward)
     ## if swarm was at a recharging station previously, and stays at one, incur a penalty
     # compare current_swarm_pos and new_positions
     # if args.brt == 'debug2':
