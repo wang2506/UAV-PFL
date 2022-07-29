@@ -305,7 +305,7 @@ ax1[2].set_ylabel('Learning Objective',fontsize=20)
 
 
 # %% plotting the greedy DRL
-seed = 1
+seed = 4 #seed = 1
 
 for ep_start in [0.7]:#[0.6,0.8]:
     for gamma in [0.7]:#[0.7,0.8]:

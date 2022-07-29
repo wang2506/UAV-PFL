@@ -82,7 +82,7 @@ parser.add_argument('--DQN_update_period',type=int,default=20,\
 # parameters to find a greedy baseline
 parser.add_argument('--greed_base',type=bool,default=True,\
                     help='greedy baseline calculation')
-parser.add_argument('--greed_style',type=int,default=1,\
+parser.add_argument('--greed_style',type=int,default=0,\
                     help='0: graph greed, 1: min dist, 2: rng min dist')
 parser.add_argument('--rng_thresh',type=float,default=0.2,\
                     help='rng min dist threshold')
@@ -94,7 +94,7 @@ parser.add_argument('--dynamic',type=bool,default=False,\
 # parser.add_argument('--dynamic_drift',type=bool,default=False,\
                     # help='dynamic model drift')
 
-parser.add_argument('--brt',type=str,default='debug',\
+parser.add_argument('--brt',type=str,default='medium',\
                     choices=['debug','debug2','medium','high','low',\
                              'vhigh','vhigh2','vhigh3','hlow','vlow','vvlow'],\
                     help='Battery Recharge Threshold')
@@ -354,15 +354,24 @@ class DQN:
                 nrg_temp = state[-16:-13]
                 for ind_nrg,nrg_temp_inst in enumerate(nrg_temp):
                     if nrg_temp_inst < 8440*5:
-                        if 7 not in pos_temp_new:
-                            pos_temp_new[ind_nrg] = 7
-                            pos_temp2[ind_nrg] = 7
-                        elif 8 not in pos_temp_new:
+                        if 8 not in pos_temp_new:
                             pos_temp_new[ind_nrg] = 8
                             pos_temp2[ind_nrg] = 8
-                        else:
+                        elif 9 not in pos_temp_new:
                             pos_temp_new[ind_nrg] = 9
                             pos_temp2[ind_nrg] = 9
+                        else:
+                            pos_temp_new[ind_nrg] = np.random.randint(0,8)
+                            pos_temp2[ind_nrg] = np.random.randint(0,8)
+                        # if 7 not in pos_temp_new:
+                        #     pos_temp_new[ind_nrg] = 7
+                        #     pos_temp2[ind_nrg] = 7
+                        # elif 8 not in pos_temp_new:
+                        #     pos_temp_new[ind_nrg] = 8
+                        #     pos_temp2[ind_nrg] = 8
+                        # else:
+                        #     pos_temp_new[ind_nrg] = 9
+                        #     pos_temp2[ind_nrg] = 9
                     else:
                         # increment by 1
                         pos_temp2[ind_nrg] += 1
@@ -404,15 +413,15 @@ class DQN:
                             pos_temp2[ind_nrg] = \
                                 min_md_pt_recharge[pos_temp2[ind_nrg]]
                         else: #you take whatever is available
-                            if 7 not in pos_temp_new:
-                                pos_temp_new[ind_nrg] = 7
-                                pos_temp2[ind_nrg] = 7
-                            elif 8 not in pos_temp_new:
+                            if 8 not in pos_temp_new:
                                 pos_temp_new[ind_nrg] = 8
                                 pos_temp2[ind_nrg] = 8
-                            else:
+                            elif 9 not in pos_temp_new:
                                 pos_temp_new[ind_nrg] = 9
                                 pos_temp2[ind_nrg] = 9
+                            else:
+                                pos_temp_new[ind_nrg] = np.random.randint(0,8)
+                                pos_temp2[ind_nrg] = np.random.randint(0,8)
                     else:
                         # travel to nearest distance cluster
                         if min_md_pt_clusters[pos_temp2[ind_nrg]] \
@@ -457,15 +466,24 @@ class DQN:
                             pos_temp2[ind_nrg] = \
                                 min_md_pt_recharge[pos_temp2[ind_nrg]]
                         else: #you take whatever is available
-                            if 7 not in pos_temp_new:
-                                pos_temp_new[ind_nrg] = 7
-                                pos_temp2[ind_nrg] = 7
-                            elif 8 not in pos_temp_new:
+                            # if 7 not in pos_temp_new:
+                            #     pos_temp_new[ind_nrg] = 7
+                            #     pos_temp2[ind_nrg] = 7
+                            # elif 8 not in pos_temp_new:
+                            #     pos_temp_new[ind_nrg] = 8
+                            #     pos_temp2[ind_nrg] = 8
+                            # else:
+                            #     pos_temp_new[ind_nrg] = 9
+                            #     pos_temp2[ind_nrg] = 9
+                            if 8 not in pos_temp_new:
                                 pos_temp_new[ind_nrg] = 8
                                 pos_temp2[ind_nrg] = 8
-                            else:
+                            elif 9 not in pos_temp_new:
                                 pos_temp_new[ind_nrg] = 9
                                 pos_temp2[ind_nrg] = 9
+                            else:
+                                pos_temp_new[ind_nrg] = np.random.randint(0,8)
+                                pos_temp2[ind_nrg] = np.random.randint(0,8)                            
                     else:
                         # travel to nearest distance cluster
                         # scaled by a random factor
@@ -1023,13 +1041,14 @@ for e in range(episodes):
 
 
         # experience update -> this is the actual training
-        if len(test_DQN.past_exps) > args.replay_bs:
-            #print('tomato')
-            test_DQN.retrain_exp_replay(args.replay_bs)
-            
-        # update label generation from taget model
-        if timestep != 0 and timestep%args.DQN_update_period==0:
-            test_DQN.align_target_model()
+        if args.greed_base == False:
+            if len(test_DQN.past_exps) > args.replay_bs:
+                #print('tomato')
+                test_DQN.retrain_exp_replay(args.replay_bs)
+                
+            # update label generation from taget model
+            if timestep != 0 and timestep%args.DQN_update_period==0:
+                test_DQN.align_target_model()
         
         #print(test_DQN.past_exps)
         
