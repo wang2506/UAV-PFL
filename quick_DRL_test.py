@@ -80,7 +80,7 @@ parser.add_argument('--DQN_update_period',type=int,default=20,\
 #8,3,2,4,2,2
 
 # parameters to find a greedy baseline
-parser.add_argument('--greed_base',type=bool,default=False,\
+parser.add_argument('--greed_base',type=bool,default=True,\
                     help='greedy baseline calculation')
 parser.add_argument('--greed_style',type=int,default=0,\
                     help='0: graph greed, 1: min dist, 2: rng min dist')
