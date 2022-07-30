@@ -33,24 +33,25 @@ ep_start = 0.6
 seed = 1
 # seed_vec = [1,3,4]
 # seed_vec = [4]
+# seed_vec = [1,4]
 seed_vec = [1,3,4] #[3,4]
 # gamma = 0.8 #gamma = 0.7 by default
 plt.figure(1)
 
 # f1,ax1 = plt.subplots(1,2,figsize=(10,4))#(9.6,4)) #10,4
-f1,ax1 = plt.subplots(1,3,figsize=(9,3.3)) #(9,4)
+f1,ax1 = plt.subplots(1,3,figsize=(9,3)) #(9,4)
 
 colors = ['darkblue','darkgreen','purple','red','brown','darkgoldenrod','cyan']
 bat_state = 'medium'
 
-# vary_ep = True
-vary_ep = False
+vary_ep = True
+# vary_ep = False
 
-# vary_g = True
+vary_g = True
 vary_g = False
 
-vary_bat = True
-# vary_bat = False
+# vary_bat = True
+vary_bat = False
 
 if vary_ep == True:
     ep_vec = [0.6,0.7,0.8]
@@ -66,7 +67,7 @@ if vary_bat == True:
     # bat_vec = ['medium','vhigh','vhigh3']#'high','vhigh'] #'low',
     # bat_vec = ['medium','vhigh','vhigh2']
     # bat_vec = ['medium','high','vhigh']
-    bat_vec = ['high','vhigh','vhigh2','vhigh3']
+    bat_vec = ['high','vhigh','vhigh2']#,'vhigh3']
     # bat_vec = ['low','high','vhigh']
     # bat_vec = ['low','medium','vhigh']
     # bat_vec = ['vlow','low','medium','high','vhigh','vhigh2','vhigh3'] 
@@ -75,12 +76,13 @@ if vary_bat == True:
     # bat_vec = ['vlow','low','medium']
     # bat_vec = ['vlow','medium','high']#'low','hlow']#'medium']
     # bat_vec = ['vlow','low','hlow','medium','high','vhigh']
-    # bat_vec2 = ['low','medium','high']
+    bat_vec2 = ['low','medium','high']
     # bat_vec = ['low']
-    bat_vec2 = bat_vec
+    # bat_vec2 = bat_vec
 else:
     # bat_vec = ['medium']
-    bat_vec = ['debug']
+    # bat_vec = ['debug']
+    bat_vec = ['high']
 
 # vary_cap = True
 # #vary_cap = False
@@ -98,9 +100,13 @@ else:
 # else:
 #     pen_vec = ['high']
 
-mv_window = 2000 #1000
-tests = True
-# tests = False
+# mv_window = 2000 #1000
+if vary_bat == False: 
+    mv_window = 5000
+else:
+    mv_window = 2000
+# tests = True
+tests = False
 
 for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
     for ind_g,gamma in enumerate(g_vec):#[0.7]):
@@ -161,7 +167,7 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                     #         ,linestyle='solid', \
                     #             color = colors[ind_pen],linewidth=lwd)
 
-ax1[0].set_title(r'(a)',fontsize=20,y=-0.35) # Reward Over Time
+ax1[0].set_title(r'(a)',fontsize=20,y=-0.40) # Reward Over Time
 ax1[0].grid(True)
 ax1[0].set_xlabel('Epoch',fontsize=20)
 ax1[0].set_ylabel('Reward',fontsize=20)
@@ -228,7 +234,7 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                     #         ,linestyle='solid', \
                     #             color = colors[ind_pen],linewidth=lwd)
 
-ax1[1].set_title('(b)',fontsize=20,y=-0.35) # Battery Over Time',fontsize=15,y=-0.24)
+ax1[1].set_title('(b)',fontsize=20,y=-0.40) # Battery Over Time',fontsize=15,y=-0.24)
 ax1[1].grid(True)
 ax1[1].set_xlabel('Epoch',fontsize=20)
 if tests == True:
@@ -298,7 +304,7 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                     #             color = colors[ind_pen],linewidth=lwd)
 
 # ax1[1].set_title('b)',fontsize=20,y=-0.32) # Battery Over Time',fontsize=15,y=-0.24)
-ax1[2].set_title('(c)',fontsize=20,y=-0.35) # Battery Over Time',fontsize=15,y=-0.24)
+ax1[2].set_title('(c)',fontsize=20,y=-0.40) # Battery Over Time',fontsize=15,y=-0.24)
 ax1[2].grid(True)
 ax1[2].set_xlabel('Epoch',fontsize=20)
 ax1[2].set_ylabel('Learning Objective',fontsize=20)
@@ -400,8 +406,9 @@ if vary_ep == True:
     ax1[1].set_yticklabels(['25','30','35','40','45'])
 elif vary_g == True:
     ax1[1].set_yticklabels(['10','20','30','40']) #['15','20','25','30','35','40','45'])
-# elif vary_bat == True:
-#     ax1[1].set_yticklabels(['20','25','30','35','40','45'])
+elif vary_bat == True:
+    # ax1[1].set_yticklabels(['20','25','30','35','40','45'])
+    ax1[1].set_yticklabels(['10','20','30','40'])
 
 f1.tight_layout()#pad=1.5)
 f1.subplots_adjust(wspace=0.6)
