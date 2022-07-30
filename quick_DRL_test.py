@@ -84,7 +84,7 @@ parser.add_argument('--greed_base',type=bool,default=True,\
                     help='greedy baseline calculation')
 parser.add_argument('--greed_style',type=int,default=0,\
                     help='0: graph greed, 1: min dist, 2: rng min dist')
-parser.add_argument('--rng_thresh',type=float,default=0.1,\
+parser.add_argument('--rng_thresh',type=float,default=0.01,\
                     help='rng min dist threshold') #0.2
 
 parser.add_argument('--dynamic',type=bool,default=False,\

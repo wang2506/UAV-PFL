@@ -106,7 +106,7 @@ for ind,theta in enumerate(theta_vect):
     energy_percents2.append(np.round(nrg_temp_per2,2))
 
 
-f, axs = plt.subplots(1,1,figsize=(3.5,1.7))
+f, axs = plt.subplots(1,1,figsize=(3.5,1.5)) #1.7
 # axs2 = axs.twinx() # Create another axes that shares the same x-axis as ax
 width = 0.82
 cats= 4
@@ -161,5 +161,5 @@ axs.add_artist(leg1)
 
 import os
 cwd = os.getcwd()
-plt.savefig(cwd+'/geo_optim_chars/greed1_percent_diff_test.pdf',dpi=1000,bbox_inches='tight')
+# plt.savefig(cwd+'/geo_optim_chars/greed1_percent_diff_test.pdf',dpi=1000,bbox_inches='tight')
 # plt.savefig(cwd+'/geo_optim_chars/greed1_percent_diff.pdf',dpi=1000,bbox_inches='tight')
