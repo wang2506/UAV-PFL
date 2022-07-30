@@ -66,10 +66,10 @@ if vary_bat == True:
     # bat_vec = ['medium','vhigh','vhigh3']#'high','vhigh'] #'low',
     # bat_vec = ['medium','vhigh','vhigh2']
     # bat_vec = ['medium','high','vhigh']
-    # bat_vec = ['high','vhigh','vhigh2','vhigh3']
+    bat_vec = ['vhigh','vhigh2','vhigh3']
     # bat_vec = ['low','high','vhigh']
     # bat_vec = ['low','medium','vhigh']
-    bat_vec = ['vlow','low','medium','high','vhigh','vhigh2','vhigh3'] 
+    # bat_vec = ['vlow','low','medium','high','vhigh','vhigh2','vhigh3'] 
     # bat_vec = ['vlow','low','medium','high','vhigh']
     # bat_vec = ['vlow','medium','vhigh']
     # bat_vec = ['vlow','low','medium']
@@ -98,7 +98,7 @@ else:
 # else:
 #     pen_vec = ['high']
 
-mv_window = 5000 #1000
+mv_window = 1000 #1000
 tests = True
 # tests = False
 
@@ -133,7 +133,7 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                         #             # +'_'+bat_state, \
                         #         'rb') as f: 
                         #     data = pickle.load(f) 
-                        datas += np.array(data[:14000])/len(seed_vec)
+                        datas += np.array(data[:27000])/len(seed_vec)
                     data_fixer = moving_average(datas,mv_window)
                     
                     if vary_ep == True:
@@ -199,7 +199,7 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                         #             # +'_'+bat_state, \
                         #         'rb') as f:
                         #     data_b = pickle.load(f)                              
-                        datas_b += np.array(data_b[:14000])/len(seed_vec)
+                        datas_b += np.array(data_b[:27000])/len(seed_vec)
                     data_b2 = [mean(i) for i in datas_b]
                     data_b2 = moving_average(data_b2,mv_window)
 
@@ -268,7 +268,7 @@ for ind_ep,ep_start in enumerate(ep_vec):#[0.7]):
                         #             # +'_'+bat_state, \
                         #         'rb') as f:
                         #     data_ml = pickle.load(f)
-                        datas_ml += np.array(data_ml[:14000])/len(seed_vec)
+                        datas_ml += np.array(data_ml[:27000])/len(seed_vec)
                         # datas_ml += np.array(data_ml[:])/len(seed_vec)
                     data_ml2 = moving_average(datas_ml,mv_window)
 
@@ -313,35 +313,35 @@ for ep_start in [0.7]:#[0.6,0.8]:
             if greed_style != 2:                
                 with open(cwd+'/drl_results/2e2seed_'+str(seed)+'_'+str(ep_start) \
                         +'_rewardtest_large_'+str(gamma) \
-                        +'_greedy_'+str(greed_style)+'_debug2', \
+                        +'_greedy_'+str(greed_style)+'_medium', \
                         'rb') as f:
                     g_reward = pickle.load(f)
                 with open(cwd+'/drl_results/2e2seed_'+str(seed)+'_'+str(ep_start) \
                         +'_batterytest_large_'+str(gamma) \
-                        +'_greedy_'+str(greed_style)+'_debug2', \
+                        +'_greedy_'+str(greed_style)+'_medium', \
                         'rb') as f:
                     g_bat = pickle.load(f)                    
                 
                 with open(cwd+'/drl_results/2e2seed_'+str(seed)+'_'+str(ep_start) \
                         +'_ml_reward_onlytest_large_'+str(gamma) \
-                        +'_greedy_'+str(greed_style)+'_debug2', \
+                        +'_greedy_'+str(greed_style)+'_medium', \
                         'rb') as f:
                     g_ml = pickle.load(f)                      
             else:
                 with open(cwd+'/drl_results/2e2seed_'+str(seed)+'_'+str(ep_start) \
                         +'_rewardtest_large_'+str(gamma) \
-                        +'_greedy_'+str(greed_style)+'_rng_thresh_0.2'+'_debug2', \
+                        +'_greedy_'+str(greed_style)+'_rng_thresh_0.1'+'_medium', \
                         'rb') as f:
                     g_reward = pickle.load(f)
                 with open(cwd+'/drl_results/2e2seed_'+str(seed)+'_'+str(ep_start) \
                         +'_batterytest_large_'+str(gamma) \
-                        +'_greedy_'+str(greed_style)+'_rng_thresh_0.2'+'_debug2', \
+                        +'_greedy_'+str(greed_style)+'_rng_thresh_0.1'+'_medium', \
                         'rb') as f:
                     g_bat = pickle.load(f)                 
 
                 with open(cwd+'/drl_results/2e2seed_'+str(seed)+'_'+str(ep_start) \
                         +'_ml_reward_onlytest_large_'+str(gamma) \
-                        +'_greedy_'+str(greed_style)+'_rng_thresh_0.2'+'_debug2', \
+                        +'_greedy_'+str(greed_style)+'_rng_thresh_0.1'+'_medium', \
                         'rb') as f:
                     g_ml = pickle.load(f)    
                     
@@ -351,36 +351,36 @@ for ep_start in [0.7]:#[0.6,0.8]:
             g_bat2 = moving_average(g_bat2,mv_window)            
             g_ml2 = moving_average(g_ml,mv_window)
             
-        #     if greed_style == 0:
-        #         # print('temp')
-        #         ax1[0].plot(g_reward2,label='S.H.',color='saddlebrown',\
-        #             linewidth = lwd) #Sequential Heuristic
+            if greed_style == 0:
+                # print('temp')
+                ax1[0].plot(g_reward2,label='S.H.',color='saddlebrown',\
+                    linewidth = lwd) #Sequential Heuristic
 
-        #         ax1[1].plot(g_bat2,label='S.H.',color='saddlebrown',\
-        #             linewidth = lwd) #Sequential Heuristic
+                ax1[1].plot(g_bat2,label='S.H.',color='saddlebrown',\
+                    linewidth = lwd) #Sequential Heuristic
                     
-        #         ax1[2].plot(g_ml2,label='S.H.',color='saddlebrown',\
-        #             linewidth = lwd)
+                ax1[2].plot(g_ml2,label='S.H.',color='saddlebrown',\
+                    linewidth = lwd)
                     
-        #     elif greed_style == 1:
-        #         ax1[0].plot(g_reward2,label='G.M.D.',color='slategrey',\
-        #             linewidth = lwd) #Greedy Minimum Distance
+            elif greed_style == 1:
+                ax1[0].plot(g_reward2,label='G.M.D.',color='slategrey',\
+                    linewidth = lwd) #Greedy Minimum Distance
 
-        #         ax1[1].plot(g_bat2,label='G.M.D.',color='slategrey',\
-        #             linewidth = lwd)
+                ax1[1].plot(g_bat2,label='G.M.D.',color='slategrey',\
+                    linewidth = lwd)
                     
-        #         ax1[2].plot(g_ml2,label='G.M.D.',color='slategrey',\
-        #             linewidth = lwd)                    
-        #     else:
-        #         ax1[0].plot(g_reward2,label='T.M.D.',color='darkorange',\
-        #             linewidth = lwd) # T.M.D. - threshold minimum distance
+                ax1[2].plot(g_ml2,label='G.M.D.',color='slategrey',\
+                    linewidth = lwd)                    
+            else:
+                ax1[0].plot(g_reward2,label='T.M.D.',color='darkorange',\
+                    linewidth = lwd) # T.M.D. - threshold minimum distance
 
-        #         ax1[1].plot(g_bat2,label='T.M.D.',color='darkorange',\
-        #             linewidth = lwd) # T.M.D.
+                ax1[1].plot(g_bat2,label='T.M.D.',color='darkorange',\
+                    linewidth = lwd) # T.M.D.
                 
-        #         ax1[2].plot(g_ml2,label='T.M.D.',color='darkorange',\
-        #             linewidth = lwd)                                     
-        # # plt.savefig(cwd+'/drl_plots/freq_no_recharge.pdf',dpi=1000, bbox_inches='tight')
+                ax1[2].plot(g_ml2,label='T.M.D.',color='darkorange',\
+                    linewidth = lwd)                                     
+        # plt.savefig(cwd+'/drl_plots/freq_no_recharge.pdf',dpi=1000, bbox_inches='tight')
 
 
 ax1[0].set_ylim([-100,430])
