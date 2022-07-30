@@ -353,7 +353,7 @@ class DQN:
                 # go recharge
                 nrg_temp = state[-16:-13]
                 for ind_nrg,nrg_temp_inst in enumerate(nrg_temp):
-                    if nrg_temp_inst < 8440*5:
+                    if nrg_temp_inst < 8440*4:
                         if 8 not in pos_temp_new:
                             pos_temp_new[ind_nrg] = 8
                             pos_temp2[ind_nrg] = 8
@@ -405,7 +405,7 @@ class DQN:
                 # go recharge
                 nrg_temp = state[-16:-13]
                 for ind_nrg,nrg_temp_inst in enumerate(nrg_temp):
-                    if nrg_temp_inst < 8440*5:#12660: #8440: #this needs margin
+                    if nrg_temp_inst < 8440*4:#12660: #8440: #this needs margin
                         if min_md_pt_recharge[pos_temp2[ind_nrg]] \
                             not in pos_temp_new:
                             pos_temp_new[ind_nrg] = \
@@ -679,7 +679,7 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
     # add the value together
     current_reward = C/(sum(reward_vec)+em_hold+gs_hold)
     ml_reward_only = C/(sum(reward_vec)+gs_hold)
-    print(ml_reward_only)
+    # print(ml_reward_only)
     # print('current reward')
     # print(current_reward)    
     # print('check the reward calc')
@@ -702,8 +702,8 @@ def reward_state_calc(test_DQN,current_state,current_action,current_action_space
             current_reward = 0 #force zero out current reward if ANY battery runs out
             
     current_reward -= penalty
-    print('current reward')
-    print(current_reward)
+    # print('current reward')
+    # print(current_reward)
     ## if swarm was at a recharging station previously, and stays at one, incur a penalty
     # compare current_swarm_pos and new_positions
     # if args.brt == 'debug2':
