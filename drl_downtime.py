@@ -17,7 +17,8 @@ g_discount = 0.7
 if vary_bat == True:
     # bat_vec = ['medium','high','vhigh'] #'low',
     # bat_vec = ['low','medium','high']
-    bat_vec = ['vlow','low','medium','high','vhigh']
+    # bat_vec = ['vlow','low','medium','high','vhigh']
+    bat_vec = ['high','vhigh','vhigh2','vhigh3']
     # bat_vec2 = ['low','medium','high']
 else:
     bat_vec = ['medium']
