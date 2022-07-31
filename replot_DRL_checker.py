@@ -44,22 +44,24 @@ f1,ax1 = plt.subplots(1,3,figsize=(9,3)) #(9,4)
 colors = ['darkblue','darkgreen','purple','red','brown','darkgoldenrod','cyan']
 bat_state = 'medium'
 
-vary_ep = True
-# vary_ep = False
+# vary_ep = True
+vary_ep = False
 
 vary_g = True
-vary_g = False
+# vary_g = False
 
 # vary_bat = True
 vary_bat = False
 
 if vary_ep == True:
-    ep_vec = [0.6,0.7,0.8]
+    # ep_vec = [0.6,0.7,0.8]
+    ep_vec = [0.65,0.7,0.75]
 else:
     ep_vec = [0.7]
 
 if vary_g == True:
-    g_vec = [0.6,0.7,0.8]
+    # g_vec = [0.6,0.7,0.8]
+    g_vec = [0.65,0.7,0.75]
 else:
     g_vec = [0.7]
 
