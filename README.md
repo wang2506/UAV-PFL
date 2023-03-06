@@ -1,2 +1,2 @@
-# jsac_2021
-reinforcement learning agent + nova based reward function for JSAC 2021 submission
+# UAV-PFL
+Code for the paper: UAV-assisted online machine learning over multi-tiered networks: A hierarchical nested personalized federated learning approach.
